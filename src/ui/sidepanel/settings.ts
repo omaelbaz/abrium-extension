@@ -14,17 +14,19 @@ import type { RenderContext } from '../shared/templates.ts';
 import { escapeHtml, notice } from '../shared/templates.ts';
 
 /* ==========================================================================
-   ⚠ PLACEHOLDER URLS — NOT REAL YET. Replace before any public release.
-   Every one of these is a dead link today. They are the only outbound links
-   in this screen, they are plain <a href> navigations (never fetched), and
-   they are listed together so none can hide in the markup.
+   OUTBOUND LINKS — one is still a PLACEHOLDER. Check before public release.
+   These are the only outbound links in this screen, they are plain <a href>
+   navigations (never fetched), and they are listed together so none can hide
+   in the markup. `support` and `repository` are live and real. `changelog`
+   is not: abrium.onl does not resolve yet (NXDOMAIN as of 2026-08-04).
+   It must stay a placeholder until the domain is live — never point it at a
+   dev server. A localhost URL here ships a dead link to every user, and
+   tools/verify-dist.mjs fails the build if one reaches dist/.
    ========================================================================== */
 export const PLACEHOLDER_LINKS = {
-  /** TODO(real-url): Patreon page does not exist yet. */
-  support: 'https://patreon.com/abrium',
-  /** TODO(real-url): public repo not created yet. */
-  repository: 'https://github.com/abrium/abrium',
-  /** TODO(real-url): website changelog page not built yet. */
+  support: 'https://patreon.com/OmarElbaz',
+  repository: 'https://github.com/omaelbaz/abrium-extension',
+  /** TODO(real-url): website changelog page not reachable yet (domain not live). */
   changelog: 'https://abrium.onl/changelog',
 } as const;
 
