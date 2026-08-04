@@ -1,8 +1,10 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import Contact from '../components/pages/Contact.astro';
+import { useTranslations } from '../i18n/utils';
 
+const t = useTranslations('en');
 ---
-<Layout title="Contact Us" description="Contact Us">
-  
-  <h1>Contact Us</h1><p><a href='https://github.com/yourusername/abrium' target='_blank'>Report an issue on GitHub</a></p><br/><p><a href='https://patreon.com/placeholder-abrium' target='_blank'>Support us on Patreon (PLACEHOLDER)</a></p>
+<Layout title={t('contactTitle') as string} description={t('contactSub') as string}>
+  <Contact lang="en" />
 </Layout>

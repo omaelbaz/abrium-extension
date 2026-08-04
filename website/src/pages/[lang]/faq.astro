@@ -1,14 +1,25 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import Faq from '../../components/pages/Faq.astro';
+import { useTranslations } from '../../i18n/utils';
 
-const faqSchema = { "@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{ "@type": "Question", "name": "Is it free?", "acceptedAnswer": { "@type": "Answer", "text": "Yes, Abrium is 100% free with no paid tiers." } }, { "@type": "Question", "name": "Does it read my conversations?", "acceptedAnswer": { "@type": "Answer", "text": "No. It only reads Artifact content, not your prompts or unrelated conversations." } }] };
-
-export function getStaticPaths() { return [ { params: { lang: 'ar' } }, { params: { lang: 'fr' } }, { params: { lang: 'es' } }, { params: { lang: 'pt' } } ]; }
+export function getStaticPaths() {
+  return [{ params: { lang: 'ar' } }, { params: { lang: 'fr' } }, { params: { lang: 'es' } }, { params: { lang: 'pt' } }];
+}
 const { lang } = Astro.params;
-const translations = {"ar":{"title":"الأسئلة الشائعة","html":"<h1>الأسئلة الشائعة</h1><h3>هل هو مجاني؟</h3><p>نعم، أبريوم مجاني 100% بدون أي فئات مدفوعة.</p><h3>هل يقرأ محادثاتي؟</h3><p>لا. يقرأ محتوى القطع الأثرية فقط، وليس مطالباتك.</p><h3>لماذا عرض الكود وليس المعاينة؟</h3><p>لأسباب أمنية، نعرض الكود الخام بدلاً من معاينات قد تكون غير آمنة.</p><h3>أين يتم تخزين البيانات؟</h3><p>يتم تخزين جميع البيانات محلياً في متصفحك.</p><h3>ماذا عن الأدوات التشخيصية في المستودع؟</h3><p>أدوات المستودع آمنة ولا تجمع بيانات شخصية.</p>"},"fr":{"title":"FAQ","html":"<h1>Foire Aux Questions</h1><h3>Est-ce gratuit ?</h3><p>Oui, 100% gratuit, sans abonnement.</p><h3>Lit-il mes conversations ?</h3><p>Non. Uniquement le contenu des Artefacts.</p><h3>Pourquoi la vue Code et non Aperçu ?</h3><p>Pour des raisons de sécurité, nous affichons le code brut.</p><h3>Où sont stockées les données ?</h3><p>Dans le stockage local de votre navigateur.</p><h3>Qu'en est-il des outils de diagnostic ?</h3><p>Ils sont sûrs et ne collectent aucune donnée personnelle.</p>"},"es":{"title":"Preguntas Frecuentes","html":"<h1>Preguntas Frecuentes</h1><h3>¿Es gratis?</h3><p>Sí, 100% gratis.</p><h3>¿Lee mis conversaciones?</h3><p>No. Solo el contenido de los Artefactos.</p><h3>¿Por qué vista de Código y no Vista Previa?</h3><p>Por seguridad, mostramos el código sin formato.</p><h3>¿Dónde se almacenan los datos?</h3><p>En el almacenamiento local de tu navegador.</p><h3>¿Qué pasa con las herramientas de diagnóstico?</h3><p>Son seguras y no recopilan datos personales.</p>"},"pt":{"title":"FAQ","html":"<h1>Perguntas Frequentes</h1><h3>É gratuito?</h3><p>Sim, 100% gratuito.</p><h3>Lê minhas conversas?</h3><p>Não. Apenas o conteúdo dos Artefatos.</p><h3>Por que visualização de Código e não Pré-visualização?</h3><p>Por segurança, mostramos o código bruto.</p><h3>Onde os dados são armazenados?</h3><p>No armazenamento local do seu navegador.</p><h3>E as ferramentas de diagnóstico?</h3><p>São seguras e não coletam dados pessoais.</p>"}};
-const t = translations[lang as keyof typeof translations];
+const t = useTranslations(lang as string);
+const faqs = t('faqs') as { q: string; a: string }[];
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map((f) => ({
+    "@type": "Question",
+    "name": f.q,
+    "acceptedAnswer": { "@type": "Answer", "text": f.a }
+  }))
+};
 ---
-<Layout title={t.title} description={t.title}>
+<Layout title={t('faqTitle') as string} description={t('faqTitle') as string}>
   <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} slot="head" />
-  <div set:html={t.html} />
+  <Faq lang={lang as string} />
 </Layout>

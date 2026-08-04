@@ -1,9 +1,10 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import CookiePreferences from '../components/pages/CookiePreferences.astro';
+import { useTranslations } from '../i18n/utils';
 
+const t = useTranslations('en');
 ---
-<Layout title="Cookie Preferences" description="Cookie Preferences">
-  
-  <h1>Cookie Preferences</h1><p>You can change your Google Analytics 4 tracking preferences here.</p><br/><div style='display:flex;gap:var(--space-4)'><button id='pref-reject' class='button button-outline'>Reject All</button><button id='pref-accept' class='button'>Accept All</button></div><script>document.addEventListener('DOMContentLoaded', () => { document.getElementById('pref-accept')?.addEventListener('click', () => { localStorage.setItem('cookie_consent', 'accepted'); alert('Preferences updated: Accepted'); location.reload(); }); document.getElementById('pref-reject')?.addEventListener('click', () => { localStorage.setItem('cookie_consent', 'rejected'); alert('Preferences updated: Rejected'); location.reload(); }); });</script>
+<Layout title={t('cookieTitle') as string} description={t('cookieTitle') as string}>
+  <CookiePreferences lang="en" />
 </Layout>
-

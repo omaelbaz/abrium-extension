@@ -1,8 +1,11 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import Prose from '../components/pages/Prose.astro';
+import { useTranslations } from '../i18n/utils';
 
+const t = useTranslations('en');
+const terms = t('terms') as { title: string };
 ---
-<Layout title="Terms of Service" description="Terms of Service">
-  
-  <h1>Terms of Service</h1><p>Welcome to Abrium. By using our free extension, you agree to our basic usage terms. Abrium is provided open-source and "as is" to help you manage your artifacts locally. We simply ask that you use the tool responsibly. Your data is yours.</p>
+<Layout title={terms.title} description={terms.title}>
+  <Prose lang="en" kind="terms" />
 </Layout>

@@ -1,10 +1,21 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import Changelog from '../components/pages/Changelog.astro';
+import { useTranslations } from '../i18n/utils';
 
-const changelogSchema = { "@context": "https://schema.org", "@type": "ItemList", "itemListElement": [ { "@type": "ListItem", "position": 1, "name": "v0.1.0 - Initial release" } ] };
-
+const t = useTranslations('en');
+const releases = t('releases') as { version: string }[];
+const changelogSchema = {
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "itemListElement": releases.map((r, i: number) => ({
+    "@type": "ListItem",
+    "position": i + 1,
+    "name": `${r.version} - Initial release`
+  }))
+};
 ---
-<Layout title="Changelog" description="Changelog">
+<Layout title={t('changelogTitle') as string} description={t('changelogTitle') as string}>
   <script type="application/ld+json" set:html={JSON.stringify(changelogSchema)} slot="head" />
-  <h1>Changelog</h1><ul><li><strong>v0.1.0</strong> &mdash; Initial release.</li></ul>
+  <Changelog lang="en" />
 </Layout>

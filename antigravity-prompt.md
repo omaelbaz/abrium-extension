@@ -1,3 +1,58 @@
+# Prompt for Antigravity — Website Content Fidelity Fix
+Paste this entire file into Antigravity as one prompt. Every file below is
+final, already-written code (verified locally: `npm run build` → 46 static
+pages, zero errors). Apply each section exactly — create the file at the
+exact path shown, replacing it entirely if it already exists.
+
+## Step 0 — Before touching anything: restore any files that may have gone missing
+
+If `npm run dev` currently errors with "Missing pages directory: src/pages"
+or "Could not import Layout.astro" / "404.astro not found", it means some
+untouched project files (Layout.astro, 404.astro, i18n/utils.ts, styles,
+CookieConsent.astro, package.json, astro.config.mjs, etc.) got deleted when
+a previous file drop replaced the whole folder instead of merging into it.
+Fix first, before anything else:
+
+```
+git status
+git restore --staged --worktree .
+```
+
+This restores every file to the last committed state (nothing here was ever
+deleted on purpose — only NEW/CHANGED files are listed in this prompt).
+Confirm `npm run dev` runs clean again before proceeding to Step 1.
+
+## Step 1 — Delete these files (confirmed unused in package.json's build/dev/preview scripts — safe)
+
+```
+extract.cjs
+extract.mjs
+extract_en.cjs
+extract_scripts.cjs
+extract_test.cjs
+fix.cjs
+fix_utils.cjs
+generate-pages.cjs
+rebuild-batch1.cjs
+test.cjs
+test2.cjs
+test3.cjs
+test_jsdom.cjs
+test_puppeteer.cjs
+rendered.html
+test_template.html
+src/pages/[lang]/   (entire old directory — every file inside will be replaced by Step 8 below)
+```
+
+Optional cleanup: remove `"cheerio"`, `"jsdom"`, `"puppeteer"` from
+`package.json` dependencies (only used by the deleted scripts), then
+`npm install` again.
+
+## Step 2 — Shared i18n dictionary (EN/AR complete + FR/ES/PT now fully merged, ES backHome typo fixed)
+
+**File:** `src/i18n/ui.ts` — replace entirely with:
+
+```typescript
 export const EN = {
   addToChrome: "Add to Chrome", viewGithub: "View on GitHub", getIt: "Get Abrium",
   eyebrow: "Chrome extension · v0.1.0",
@@ -465,3 +520,878 @@ export const PT = {
   }
 };
 
+
+```
+
+## Step 3 — Shared icon path constants
+
+**File:** `src/lib/icons.ts` — replace entirely with:
+
+```typescript
+// Single source of truth for icon path data used across website page components.
+// lucide-style, 1.6px stroke — matches the extension's icon set and the design reference.
+export const ICONS: Record<string, string> = {
+  capture: "M12 3a9 9 0 1 0 0 18a9 9 0 0 0 0-18M12 8v8M8 12h8",
+  search: "M11 4a7 7 0 1 0 0 14a7 7 0 0 0 0-14M20 20l-4-4",
+  zip: "M3 7h18v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zM3 7l2-4h14l2 4M10 12h4",
+  globe: "M12 3a9 9 0 1 0 0 18a9 9 0 0 0 0-18M3 12h18M12 3c2.4 2.6 3.6 5.6 3.6 9S14.4 18.4 12 21M12 3C9.6 5.6 8.4 8.6 8.4 12s1.2 6.4 3.6 9",
+  lock: "M6 10h12v10H6zM9 10V7a3 3 0 0 1 6 0v3",
+  github: "M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.3 4.3 0 0 0-.1-3.2s-1.1-.3-3.5 1.3a12 12 0 0 0-6.2 0C6.5 2.8 5.4 3.1 5.4 3.1a4.3 4.3 0 0 0-.1 3.2A4.6 4.6 0 0 0 4 9.5c0 4.6 2.7 5.7 5.5 6-.4.4-.5.9-.5 1.6V21",
+  patreon: "M4 3v18M14.5 3a5.8 5.8 0 1 1 0 11.6a5.8 5.8 0 0 1 0-11.6",
+  chrome: "M12 3a9 9 0 1 0 0 18a9 9 0 0 0 0-18M12 8.4a3.6 3.6 0 1 0 0 7.2a3.6 3.6 0 0 0 0-7.2M20.4 7.6H12M4.3 6 8.4 13.2M10.7 20.9 14.8 13.7",
+  clock: "M12 7v5l3 2M12 3a9 9 0 1 0 0 18a9 9 0 0 0 0-18",
+  check: "m20 6-11 11-5-5",
+  chevronRight: "m9 6 6 6-6 6",
+  chevronLeft: "m15 18-6-6 6-6",
+};
+```
+
+## Step 4 — Shared page components (used by BOTH the English root page and every [lang] localized page — single source of truth)
+
+## Component: Home.astro
+
+**File:** `src/components/pages/Home.astro` — replace entirely with:
+
+```astro
+---
+import { useTranslations } from '../../i18n/utils';
+import { ICONS } from '../../lib/icons';
+
+interface Props {
+  lang: string;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const downloadHref = lang === 'en' ? '/download' : `/${lang}/download`;
+const homeFeatureIcons: Record<string, string> = {
+  capture: "M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6",
+  search: "M4 22h14a2 2 0 0 0 2-2V7.5L14.5 2H6a2 2 0 0 0-2 2v4",
+  zip: "M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3",
+  globe: "M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10",
+};
+---
+<div style="max-width:1080px; margin:0 auto; padding-block:72px 0">
+
+  <div style="display:flex; flex-direction:row; gap:64px; align-items:center">
+    <div style="flex:1; min-width:0; display:flex; flex-direction:column; gap:20px; max-width:720px">
+      <span style="font:500 11.5px/1 ui-monospace,Menlo,monospace; letter-spacing:0.12em; text-transform:uppercase; color:var(--accent-text)">{t('eyebrow')}</span>
+      <h1 style="margin:0; font-size:48px; font-weight:600; line-height:1.1; letter-spacing:-0.025em; text-wrap:balance">{t('heroTitle')}</h1>
+      <p style="margin:0; font-size:18px; line-height:1.65; color:var(--text-3); text-wrap:pretty; max-width:48ch">{t('heroSub')}</p>
+      <div style="display:flex; flex-wrap:wrap; gap:10px; padding-top:4px">
+        <a href={downloadHref} style="height:48px; display:flex; align-items:center; gap:9px; padding:0 20px; border-radius:8px; background:var(--accent-solid); color:var(--on-accent); font:600 14.5px/1 inherit; cursor:pointer; text-decoration:none">
+          <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 11l5 5 5-5M4 20h16"></path></svg>
+          {t('addToChrome')}
+        </a>
+        <a href="https://github.com/omaelbaz/abrium-extension" target="_blank" rel="noopener" style="height:48px; display:flex; align-items:center; gap:9px; padding:0 18px; border-radius:8px; border:1px solid var(--border); background:var(--surface); color:var(--text); font:600 14.5px/1 inherit; text-decoration:none">
+          <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d={ICONS.github}></path></svg>
+          {t('viewGithub')}
+        </a>
+      </div>
+      <div style="display:flex; flex-wrap:wrap; align-items:center; gap:8px; padding-top:8px">
+        {(t('trust') as string[]).map((item: string) => (
+          <span style="display:flex; align-items:center; gap:6px; font:500 12px/1 inherit; color:var(--text-3)">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d={ICONS.check}></path></svg>
+            {item}
+          </span>
+        ))}
+      </div>
+    </div>
+  </div>
+
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; padding-block:72px">
+    {(t('homeFeatures') as {i: string, title: string, body: string}[]).map((f) => (
+      <div style="border:1px solid var(--border); border-radius:8px; background:var(--surface); padding:22px; display:flex; flex-direction:column; gap:11px">
+        <span style="width:36px; height:36px; border-radius:8px; border:1px solid var(--accent); display:flex; align-items:center; justify-content:center; background:var(--tint)">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d={homeFeatureIcons[f.i]}></path></svg>
+        </span>
+        <h3 style="margin:0; font:600 16px/1.3 inherit; letter-spacing:-0.01em">{f.title}</h3>
+        <p style="margin:0; font-size:13.5px; line-height:1.65; color:var(--text-3); text-wrap:pretty">{f.body}</p>
+      </div>
+    ))}
+  </div>
+
+  <div style="border-top:1px solid var(--border); padding-block:72px; display:flex; flex-direction:column; gap:26px">
+    <div style="display:flex; flex-direction:column; gap:8px; max-width:600px">
+      <span style="font:500 11.5px/1 ui-monospace,Menlo,monospace; letter-spacing:0.12em; text-transform:uppercase; color:var(--accent-text)">{t('howLabel')}</span>
+      <h2 style="margin:0; font-size:32px; font-weight:600; line-height:1.2; letter-spacing:-0.02em">{t('howTitle')}</h2>
+    </div>
+    <div style="display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:14px">
+      {(t('steps') as {n: string, title: string, body: string}[]).map((s) => (
+        <div style="display:flex; flex-direction:column; gap:10px; padding:20px; border:1px solid var(--border-2); border-radius:8px; background:var(--bg-alt)">
+          <span style="width:26px; height:26px; border-radius:999px; border:1px solid var(--accent); display:flex; align-items:center; justify-content:center; font:600 12px/1 ui-monospace,Menlo,monospace; color:var(--accent-text)">{s.n}</span>
+          <span style="font:600 14.5px/1.35 inherit">{s.title}</span>
+          <span style="font-size:13px; line-height:1.6; color:var(--text-3)">{s.body}</span>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <div style="border:1px solid var(--border); border-radius:8px; background:var(--bg-alt); padding:18px 22px; margin-bottom:72px; display:flex; flex-wrap:wrap; align-items:center; gap:14px; justify-content:space-between">
+    <span style="font:500 13px/1.5 inherit; color:var(--text-2)">{t('trustStrip')}</span>
+    <a href={downloadHref} style="height:40px; display:flex; align-items:center; gap:8px; padding:0 16px; border-radius:7px; border:1px solid var(--accent); color:var(--accent-text); font:600 13px/1 inherit; cursor:pointer; text-decoration:none">
+      {t('getIt')}
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d={ICONS.chevronRight}></path></svg>
+    </a>
+  </div>
+</div>
+```
+
+## Component: Features.astro
+
+**File:** `src/components/pages/Features.astro` — replace entirely with:
+
+```astro
+---
+import { useTranslations } from '../../i18n/utils';
+import { ICONS } from '../../lib/icons';
+
+interface Props {
+  lang: string;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const featureSections = t('featureSections') as { i: string; title: string; frame: string; body: string; bullets: string[] }[];
+---
+<div style="max-width:1080px; margin:0 auto; padding-block:72px 72px">
+  <div style="display:flex; flex-direction:column; gap:12px; max-width:620px; padding-bottom:40px">
+    <span style="font:500 11.5px/1 ui-monospace,Menlo,monospace; letter-spacing:0.12em; text-transform:uppercase; color:var(--accent-text)">{t('featuresLabel')}</span>
+    <h1 style="margin:0; font-size:40px; font-weight:600; line-height:1.15; letter-spacing:-0.025em">{t('featuresTitle')}</h1>
+    <p style="margin:0; font-size:16.5px; line-height:1.65; color:var(--text-3); text-wrap:pretty">{t('featuresSub')}</p>
+  </div>
+
+  <div style="display:flex; flex-direction:column; gap:0">
+    {featureSections.map((f, i: number) => (
+      <div style={`display:flex; flex-direction:${i % 2 === 1 ? 'row-reverse' : 'row'}; gap:56px; align-items:flex-start; padding-block:36px; border-top:1px solid var(--border)`}>
+        <div style="flex:1; min-width:0; display:flex; flex-direction:column; gap:12px; max-width:520px">
+          <span style="width:38px; height:38px; border-radius:8px; border:1px solid var(--accent); display:flex; align-items:center; justify-content:center; background:var(--tint)">
+            <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d={ICONS[f.i]}></path></svg>
+          </span>
+          <h2 style="margin:0; font-size:27px; font-weight:600; line-height:1.25; letter-spacing:-0.02em">{f.title}</h2>
+          <p style="margin:0; font-size:14.5px; line-height:1.7; color:var(--text-3); text-wrap:pretty">{f.body}</p>
+          <div style="display:flex; flex-direction:column; gap:7px; padding-top:4px">
+            {f.bullets.map((b: string) => (
+              <span style="display:flex; gap:9px; align-items:flex-start; font-size:13.5px; line-height:1.6; color:var(--text-2)">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none; margin-top:4px"><path d={ICONS.check}></path></svg>
+                {b}
+              </span>
+            ))}
+          </div>
+        </div>
+        <div style="flex:none; width:380px; max-width:100%; height:240px; border:1px solid var(--border); border-radius:10px; background:var(--surface); box-shadow:var(--shadow); overflow:hidden; display:flex; flex-direction:column">
+          <div style="height:30px; display:flex; align-items:center; gap:7px; padding:0 11px; border-bottom:1px solid var(--border-2); background:var(--bg-alt)">
+            <span style="width:7px; height:7px; border-radius:999px; background:var(--border)"></span>
+            <span style="font:500 10.5px/1 ui-monospace,Menlo,monospace; color:var(--muted); letter-spacing:0.06em">{f.frame}</span>
+          </div>
+          <div style="flex:1; display:flex; align-items:center; justify-content:center; gap:9px; color:var(--muted)">
+            <span style="font:400 12px/1 ui-monospace,Menlo,monospace">380 × 240 · {t('screenshot')}</span>
+          </div>
+        </div>
+      </div>
+    ))}
+  </div>
+</div>
+```
+
+## Component: Faq.astro
+
+**File:** `src/components/pages/Faq.astro` — replace entirely with:
+
+```astro
+---
+import { useTranslations } from '../../i18n/utils';
+import { ICONS } from '../../lib/icons';
+
+interface Props {
+  lang: string;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const faqs = t('faqs') as { q: string; a: string }[];
+---
+<div style="max-width:760px; margin:0 auto; padding-block:72px 72px">
+  <div style="display:flex; flex-direction:column; gap:12px; padding-bottom:34px">
+    <span style="font:500 11.5px/1 ui-monospace,Menlo,monospace; letter-spacing:0.12em; text-transform:uppercase; color:var(--accent-text)">{t('faqLabel')}</span>
+    <h1 style="margin:0; font-size:40px; font-weight:600; line-height:1.15; letter-spacing:-0.025em">{t('faqTitle')}</h1>
+  </div>
+  <div class="abr-faq-list" style="display:flex; flex-direction:column; gap:8px">
+    {faqs.map((f, i: number) => (
+      <details class="abr-faq-item" style="border:1px solid var(--border); border-radius:8px; background:var(--surface); overflow:hidden" open={i === 0}>
+        <summary style="min-height:56px; display:flex; align-items:center; gap:14px; padding:14px 18px; cursor:pointer; list-style:none">
+          <span style="flex:1; font:600 15px/1.45 inherit; text-wrap:pretty">{f.q}</span>
+          <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d={ICONS.chevronRight} transform="rotate(90 12 12)"></path></svg>
+        </summary>
+        <div style="padding:0 18px 18px; border-top:1px solid var(--border-2); padding-top:14px">
+          <p style="margin:0; font-size:14px; line-height:1.75; color:var(--text-3); text-wrap:pretty">{f.a}</p>
+        </div>
+      </details>
+    ))}
+  </div>
+  <div style="margin-top:32px; border:1px solid var(--border-2); border-radius:8px; background:var(--bg-alt); padding:20px; display:flex; flex-wrap:wrap; align-items:center; gap:12px; justify-content:space-between">
+    <span style="font-size:13.5px; color:var(--text-2)">{t('faqMore')}</span>
+    <a href={lang === 'en' ? '/contact' : `/${lang}/contact`} style="height:40px; display:flex; align-items:center; padding:0 16px; border-radius:7px; border:1px solid var(--accent); color:var(--accent-text); font:600 13px/1 inherit; text-decoration:none">{t('contactUs')}</a>
+  </div>
+</div>
+<style>
+  .abr-faq-item summary::-webkit-details-marker { display:none; }
+</style>
+```
+
+## Component: Download.astro
+
+**File:** `src/components/pages/Download.astro` — replace entirely with:
+
+```astro
+---
+import { useTranslations } from '../../i18n/utils';
+import { ICONS } from '../../lib/icons';
+
+interface Props {
+  lang: string;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const installSteps = t('installSteps') as { n: string; title: string; body: string }[];
+---
+<div style="max-width:760px; margin:0 auto; padding-block:72px 72px; display:flex; flex-direction:column; gap:32px">
+  <div style="display:flex; flex-direction:column; align-items:center; gap:16px; text-align:center">
+    <img src="/assets/abrium-mark.png" alt="Abrium" style="width:72px; height:auto; display:block" />
+    <h1 style="margin:0; font-size:40px; font-weight:600; line-height:1.15; letter-spacing:-0.025em">{t('dlTitle')}</h1>
+    <p style="margin:0; max-width:44ch; font-size:16.5px; line-height:1.65; color:var(--text-3); text-wrap:pretty">{t('dlSub')}</p>
+    <div style="display:flex; flex-direction:column; align-items:center; gap:10px; padding-top:6px">
+      <span style="height:52px; display:flex; align-items:center; gap:10px; padding:0 26px; border-radius:8px; background:var(--accent-solid); color:var(--on-accent); font:600 15px/1 inherit; opacity:0.92">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d={ICONS.chrome}></path></svg>
+        {t('addToChrome')}
+      </span>
+      <span style="display:flex; align-items:center; gap:7px; height:26px; padding:0 10px; border-radius:999px; border:1px dashed var(--accent); font:500 11px/1 ui-monospace,Menlo,monospace; letter-spacing:0.08em; text-transform:uppercase; color:var(--accent-text)">
+        <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d={ICONS.clock}></path></svg>
+        {t('comingSoon')}
+      </span>
+    </div>
+  </div>
+
+  <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:14px">
+    {installSteps.map((s) => (
+      <div style="display:flex; flex-direction:column; gap:10px; padding:20px; border:1px solid var(--border-2); border-radius:8px; background:var(--surface)">
+        <span style="width:26px; height:26px; border-radius:999px; border:1px solid var(--accent); display:flex; align-items:center; justify-content:center; font:600 12px/1 ui-monospace,Menlo,monospace; color:var(--accent-text)">{s.n}</span>
+        <span style="font:600 14.5px/1.35 inherit">{s.title}</span>
+        <span style="font-size:13px; line-height:1.6; color:var(--text-3)">{s.body}</span>
+      </div>
+    ))}
+  </div>
+
+  <div style="border:1px solid var(--border); border-radius:10px; background:var(--surface); box-shadow:var(--shadow); overflow:hidden">
+    <div style="height:32px; display:flex; align-items:center; gap:8px; padding:0 12px; border-bottom:1px solid var(--border-2); background:var(--bg-alt)">
+      <span style="font:500 10.5px/1 ui-monospace,Menlo,monospace; color:var(--muted); letter-spacing:0.06em">{t('sidePanel')} · 380px</span>
+    </div>
+    <div style="height:280px; display:flex; align-items:center; justify-content:center; gap:9px; color:var(--muted)">
+      <span style="font:400 12px/1 ui-monospace,Menlo,monospace">{t('screenshot')}</span>
+    </div>
+  </div>
+</div>
+```
+
+## Component: Changelog.astro
+
+**File:** `src/components/pages/Changelog.astro` — replace entirely with:
+
+```astro
+---
+import { useTranslations } from '../../i18n/utils';
+
+interface Props {
+  lang: string;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const releases = t('releases') as { version: string; date: string; tag: string; items: string[] }[];
+---
+<div style="max-width:720px; margin:0 auto; padding-block:72px 72px">
+  <div style="display:flex; flex-direction:column; gap:12px; padding-bottom:34px">
+    <span style="font:500 11.5px/1 ui-monospace,Menlo,monospace; letter-spacing:0.12em; text-transform:uppercase; color:var(--accent-text)">{t('changelogLabel')}</span>
+    <h1 style="margin:0; font-size:40px; font-weight:600; line-height:1.15; letter-spacing:-0.025em">{t('changelogTitle')}</h1>
+  </div>
+  {releases.map((r) => (
+    <div style="display:flex; gap:18px; border-inline-start:1px solid var(--border); padding-inline-start:22px; padding-bottom:28px; position:relative">
+      <span style="position:absolute; inset-inline-start:-5px; top:6px; width:9px; height:9px; border-radius:999px; background:var(--accent-solid)"></span>
+      <div style="flex:1; display:flex; flex-direction:column; gap:12px">
+        <div style="display:flex; flex-wrap:wrap; align-items:center; gap:10px">
+          <span style="font:600 17px/1 ui-monospace,Menlo,monospace; letter-spacing:-0.01em">{r.version}</span>
+          <span style="font:400 12px/1 ui-monospace,Menlo,monospace; color:var(--muted)">{r.date}</span>
+          <span style="height:22px; display:flex; align-items:center; padding:0 8px; border-radius:5px; border:1px solid var(--accent); font:500 10.5px/1 ui-monospace,Menlo,monospace; text-transform:uppercase; letter-spacing:0.08em; color:var(--accent-text)">{r.tag}</span>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:8px">
+          {r.items.map((it: string) => (
+            <span style="display:flex; gap:10px; align-items:flex-start; font-size:14px; line-height:1.65; color:var(--text-3)">
+              <span style="width:5px; height:5px; border-radius:999px; background:var(--muted); flex:none; margin-top:8px"></span>
+              {it}
+            </span>
+          ))}
+        </div>
+      </div>
+    </div>
+  ))}
+</div>
+```
+
+## Component: Prose.astro
+
+**File:** `src/components/pages/Prose.astro` — replace entirely with:
+
+```astro
+---
+import { useTranslations } from '../../i18n/utils';
+
+interface Props {
+  lang: string;
+  kind: 'privacy' | 'terms';
+}
+const { lang, kind } = Astro.props;
+const t = useTranslations(lang);
+const prose = t(kind) as { title: string; updated: string; sections: { h: string; p: string[] }[] };
+---
+<div style="max-width:680px; margin:0 auto; padding-block:72px 72px">
+  <div style="display:flex; flex-direction:column; gap:10px; padding-bottom:34px; border-bottom:1px solid var(--border)">
+    <h1 style="margin:0; font-size:40px; font-weight:600; line-height:1.15; letter-spacing:-0.025em">{prose.title}</h1>
+    <span style="font:400 12.5px/1 ui-monospace,Menlo,monospace; color:var(--muted)">{prose.updated}</span>
+  </div>
+  <div style="display:flex; flex-direction:column; gap:30px; padding-top:30px">
+    {prose.sections.map((s) => (
+      <div style="display:flex; flex-direction:column; gap:12px">
+        <h2 style="margin:0; font:600 17px/1.35 inherit; letter-spacing:-0.01em">{s.h}</h2>
+        {s.p.map((para: string) => (
+          <p style="margin:0; font-size:15px; line-height:1.8; color:var(--text-3); text-wrap:pretty">{para}</p>
+        ))}
+      </div>
+    ))}
+  </div>
+</div>
+```
+
+## Component: Contact.astro
+
+**File:** `src/components/pages/Contact.astro` — replace entirely with:
+
+```astro
+---
+import { useTranslations } from '../../i18n/utils';
+import { ICONS } from '../../lib/icons';
+
+interface Props {
+  lang: string;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const contactCards = t('contactCards') as { i: string; title: string; body: string; cta: string; placeholder: boolean }[];
+---
+<div style="max-width:760px; margin:0 auto; padding-block:72px 72px">
+  <div style="display:flex; flex-direction:column; gap:12px; padding-bottom:32px">
+    <h1 style="margin:0; font-size:40px; font-weight:600; line-height:1.15; letter-spacing:-0.025em">{t('contactTitle')}</h1>
+    <p style="margin:0; max-width:52ch; font-size:16.5px; line-height:1.65; color:var(--text-3)">{t('contactSub')}</p>
+  </div>
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px">
+    {contactCards.map((c) => (
+      <div style="border:1px solid var(--border); border-radius:8px; background:var(--surface); padding:24px; display:flex; flex-direction:column; gap:12px">
+        <div style="display:flex; align-items:center; gap:10px">
+          <span style="width:38px; height:38px; border-radius:8px; border:1px solid var(--accent); display:flex; align-items:center; justify-content:center; background:var(--tint)">
+            <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d={ICONS[c.i]}></path></svg>
+          </span>
+          {c.placeholder && (
+            <span style="height:22px; display:flex; align-items:center; padding:0 8px; border-radius:5px; border:1px dashed var(--accent); font:500 10.5px/1 ui-monospace,Menlo,monospace; text-transform:uppercase; letter-spacing:0.08em; color:var(--accent-text)">{t('comingSoon')}</span>
+          )}
+        </div>
+        <h2 style="margin:0; font:600 16px/1.35 inherit">{c.title}</h2>
+        <p style="margin:0; font-size:13.5px; line-height:1.65; color:var(--text-3); flex:1">{c.body}</p>
+        <a href={c.i === 'github' ? 'https://github.com/omaelbaz/abrium-extension/issues' : 'https://patreon.com/placeholder-abrium'} target="_blank" rel="noopener" style="height:44px; display:flex; align-items:center; justify-content:center; gap:8px; border-radius:7px; border:1px solid var(--border); background:var(--bg-alt); color:var(--text); font:600 13.5px/1 inherit; text-decoration:none">
+          {c.cta}
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
+        </a>
+      </div>
+    ))}
+  </div>
+</div>
+```
+
+## Component: CookiePreferences.astro
+
+**File:** `src/components/pages/CookiePreferences.astro` — replace entirely with:
+
+```astro
+---
+import { useTranslations } from '../../i18n/utils';
+
+interface Props {
+  lang: string;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+---
+<div style="max-width:620px; margin:0 auto; padding-block:72px 72px; display:flex; flex-direction:column; gap:22px">
+  <div style="display:flex; flex-direction:column; gap:12px">
+    <h1 style="margin:0; font-size:40px; font-weight:600; line-height:1.15; letter-spacing:-0.025em">{t('cookieTitle')}</h1>
+    <p style="margin:0; font-size:15px; line-height:1.75; color:var(--text-3); text-wrap:pretty">{t('cookieBody')}</p>
+  </div>
+  <div style="border:1px solid var(--border); border-radius:8px; background:var(--surface); padding:18px; display:flex; align-items:center; gap:12px">
+    <span id="pref-status-dot" style="width:9px; height:9px; border-radius:999px; flex:none; background:var(--border)"></span>
+    <div style="flex:1; display:flex; flex-direction:column; gap:3px">
+      <span style="font:600 13.5px/1.3 inherit">{t('currentStatus')}</span>
+      <span id="pref-status-label" style="font-size:12.5px; color:var(--text-3)"></span>
+    </div>
+  </div>
+  <div style="display:flex; flex-wrap:wrap; gap:10px">
+    <button id="pref-accept" style="height:44px; display:flex; align-items:center; padding:0 20px; border-radius:7px; background:var(--accent-solid); color:var(--on-accent); border:none; font:600 13.5px/1 inherit; cursor:pointer">{t('acceptAll')}</button>
+    <button id="pref-reject" style="height:44px; display:flex; align-items:center; padding:0 20px; border-radius:7px; border:1px solid var(--border); background:var(--surface); color:var(--text); font:600 13.5px/1 inherit; cursor:pointer">{t('rejectAll')}</button>
+  </div>
+  <p style="margin:0; font-size:12.5px; line-height:1.7; color:var(--muted)">{t('cookieNote')}</p>
+</div>
+
+<script define:vars={{
+  labelUnset: lang === 'ar' ? 'لم يُتخذ اختيار بعد — الافتراضي هو الرفض.' : (lang === 'fr' ? 'Aucun choix effectué — refusé par défaut.' : (lang === 'es' ? 'Aún no se ha elegido — rechazado por defecto.' : (lang === 'pt' ? 'Nenhuma escolha feita — rejeitado por padrão.' : 'No choice made yet — defaults to rejected.'))),
+  labelAccepted: lang === 'ar' ? 'مقبولة — يُحفظ ملف التفضيلات.' : (lang === 'fr' ? 'Accepté — le cookie de préférence est stocké.' : (lang === 'es' ? 'Aceptado — se guarda la cookie de preferencia.' : (lang === 'pt' ? 'Aceito — o cookie de preferência é armazenado.' : 'Accepted — the preference cookie is stored.'))),
+  labelRejected: lang === 'ar' ? 'مرفوضة — لا تُحفظ أي كوكيز.' : (lang === 'fr' ? 'Refusé — aucun cookie stocké.' : (lang === 'es' ? 'Rechazado — no se almacena ninguna cookie.' : (lang === 'pt' ? 'Rejeitado — nenhum cookie armazenado.' : 'Rejected — no cookies are stored.')))
+}}>
+  document.addEventListener('DOMContentLoaded', () => {
+    const dot = document.getElementById('pref-status-dot');
+    const label = document.getElementById('pref-status-label');
+    const acceptBtn = document.getElementById('pref-accept');
+    const rejectBtn = document.getElementById('pref-reject');
+
+    const render = () => {
+      const consent = localStorage.getItem('cookie_consent');
+      if (consent === 'accepted') {
+        dot.style.background = 'var(--accent-solid)';
+        label.textContent = labelAccepted;
+      } else if (consent === 'rejected') {
+        dot.style.background = 'var(--muted)';
+        label.textContent = labelRejected;
+      } else {
+        dot.style.background = 'var(--border)';
+        label.textContent = labelUnset;
+      }
+    };
+
+    const setConsent = (value) => {
+      localStorage.setItem('cookie_consent', value);
+      render();
+      if (value === 'accepted' && window.gtag) {
+        window.gtag('consent', 'update', { analytics_storage: 'granted' });
+        const script = document.createElement('script');
+        script.src = 'https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX';
+        script.async = true;
+        document.head.appendChild(script);
+        script.onload = () => window.gtag('config', 'G-XXXXXXXXXX');
+      }
+    };
+
+    acceptBtn.addEventListener('click', () => setConsent('accepted'));
+    rejectBtn.addEventListener('click', () => setConsent('rejected'));
+    render();
+  });
+</script>
+```
+
+## Step 5 — English root pages (rewrite to import Layout + the matching shared component)
+
+## src/pages/index.astro
+
+**File:** `src/pages/index.astro` — replace entirely with:
+
+```astro
+---
+import Layout from '../layouts/Layout.astro';
+import Home from '../components/pages/Home.astro';
+import { useTranslations } from '../i18n/utils';
+
+const t = useTranslations('en');
+---
+<Layout title="Abrium - Open Source Claude Companion" description={t('heroSub') as string}>
+  <Home lang="en" />
+</Layout>
+```
+
+## src/pages/features.astro
+
+**File:** `src/pages/features.astro` — replace entirely with:
+
+```astro
+---
+import Layout from '../layouts/Layout.astro';
+import Features from '../components/pages/Features.astro';
+import { useTranslations } from '../i18n/utils';
+
+const t = useTranslations('en');
+---
+<Layout title={t('featuresTitle') as string} description={t('featuresSub') as string}>
+  <Features lang="en" />
+</Layout>
+```
+
+## src/pages/faq.astro
+
+**File:** `src/pages/faq.astro` — replace entirely with:
+
+```astro
+---
+import Layout from '../layouts/Layout.astro';
+import Faq from '../components/pages/Faq.astro';
+import { useTranslations } from '../i18n/utils';
+
+const t = useTranslations('en');
+const faqs = t('faqs') as { q: string; a: string }[];
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map((f) => ({
+    "@type": "Question",
+    "name": f.q,
+    "acceptedAnswer": { "@type": "Answer", "text": f.a }
+  }))
+};
+---
+<Layout title={t('faqTitle') as string} description={t('faqTitle') as string}>
+  <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} slot="head" />
+  <Faq lang="en" />
+</Layout>
+```
+
+## src/pages/download.astro
+
+**File:** `src/pages/download.astro` — replace entirely with:
+
+```astro
+---
+import Layout from '../layouts/Layout.astro';
+import Download from '../components/pages/Download.astro';
+import { useTranslations } from '../i18n/utils';
+
+const t = useTranslations('en');
+---
+<Layout title={t('dlTitle') as string} description={t('dlSub') as string}>
+  <Download lang="en" />
+</Layout>
+```
+
+## src/pages/changelog.astro
+
+**File:** `src/pages/changelog.astro` — replace entirely with:
+
+```astro
+---
+import Layout from '../layouts/Layout.astro';
+import Changelog from '../components/pages/Changelog.astro';
+import { useTranslations } from '../i18n/utils';
+
+const t = useTranslations('en');
+const releases = t('releases') as { version: string }[];
+const changelogSchema = {
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "itemListElement": releases.map((r, i: number) => ({
+    "@type": "ListItem",
+    "position": i + 1,
+    "name": `${r.version} - Initial release`
+  }))
+};
+---
+<Layout title={t('changelogTitle') as string} description={t('changelogTitle') as string}>
+  <script type="application/ld+json" set:html={JSON.stringify(changelogSchema)} slot="head" />
+  <Changelog lang="en" />
+</Layout>
+```
+
+## src/pages/terms.astro
+
+**File:** `src/pages/terms.astro` — replace entirely with:
+
+```astro
+---
+import Layout from '../layouts/Layout.astro';
+import Prose from '../components/pages/Prose.astro';
+import { useTranslations } from '../i18n/utils';
+
+const t = useTranslations('en');
+const terms = t('terms') as { title: string };
+---
+<Layout title={terms.title} description={terms.title}>
+  <Prose lang="en" kind="terms" />
+</Layout>
+```
+
+## src/pages/privacy.astro
+
+**File:** `src/pages/privacy.astro` — replace entirely with:
+
+```astro
+---
+import Layout from '../layouts/Layout.astro';
+import Prose from '../components/pages/Prose.astro';
+import { useTranslations } from '../i18n/utils';
+
+const t = useTranslations('en');
+const privacy = t('privacy') as { title: string };
+---
+<Layout title={privacy.title} description={privacy.title}>
+  <Prose lang="en" kind="privacy" />
+</Layout>
+```
+
+## src/pages/contact.astro
+
+**File:** `src/pages/contact.astro` — replace entirely with:
+
+```astro
+---
+import Layout from '../layouts/Layout.astro';
+import Contact from '../components/pages/Contact.astro';
+import { useTranslations } from '../i18n/utils';
+
+const t = useTranslations('en');
+---
+<Layout title={t('contactTitle') as string} description={t('contactSub') as string}>
+  <Contact lang="en" />
+</Layout>
+```
+
+## src/pages/cookie-preferences.astro
+
+**File:** `src/pages/cookie-preferences.astro` — replace entirely with:
+
+```astro
+---
+import Layout from '../layouts/Layout.astro';
+import CookiePreferences from '../components/pages/CookiePreferences.astro';
+import { useTranslations } from '../i18n/utils';
+
+const t = useTranslations('en');
+---
+<Layout title={t('cookieTitle') as string} description={t('cookieTitle') as string}>
+  <CookiePreferences lang="en" />
+</Layout>
+```
+
+## Step 6 — Localized [lang] pages (ar/fr/es/pt — recreated after Step 1's deletion, same shared components)
+
+## src/pages/[lang]/index.astro
+
+**File:** `src/pages/[lang]/index.astro` — replace entirely with:
+
+```astro
+---
+import Layout from '../../layouts/Layout.astro';
+import Home from '../../components/pages/Home.astro';
+import { useTranslations } from '../../i18n/utils';
+
+export function getStaticPaths() {
+  return [{ params: { lang: 'ar' } }, { params: { lang: 'fr' } }, { params: { lang: 'es' } }, { params: { lang: 'pt' } }];
+}
+const { lang } = Astro.params;
+const t = useTranslations(lang as string);
+---
+<Layout title={t('heroTitle') as string} description={t('heroSub') as string}>
+  <Home lang={lang as string} />
+</Layout>
+```
+
+## src/pages/[lang]/features.astro
+
+**File:** `src/pages/[lang]/features.astro` — replace entirely with:
+
+```astro
+---
+import Layout from '../../layouts/Layout.astro';
+import Features from '../../components/pages/Features.astro';
+import { useTranslations } from '../../i18n/utils';
+
+export function getStaticPaths() {
+  return [{ params: { lang: 'ar' } }, { params: { lang: 'fr' } }, { params: { lang: 'es' } }, { params: { lang: 'pt' } }];
+}
+const { lang } = Astro.params;
+const t = useTranslations(lang as string);
+---
+<Layout title={t('featuresTitle') as string} description={t('featuresSub') as string}>
+  <Features lang={lang as string} />
+</Layout>
+```
+
+## src/pages/[lang]/faq.astro
+
+**File:** `src/pages/[lang]/faq.astro` — replace entirely with:
+
+```astro
+---
+import Layout from '../../layouts/Layout.astro';
+import Faq from '../../components/pages/Faq.astro';
+import { useTranslations } from '../../i18n/utils';
+
+export function getStaticPaths() {
+  return [{ params: { lang: 'ar' } }, { params: { lang: 'fr' } }, { params: { lang: 'es' } }, { params: { lang: 'pt' } }];
+}
+const { lang } = Astro.params;
+const t = useTranslations(lang as string);
+const faqs = t('faqs') as { q: string; a: string }[];
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map((f) => ({
+    "@type": "Question",
+    "name": f.q,
+    "acceptedAnswer": { "@type": "Answer", "text": f.a }
+  }))
+};
+---
+<Layout title={t('faqTitle') as string} description={t('faqTitle') as string}>
+  <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} slot="head" />
+  <Faq lang={lang as string} />
+</Layout>
+```
+
+## src/pages/[lang]/download.astro
+
+**File:** `src/pages/[lang]/download.astro` — replace entirely with:
+
+```astro
+---
+import Layout from '../../layouts/Layout.astro';
+import Download from '../../components/pages/Download.astro';
+import { useTranslations } from '../../i18n/utils';
+
+export function getStaticPaths() {
+  return [{ params: { lang: 'ar' } }, { params: { lang: 'fr' } }, { params: { lang: 'es' } }, { params: { lang: 'pt' } }];
+}
+const { lang } = Astro.params;
+const t = useTranslations(lang as string);
+---
+<Layout title={t('dlTitle') as string} description={t('dlSub') as string}>
+  <Download lang={lang as string} />
+</Layout>
+```
+
+## src/pages/[lang]/changelog.astro
+
+**File:** `src/pages/[lang]/changelog.astro` — replace entirely with:
+
+```astro
+---
+import Layout from '../../layouts/Layout.astro';
+import Changelog from '../../components/pages/Changelog.astro';
+import { useTranslations } from '../../i18n/utils';
+
+export function getStaticPaths() {
+  return [{ params: { lang: 'ar' } }, { params: { lang: 'fr' } }, { params: { lang: 'es' } }, { params: { lang: 'pt' } }];
+}
+const { lang } = Astro.params;
+const t = useTranslations(lang as string);
+const releases = t('releases') as { version: string }[];
+const changelogSchema = {
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "itemListElement": releases.map((r, i: number) => ({
+    "@type": "ListItem",
+    "position": i + 1,
+    "name": `${r.version} - Initial release`
+  }))
+};
+---
+<Layout title={t('changelogTitle') as string} description={t('changelogTitle') as string}>
+  <script type="application/ld+json" set:html={JSON.stringify(changelogSchema)} slot="head" />
+  <Changelog lang={lang as string} />
+</Layout>
+```
+
+## src/pages/[lang]/terms.astro
+
+**File:** `src/pages/[lang]/terms.astro` — replace entirely with:
+
+```astro
+---
+import Layout from '../../layouts/Layout.astro';
+import Prose from '../../components/pages/Prose.astro';
+import { useTranslations } from '../../i18n/utils';
+
+export function getStaticPaths() {
+  return [{ params: { lang: 'ar' } }, { params: { lang: 'fr' } }, { params: { lang: 'es' } }, { params: { lang: 'pt' } }];
+}
+const { lang } = Astro.params;
+const t = useTranslations(lang as string);
+const terms = t('terms') as { title: string };
+---
+<Layout title={terms.title} description={terms.title}>
+  <Prose lang={lang as string} kind="terms" />
+</Layout>
+```
+
+## src/pages/[lang]/privacy.astro
+
+**File:** `src/pages/[lang]/privacy.astro` — replace entirely with:
+
+```astro
+---
+import Layout from '../../layouts/Layout.astro';
+import Prose from '../../components/pages/Prose.astro';
+import { useTranslations } from '../../i18n/utils';
+
+export function getStaticPaths() {
+  return [{ params: { lang: 'ar' } }, { params: { lang: 'fr' } }, { params: { lang: 'es' } }, { params: { lang: 'pt' } }];
+}
+const { lang } = Astro.params;
+const t = useTranslations(lang as string);
+const privacy = t('privacy') as { title: string };
+---
+<Layout title={privacy.title} description={privacy.title}>
+  <Prose lang={lang as string} kind="privacy" />
+</Layout>
+```
+
+## src/pages/[lang]/contact.astro
+
+**File:** `src/pages/[lang]/contact.astro` — replace entirely with:
+
+```astro
+---
+import Layout from '../../layouts/Layout.astro';
+import Contact from '../../components/pages/Contact.astro';
+import { useTranslations } from '../../i18n/utils';
+
+export function getStaticPaths() {
+  return [{ params: { lang: 'ar' } }, { params: { lang: 'fr' } }, { params: { lang: 'es' } }, { params: { lang: 'pt' } }];
+}
+const { lang } = Astro.params;
+const t = useTranslations(lang as string);
+---
+<Layout title={t('contactTitle') as string} description={t('contactSub') as string}>
+  <Contact lang={lang as string} />
+</Layout>
+```
+
+## src/pages/[lang]/cookie-preferences.astro
+
+**File:** `src/pages/[lang]/cookie-preferences.astro` — replace entirely with:
+
+```astro
+---
+import Layout from '../../layouts/Layout.astro';
+import CookiePreferences from '../../components/pages/CookiePreferences.astro';
+import { useTranslations } from '../../i18n/utils';
+
+export function getStaticPaths() {
+  return [{ params: { lang: 'ar' } }, { params: { lang: 'fr' } }, { params: { lang: 'es' } }, { params: { lang: 'pt' } }];
+}
+const { lang } = Astro.params;
+const t = useTranslations(lang as string);
+---
+<Layout title={t('cookieTitle') as string} description={t('cookieTitle') as string}>
+  <CookiePreferences lang={lang as string} />
+</Layout>
+```
+
+## Step 7 — Verify
+
+```
+npm run build
+```
+
+Expect: 46 static pages, zero errors. Then diff-check a sample per language
+directly in `dist/`:
+- `dist/features/index.html` should contain "Everything the Vault does."
+- `dist/ar/index.html` should contain "لا تفقد أي Artifact من كلود بعد اليوم."
+- `dist/fr/features/index.html` should contain "Tout ce que fait le Coffre."
+Report back: build result, and confirmation of these three checks.
