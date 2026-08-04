@@ -1904,3 +1904,20 @@ Prompt issued covering bugs 4-6.
 STILL OPEN: awaiting Claude Code's fixes + the RTL gap investigation
 result; Prompt 11's 3 bugs (footer tagline/icons) still pending Omar's
 commit from the previous turn.
+Bug 5 (copyright line): new footerCopyright key added to ui.ts for all
+5 languages with idiomatic (not literal) translations, matching each
+language's existing footerTag register. Wired and verified 5/5.
+Bug 6 (RTL footer gap): investigated and explained, NOT a bug — measured
+identical flex geometry in LTR/RTL (36px gaps both directions). Root
+cause: the logo/tagline block has flex:1 and absorbs ~475px of leftover
+width in BOTH directions (tagline text capped at max-width:34ch) — it's
+the same empty space, just visually landing on the opposite side when
+mirrored. Confirmed present equally in English. No change made — noted
+as a design lever (drop flex:1 or cap block width) if Omar wants the
+columns pulled closer, but not a defect. Approved, no action taken.
+npm run build: 46 pages, 0 errors. Verified all 5 languages at desktop
++ mobile, 0 footer overflow across all 10 combinations, grep confirms
+zero remaining hardcoded "Product"/"Legal"/"2026 Abrium" literals.
+STILL OPEN: Omar to commit (covers this round + still-pending Prompt 11
+commit from before — same files, likely already staged together).
+## ✅ PROMPT 12 (Footer Product/Legal + copyright i18n) — READY TO COMMIT
