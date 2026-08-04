@@ -1921,3 +1921,19 @@ zero remaining hardcoded "Product"/"Legal"/"2026 Abrium" literals.
 STILL OPEN: Omar to commit (covers this round + still-pending Prompt 11
 commit from before — same files, likely already staged together).
 ## ✅ PROMPT 12 (Footer Product/Legal + copyright i18n) — READY TO COMMIT
+visually read as the Patreon logo at all, despite Claude Code's earlier
+automated check (2 connected components = bar + circle) passing it as
+correct. Root cause: the check measured component count, not visual
+resemblance — the path has the bar and circle floating with a visible
+gap between them (bar at x=4, circle left edge at x=8.7), unlike the
+real Patreon mark where the circle overlaps/sits directly against the
+bar, reading as one cohesive "P"-like shape.
+Prompt issued: redesign the icon with the circle touching/overlapping
+the bar, explicitly permitted to break from the single-stroke-outline
+convention used elsewhere (suggested filled rect+circle instead, since
+Patreon's real brand mark is solid, not an outline) if that reads more
+recognizably. Required to verify visually at both 19px (contact card)
+and 16px (footer button) sizes and describe the exact geometry changed,
+since visual review isn't possible from this side — automated structural
+checks alone aren't sufficient for this kind of brand-recognition bug.
+STILL OPEN: awaiting Claude Code's redesign + description.
