@@ -230,20 +230,20 @@ const t = useTranslations(currentLocale);
             <span style="font:400 11.5px/1 ui-monospace,Menlo,monospace; color:var(--muted)">abrium.onl</span>
           </div>
           <div style="min-width:150px; display:flex; flex-direction:column; gap:10px">
-            <span style="font:500 11px/1 ui-monospace,Menlo,monospace; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted)">Product</span>
+            <span style="font:500 11px/1 ui-monospace,Menlo,monospace; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted)">{t('footProduct')}</span>
             <a href={getNavLink('/features')} style="min-height:26px; display:flex; align-items:center; font-size:13px; color:var(--text-3); text-decoration:none">{tl.features}</a>
             <a href={getNavLink('/faq')} style="min-height:26px; display:flex; align-items:center; font-size:13px; color:var(--text-3); text-decoration:none">{tl.faq}</a>
             <a href={getNavLink('/changelog')} style="min-height:26px; display:flex; align-items:center; font-size:13px; color:var(--text-3); text-decoration:none">{tl.changelog}</a>
           </div>
           <div style="min-width:150px; display:flex; flex-direction:column; gap:10px">
-            <span style="font:500 11px/1 ui-monospace,Menlo,monospace; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted)">Legal</span>
+            <span style="font:500 11px/1 ui-monospace,Menlo,monospace; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted)">{t('footLegal')}</span>
             <a href={getNavLink('/terms')} style="min-height:26px; display:flex; align-items:center; font-size:13px; color:var(--text-3); text-decoration:none">{tl.terms}</a>
             <a href={getNavLink('/privacy')} style="min-height:26px; display:flex; align-items:center; font-size:13px; color:var(--text-3); text-decoration:none">{tl.privacy}</a>
             <a href={getNavLink('/cookie-preferences')} style="min-height:26px; display:flex; align-items:center; font-size:13px; color:var(--text-3); text-decoration:none">{tl.cookiePrefs}</a>
           </div>
         </div>
         <div style="max-width:1080px; margin:0 auto; padding-block:16px 26px; border-top:1px solid var(--border); display:flex; flex-wrap:wrap; align-items:center; gap:14px">
-          <span style="font-size:12.5px; color:var(--text-3); flex:1">© 2026 Abrium · Open source & private</span>
+          <span style="font-size:12.5px; color:var(--text-3); flex:1">{t('footerCopyright')}</span>
           <div style="display:flex; gap:8px">
             <a href="https://github.com/omaelbaz/abrium-extension" target="_blank" rel="noopener" aria-label="GitHub" style="width:36px; height:36px; display:flex; align-items:center; justify-content:center; border:1px solid var(--border); border-radius:7px; background:var(--surface); color:var(--text-2)">
               <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d={ICONS.github}></path></svg>

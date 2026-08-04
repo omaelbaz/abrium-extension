@@ -1576,3 +1576,52 @@ tagline i18n, Home.astro icon map replacement, footer social icons/
 Patreon path/GitHub URL) in one pass, with full cross-language and
 LTR/RTL verification steps.
 STILL OPEN: awaiting Claude Code's fix + verification for all 3.
+
+
+## Prompt 11 — RESULTS: all 3 bugs fixed and verified, NOT yet committed
+Bug 1 (footer tagline): Layout.astro had zero access to ui.ts (only its
+own local layoutTranslations for nav labels) — imported useTranslations,
+wired t() from currentLocale, footer now renders {t('footerTag')}.
+Verified all 5 languages render distinct correct taglines. NOTE FOR
+OMAR: the English tagline text itself changes as a side effect — from
+"The open-source companion for Claude." (the old hardcoded string) to
+ui.ts's actual footerTag value "A local-first catalog for Claude
+Artifacts. Free and open source." — this is correct single-source-of-
+truth behavior, not a bug, but it's a visible copy change worth Omar's
+awareness/approval.
+Bug 2 (Home.astro icons): local homeFeatureIcons object deleted entirely,
+switched to ICONS[f.i] from the shared icons.ts (already imported in the
+file). Verified byte-for-byte path match against Features.astro's
+identical cards — 0 mismatches, both pages now agree exactly.
+Bug 3 (footer social icons): both hardcoded SVGs replaced with
+ICONS.github/ICONS.patreon, GitHub href fixed to the real repo, added
+rel="noopener" + aria-label to both icon-only links. Patreon href
+remains the known placeholder (out of scope, unchanged).
+npm run build: 46 pages, 0 errors. Responsive regression re-checked
+(Layout/Home were touched) — /, /ar/, /pt/, /features/, /ar/features/,
+/contact/ all still PASS at 375/768/1024/1440.
+STILL OPEN: Omar to commit; confirm English footerTag copy change is
+acceptable (or revert ui.ts's footerTag wording if not).
+## ✅ PROMPT 11 (Footer tagline i18n, Home icon bug, footer social icons) — READY TO COMMIT
+
+
+## Prompt 12 — More hardcoded footer strings found (same bug class)
+Confirmed 2 more instances of the same pattern (Layout.astro's footer
+bypassing ui.ts): "Product"/"Legal" column headers hardcoded in English
+despite footProduct/footLegal keys ALREADY existing fully translated in
+ui.ts for all 5 languages (never wired up — pure oversight, not a
+translation gap). Bottom copyright line "© 2026 Abrium · Open source &
+private" also hardcoded, but unlike the labels, ui.ts has no key for it
+at all yet — needs a new key (footerCopyright) added across all 5
+languages with a natural translation, not literal.
+Also flagged for investigation (not diagnosed): a possibly-awkward empty
+gap in the RTL (Arabic) footer's top row between the nav columns and the
+logo block — could be intentional flex-wrap behavior or a real bug,
+unconfirmed.
+CONFIRMED CLOSED: the floating toolbar visible in Omar's screenshots
+(gear/search/cursor/red "A" mark icons) is Antigravity's own agent
+browser toolbar, not part of the site — fully resolved, not a bug.
+Prompt issued covering bugs 4-6.
+STILL OPEN: awaiting Claude Code's fixes + the RTL gap investigation
+result; Prompt 11's 3 bugs (footer tagline/icons) still pending Omar's
+commit from the previous turn.

@@ -24,6 +24,7 @@ export const EN = {
   footerTag: "A local-first catalog for Claude Artifacts. Free and open source.",
   nav: { home: "Home", features: "Features", faq: "FAQ", download: "Download", changelog: "Changelog" },
   footProduct: "Product", footLegal: "Legal",
+  footerCopyright: "© 2026 Abrium · Open source & private",
   linkPrivacy: "Privacy", linkTerms: "Terms", linkContact: "Contact", linkCookies: "Cookie preferences", linkSystem: "Design system",
   trust: ["Free forever", "Open source", "Local-only", "No tracking"],
   homeFeatures: [
@@ -118,6 +119,7 @@ export const AR = {
   footerTag: "فهرس محلي لعناصر كلود. مجاني ومفتوح المصدر.",
   nav: { home: "الرئيسية", features: "المزايا", faq: "الأسئلة", download: "التحميل", changelog: "السجل" },
   footProduct: "المنتج", footLegal: "قانوني",
+  footerCopyright: "© 2026 Abrium · مفتوح المصدر وخاص",
   linkPrivacy: "الخصوصية", linkTerms: "الشروط", linkContact: "اتصل بنا", linkCookies: "تفضيلات الكوكيز", linkSystem: "نظام التصميم",
   trust: ["مجاني للأبد", "مفتوح المصدر", "محلي بالكامل", "بلا تتبّع"],
   homeFeatures: [
@@ -213,6 +215,7 @@ export const FR = {
   nfTitle: "Cette page n'est pas dans le Coffre.", nfBody: "Le lien est peut-être obsolète, ou la page a été déplacée. Tout le reste est toujours là où vous l'avez laissé.",
   backHome: "Retour à l'accueil",
   footProduct: "Produit", footLegal: "Légal",
+  footerCopyright: "© 2026 Abrium · Open source et privé",
   linkPrivacy: "Confidentialité", linkTerms: "Conditions", linkContact: "Contact", linkCookies: "Préférences de cookies", linkSystem: "Design system",
   homeFeatures: [
     { i: "capture", title: "Capture automatique", body: "Chaque artifact que vous ouvrez est enregistré dès son rendu — y compris chaque révision, afin que les anciennes versions restent récupérables." },
@@ -306,6 +309,7 @@ export const ES = {
   nfTitle: "Esta página no está en la Bóveda.", nfBody: "El enlace puede estar caducado. Todo lo demás sigue donde lo dejaste.",
   backHome: "Volver al inicio",
   footProduct: "Producto", footLegal: "Legal",
+  footerCopyright: "© 2026 Abrium · Código abierto y privado",
   linkPrivacy: "Privacidad", linkTerms: "Términos", linkContact: "Contacto", linkCookies: "Preferencias de cookies", linkSystem: "Design system",
   homeFeatures: [
     { i: "capture", title: "Captura automática", body: "Cada artifact se guarda en el momento en que aparece, incluyendo las revisiones para poder recuperarlas." },
@@ -399,6 +403,7 @@ export const PT = {
   nfTitle: "Esta página não está no Cofre.", nfBody: "O link pode estar desatualizado. Todo o resto continua onde você deixou.",
   backHome: "Voltar ao início",
   footProduct: "Produto", footLegal: "Legal",
+  footerCopyright: "© 2026 Abrium · Código aberto e privado",
   linkPrivacy: "Privacidade", linkTerms: "Termos", linkContact: "Contato", linkCookies: "Preferências de cookies", linkSystem: "Design system",
   homeFeatures: [
     { i: "capture", title: "Captura automática", body: "Cada artifact que você abre é salvo no momento em que é renderizado — incluindo revisões." },
