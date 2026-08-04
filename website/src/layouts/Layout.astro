@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import CookieConsent from '../components/CookieConsent.astro';
 import { ICONS } from '../lib/icons';
+import { useTranslations } from '../i18n/utils';
 
 interface Props {
 	title: string;
@@ -81,6 +82,10 @@ const getNavLink = (pagePath: string) => {
 };
 
 const isRTL = currentLocale === 'ar';
+
+// Shared copy (footer tagline, etc.) comes from ui.ts, the same source the
+// page components read — not a second hardcoded string in this file.
+const t = useTranslations(currentLocale);
 ---
 
 <!doctype html>
@@ -221,7 +226,7 @@ const isRTL = currentLocale === 'ar';
               <img src="/assets/abrium-mark.png" alt="" style="width:26px; height:auto; display:block">
               <span style="font:600 14.5px/1 inherit">Abrium</span>
             </div>
-            <p style="margin:0; max-width:34ch; font-size:13px; line-height:1.65; color:var(--text-3)">The open-source companion for Claude.</p>
+            <p style="margin:0; max-width:34ch; font-size:13px; line-height:1.65; color:var(--text-3)">{t('footerTag')}</p>
             <span style="font:400 11.5px/1 ui-monospace,Menlo,monospace; color:var(--muted)">abrium.onl</span>
           </div>
           <div style="min-width:150px; display:flex; flex-direction:column; gap:10px">
@@ -240,11 +245,11 @@ const isRTL = currentLocale === 'ar';
         <div style="max-width:1080px; margin:0 auto; padding-block:16px 26px; border-top:1px solid var(--border); display:flex; flex-wrap:wrap; align-items:center; gap:14px">
           <span style="font-size:12.5px; color:var(--text-3); flex:1">© 2026 Abrium · Open source & private</span>
           <div style="display:flex; gap:8px">
-            <a href="https://github.com/yourusername/abrium" target="_blank" style="width:36px; height:36px; display:flex; align-items:center; justify-content:center; border:1px solid var(--border); border-radius:7px; background:var(--surface); color:var(--text-2)">
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.3 4.3 0 0 0-.1-3.2s-1.1-.3-3.5 1.3a12 12 0 0 0-6.2 0C6.5 2.8 5.4 3.1 5.4 3.1a4.3 4.3 0 0 0-.1 3.2A4.6 4.6 0 0 0 4 9.5c0 4.6 2.7 5.7 5.5 6-.4.4-.5.9-.5 1.6V21"></path></svg>
+            <a href="https://github.com/omaelbaz/abrium-extension" target="_blank" rel="noopener" aria-label="GitHub" style="width:36px; height:36px; display:flex; align-items:center; justify-content:center; border:1px solid var(--border); border-radius:7px; background:var(--surface); color:var(--text-2)">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d={ICONS.github}></path></svg>
             </a>
-            <a href="https://patreon.com/placeholder-abrium" target="_blank" style="width:36px; height:36px; display:flex; align-items:center; justify-content:center; border:1px solid var(--border); border-radius:7px; background:var(--surface); color:var(--text-2)">
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V5a2 2 0 0 1 2-2h11M16 11l-4 4-4-4M12 15V3"></path></svg>
+            <a href="https://patreon.com/placeholder-abrium" target="_blank" rel="noopener" aria-label="Patreon" style="width:36px; height:36px; display:flex; align-items:center; justify-content:center; border:1px solid var(--border); border-radius:7px; background:var(--surface); color:var(--text-2)">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d={ICONS.patreon}></path></svg>
             </a>
           </div>
         </div>

@@ -8,12 +8,6 @@ interface Props {
 const { lang } = Astro.props;
 const t = useTranslations(lang);
 const downloadHref = lang === 'en' ? '/download' : `/${lang}/download`;
-const homeFeatureIcons: Record<string, string> = {
-  capture: "M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6",
-  search: "M4 22h14a2 2 0 0 0 2-2V7.5L14.5 2H6a2 2 0 0 0-2 2v4",
-  zip: "M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3",
-  globe: "M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10",
-};
 ---
 <div class="home-wrap" style="max-width:1080px; margin:0 auto">
 
@@ -47,7 +41,7 @@ const homeFeatureIcons: Record<string, string> = {
     {(t('homeFeatures') as {i: string, title: string, body: string}[]).map((f) => (
       <div style="border:1px solid var(--border); border-radius:8px; background:var(--surface); padding:22px; display:flex; flex-direction:column; gap:11px">
         <span style="width:36px; height:36px; border-radius:8px; border:1px solid var(--accent); display:flex; align-items:center; justify-content:center; background:var(--tint)">
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d={homeFeatureIcons[f.i]}></path></svg>
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d={ICONS[f.i]}></path></svg>
         </span>
         <h3 style="margin:0; font:600 16px/1.3 inherit; letter-spacing:-0.01em">{f.title}</h3>
         <p style="margin:0; font-size:13.5px; line-height:1.65; color:var(--text-3); text-wrap:pretty">{f.body}</p>

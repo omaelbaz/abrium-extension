@@ -1821,4 +1821,43 @@ Required: every fix re-verified in Arabic/RTL at the same breakpoints,
 not assumed to carry over from LTR. Verification required at 375/768/
 1024/1440px, both directions, before any commit — per-component/
 per-breakpoint pass/fail table required, not a general "looks good."
-STILL OPEN: awaiting Claude Code's pass/fail table before approving commit.
+STILL OPEN: awaiting Claude Code's pass/fail table before approving commit.   diagnosed in code — still open.
+2. REAL BUG — Home.astro icon mismatch, Claude's own error: Home.astro
+   has its own separate homeFeatureIcons map instead of using the shared
+   icons.ts, and 2 of its 4 paths are wrong — "Gallery & search" shows a
+   document/paper shape instead of a magnifying glass, "Five languages,
+   real RTL" shows a shield instead of a globe. Root cause: a duplicate,
+   incorrect icon source in Home.astro. Scope unconfirmed: does this
+   affect only the homepage, or also Features.astro (which uses the
+   correct shared icons.ts and was already verified correct)? — awaiting
+   Omar's confirmation before scoping the fix.
+3. REAL BUG — Layout.astro footer social icons are hardcoded separately
+   from icons.ts (not using ICONS.github/ICONS.patreon like Contact.astro
+   correctly does). The footer's "patreon" SVG path is not the Patreon
+   mark at all (it's actually a flag/download-arrow shape) — confirmed
+   by reading the exact path in Layout.astro. Also confirmed: footer
+   GitHub link still points to the placeholder
+   "github.com/yourusername/abrium" instead of the real repo.
+   Prompt issued to Claude Code: replace both footer icons with
+   ICONS.github/ICONS.patreon from icons.ts, fix the GitHub URL to
+   github.com/omaelbaz/abrium-extension, verify build + visual render
+   in both LTR/RTL.
+4. NOT A BUG — the floating black toolbar seen in earlier screenshots is
+   now clearly a 4-icon floating toolbar from an unrelated app/extension
+   on Omar's machine (visible distinctly in a later screenshot) — closed,
+   confirmed unrelated to the site.
+STILL OPEN: item 1 (footer tagline translation) not yet diagnosed in code;
+item 2 scope question (homepage-only vs. also affecting Features.astro)
+awaiting Omar's answer before writing a combined fix prompt; item 3
+prompt awaiting Claude Code's execution.
+## Prompt 11 — items 1 & 2 diagnosed, combined prompt issued (all 3 bugs)
+Item 1 root cause confirmed: Layout.astro line 224 hardcodes the footer
+tagline in plain English, never calls t('footerTag') at all.
+Item 2 scope confirmed: bug is isolated to Home.astro's own local
+homeFeatureIcons map (line 11) — Features.astro already correctly
+imports the shared icons.ts and needs no changes.
+Combined prompt issued to Claude Code covering all 3 bugs (footer
+tagline i18n, Home.astro icon map replacement, footer social icons/
+Patreon path/GitHub URL) in one pass, with full cross-language and
+LTR/RTL verification steps.
+STILL OPEN: awaiting Claude Code's fix + verification for all 3.
