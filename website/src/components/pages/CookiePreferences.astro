@@ -1,0 +1,71 @@
+---
+import { useTranslations } from '../../i18n/utils';
+
+interface Props {
+  lang: string;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+---
+<div style="max-width:620px; margin:0 auto; padding-block:72px 72px; display:flex; flex-direction:column; gap:22px">
+  <div style="display:flex; flex-direction:column; gap:12px">
+    <h1 style="margin:0; font-size:40px; font-weight:600; line-height:1.15; letter-spacing:-0.025em">{t('cookieTitle')}</h1>
+    <p style="margin:0; font-size:15px; line-height:1.75; color:var(--text-3); text-wrap:pretty">{t('cookieBody')}</p>
+  </div>
+  <div style="border:1px solid var(--border); border-radius:8px; background:var(--surface); padding:18px; display:flex; align-items:center; gap:12px">
+    <span id="pref-status-dot" style="width:9px; height:9px; border-radius:999px; flex:none; background:var(--border)"></span>
+    <div style="flex:1; display:flex; flex-direction:column; gap:3px">
+      <span style="font:600 13.5px/1.3 inherit">{t('currentStatus')}</span>
+      <span id="pref-status-label" style="font-size:12.5px; color:var(--text-3)"></span>
+    </div>
+  </div>
+  <div style="display:flex; flex-wrap:wrap; gap:10px">
+    <button id="pref-accept" style="height:44px; display:flex; align-items:center; padding:0 20px; border-radius:7px; background:var(--accent-solid); color:var(--on-accent); border:none; font:600 13.5px/1 inherit; cursor:pointer">{t('acceptAll')}</button>
+    <button id="pref-reject" style="height:44px; display:flex; align-items:center; padding:0 20px; border-radius:7px; border:1px solid var(--border); background:var(--surface); color:var(--text); font:600 13.5px/1 inherit; cursor:pointer">{t('rejectAll')}</button>
+  </div>
+  <p style="margin:0; font-size:12.5px; line-height:1.7; color:var(--muted)">{t('cookieNote')}</p>
+</div>
+
+<script define:vars={{
+  labelUnset: lang === 'ar' ? 'لم يُتخذ اختيار بعد — الافتراضي هو الرفض.' : (lang === 'fr' ? 'Aucun choix effectué — refusé par défaut.' : (lang === 'es' ? 'Aún no se ha elegido — rechazado por defecto.' : (lang === 'pt' ? 'Nenhuma escolha feita — rejeitado por padrão.' : 'No choice made yet — defaults to rejected.'))),
+  labelAccepted: lang === 'ar' ? 'مقبولة — يُحفظ ملف التفضيلات.' : (lang === 'fr' ? 'Accepté — le cookie de préférence est stocké.' : (lang === 'es' ? 'Aceptado — se guarda la cookie de preferencia.' : (lang === 'pt' ? 'Aceito — o cookie de preferência é armazenado.' : 'Accepted — the preference cookie is stored.'))),
+  labelRejected: lang === 'ar' ? 'مرفوضة — لا تُحفظ أي كوكيز.' : (lang === 'fr' ? 'Refusé — aucun cookie stocké.' : (lang === 'es' ? 'Rechazado — no se almacena ninguna cookie.' : (lang === 'pt' ? 'Rejeitado — nenhum cookie armazenado.' : 'Rejected — no cookies are stored.')))
+}}>
+  document.addEventListener('DOMContentLoaded', () => {
+    const dot = document.getElementById('pref-status-dot');
+    const label = document.getElementById('pref-status-label');
+    const acceptBtn = document.getElementById('pref-accept');
+    const rejectBtn = document.getElementById('pref-reject');
+
+    const render = () => {
+      const consent = localStorage.getItem('cookie_consent');
+      if (consent === 'accepted') {
+        dot.style.background = 'var(--accent-solid)';
+        label.textContent = labelAccepted;
+      } else if (consent === 'rejected') {
+        dot.style.background = 'var(--muted)';
+        label.textContent = labelRejected;
+      } else {
+        dot.style.background = 'var(--border)';
+        label.textContent = labelUnset;
+      }
+    };
+
+    const setConsent = (value) => {
+      localStorage.setItem('cookie_consent', value);
+      render();
+      if (value === 'accepted' && window.gtag) {
+        window.gtag('consent', 'update', { analytics_storage: 'granted' });
+        const script = document.createElement('script');
+        script.src = 'https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX';
+        script.async = true;
+        document.head.appendChild(script);
+        script.onload = () => window.gtag('config', 'G-XXXXXXXXXX');
+      }
+    };
+
+    acceptBtn.addEventListener('click', () => setConsent('accepted'));
+    rejectBtn.addEventListener('click', () => setConsent('rejected'));
+    render();
+  });
+</script>

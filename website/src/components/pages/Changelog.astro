@@ -1,0 +1,36 @@
+---
+import { useTranslations } from '../../i18n/utils';
+
+interface Props {
+  lang: string;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const releases = t('releases') as { version: string; date: string; tag: string; items: string[] }[];
+---
+<div style="max-width:720px; margin:0 auto; padding-block:72px 72px">
+  <div style="display:flex; flex-direction:column; gap:12px; padding-bottom:34px">
+    <span style="font:500 11.5px/1 ui-monospace,Menlo,monospace; letter-spacing:0.12em; text-transform:uppercase; color:var(--accent-text)">{t('changelogLabel')}</span>
+    <h1 style="margin:0; font-size:40px; font-weight:600; line-height:1.15; letter-spacing:-0.025em">{t('changelogTitle')}</h1>
+  </div>
+  {releases.map((r) => (
+    <div style="display:flex; gap:18px; border-inline-start:1px solid var(--border); padding-inline-start:22px; padding-bottom:28px; position:relative">
+      <span style="position:absolute; inset-inline-start:-5px; top:6px; width:9px; height:9px; border-radius:999px; background:var(--accent-solid)"></span>
+      <div style="flex:1; display:flex; flex-direction:column; gap:12px">
+        <div style="display:flex; flex-wrap:wrap; align-items:center; gap:10px">
+          <span style="font:600 17px/1 ui-monospace,Menlo,monospace; letter-spacing:-0.01em">{r.version}</span>
+          <span style="font:400 12px/1 ui-monospace,Menlo,monospace; color:var(--muted)">{r.date}</span>
+          <span style="height:22px; display:flex; align-items:center; padding:0 8px; border-radius:5px; border:1px solid var(--accent); font:500 10.5px/1 ui-monospace,Menlo,monospace; text-transform:uppercase; letter-spacing:0.08em; color:var(--accent-text)">{r.tag}</span>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:8px">
+          {r.items.map((it: string) => (
+            <span style="display:flex; gap:10px; align-items:flex-start; font-size:14px; line-height:1.65; color:var(--text-3)">
+              <span style="width:5px; height:5px; border-radius:999px; background:var(--muted); flex:none; margin-top:8px"></span>
+              {it}
+            </span>
+          ))}
+        </div>
+      </div>
+    </div>
+  ))}
+</div>

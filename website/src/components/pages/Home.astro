@@ -1,0 +1,81 @@
+---
+import { useTranslations } from '../../i18n/utils';
+import { ICONS } from '../../lib/icons';
+
+interface Props {
+  lang: string;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const downloadHref = lang === 'en' ? '/download' : `/${lang}/download`;
+const homeFeatureIcons: Record<string, string> = {
+  capture: "M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6",
+  search: "M4 22h14a2 2 0 0 0 2-2V7.5L14.5 2H6a2 2 0 0 0-2 2v4",
+  zip: "M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3",
+  globe: "M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10",
+};
+---
+<div style="max-width:1080px; margin:0 auto; padding-block:72px 0">
+
+  <div style="display:flex; flex-direction:row; gap:64px; align-items:center">
+    <div style="flex:1; min-width:0; display:flex; flex-direction:column; gap:20px; max-width:720px">
+      <span style="font:500 11.5px/1 ui-monospace,Menlo,monospace; letter-spacing:0.12em; text-transform:uppercase; color:var(--accent-text)">{t('eyebrow')}</span>
+      <h1 style="margin:0; font-size:48px; font-weight:600; line-height:1.1; letter-spacing:-0.025em; text-wrap:balance">{t('heroTitle')}</h1>
+      <p style="margin:0; font-size:18px; line-height:1.65; color:var(--text-3); text-wrap:pretty; max-width:48ch">{t('heroSub')}</p>
+      <div style="display:flex; flex-wrap:wrap; gap:10px; padding-top:4px">
+        <a href={downloadHref} style="height:48px; display:flex; align-items:center; gap:9px; padding:0 20px; border-radius:8px; background:var(--accent-solid); color:var(--on-accent); font:600 14.5px/1 inherit; cursor:pointer; text-decoration:none">
+          <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 11l5 5 5-5M4 20h16"></path></svg>
+          {t('addToChrome')}
+        </a>
+        <a href="https://github.com/omaelbaz/abrium-extension" target="_blank" rel="noopener" style="height:48px; display:flex; align-items:center; gap:9px; padding:0 18px; border-radius:8px; border:1px solid var(--border); background:var(--surface); color:var(--text); font:600 14.5px/1 inherit; text-decoration:none">
+          <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d={ICONS.github}></path></svg>
+          {t('viewGithub')}
+        </a>
+      </div>
+      <div style="display:flex; flex-wrap:wrap; align-items:center; gap:8px; padding-top:8px">
+        {(t('trust') as string[]).map((item: string) => (
+          <span style="display:flex; align-items:center; gap:6px; font:500 12px/1 inherit; color:var(--text-3)">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d={ICONS.check}></path></svg>
+            {item}
+          </span>
+        ))}
+      </div>
+    </div>
+  </div>
+
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; padding-block:72px">
+    {(t('homeFeatures') as {i: string, title: string, body: string}[]).map((f) => (
+      <div style="border:1px solid var(--border); border-radius:8px; background:var(--surface); padding:22px; display:flex; flex-direction:column; gap:11px">
+        <span style="width:36px; height:36px; border-radius:8px; border:1px solid var(--accent); display:flex; align-items:center; justify-content:center; background:var(--tint)">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d={homeFeatureIcons[f.i]}></path></svg>
+        </span>
+        <h3 style="margin:0; font:600 16px/1.3 inherit; letter-spacing:-0.01em">{f.title}</h3>
+        <p style="margin:0; font-size:13.5px; line-height:1.65; color:var(--text-3); text-wrap:pretty">{f.body}</p>
+      </div>
+    ))}
+  </div>
+
+  <div style="border-top:1px solid var(--border); padding-block:72px; display:flex; flex-direction:column; gap:26px">
+    <div style="display:flex; flex-direction:column; gap:8px; max-width:600px">
+      <span style="font:500 11.5px/1 ui-monospace,Menlo,monospace; letter-spacing:0.12em; text-transform:uppercase; color:var(--accent-text)">{t('howLabel')}</span>
+      <h2 style="margin:0; font-size:32px; font-weight:600; line-height:1.2; letter-spacing:-0.02em">{t('howTitle')}</h2>
+    </div>
+    <div style="display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:14px">
+      {(t('steps') as {n: string, title: string, body: string}[]).map((s) => (
+        <div style="display:flex; flex-direction:column; gap:10px; padding:20px; border:1px solid var(--border-2); border-radius:8px; background:var(--bg-alt)">
+          <span style="width:26px; height:26px; border-radius:999px; border:1px solid var(--accent); display:flex; align-items:center; justify-content:center; font:600 12px/1 ui-monospace,Menlo,monospace; color:var(--accent-text)">{s.n}</span>
+          <span style="font:600 14.5px/1.35 inherit">{s.title}</span>
+          <span style="font-size:13px; line-height:1.6; color:var(--text-3)">{s.body}</span>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <div style="border:1px solid var(--border); border-radius:8px; background:var(--bg-alt); padding:18px 22px; margin-bottom:72px; display:flex; flex-wrap:wrap; align-items:center; gap:14px; justify-content:space-between">
+    <span style="font:500 13px/1.5 inherit; color:var(--text-2)">{t('trustStrip')}</span>
+    <a href={downloadHref} style="height:40px; display:flex; align-items:center; gap:8px; padding:0 16px; border-radius:7px; border:1px solid var(--accent); color:var(--accent-text); font:600 13px/1 inherit; cursor:pointer; text-decoration:none">
+      {t('getIt')}
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d={ICONS.chevronRight}></path></svg>
+    </a>
+  </div>
+</div>

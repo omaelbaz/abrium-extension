@@ -1,0 +1,27 @@
+---
+import { useTranslations } from '../../i18n/utils';
+
+interface Props {
+  lang: string;
+  kind: 'privacy' | 'terms';
+}
+const { lang, kind } = Astro.props;
+const t = useTranslations(lang);
+const prose = t(kind) as { title: string; updated: string; sections: { h: string; p: string[] }[] };
+---
+<div style="max-width:680px; margin:0 auto; padding-block:72px 72px">
+  <div style="display:flex; flex-direction:column; gap:10px; padding-bottom:34px; border-bottom:1px solid var(--border)">
+    <h1 style="margin:0; font-size:40px; font-weight:600; line-height:1.15; letter-spacing:-0.025em">{prose.title}</h1>
+    <span style="font:400 12.5px/1 ui-monospace,Menlo,monospace; color:var(--muted)">{prose.updated}</span>
+  </div>
+  <div style="display:flex; flex-direction:column; gap:30px; padding-top:30px">
+    {prose.sections.map((s) => (
+      <div style="display:flex; flex-direction:column; gap:12px">
+        <h2 style="margin:0; font:600 17px/1.35 inherit; letter-spacing:-0.01em">{s.h}</h2>
+        {s.p.map((para: string) => (
+          <p style="margin:0; font-size:15px; line-height:1.8; color:var(--text-3); text-wrap:pretty">{para}</p>
+        ))}
+      </div>
+    ))}
+  </div>
+</div>
