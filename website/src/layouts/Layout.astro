@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import CookieConsent from '../components/CookieConsent.astro';
+import { ICONS } from '../lib/icons';
 
 interface Props {
 	title: string;
@@ -88,7 +89,11 @@ const isRTL = currentLocale === 'ar';
 		<meta charset="UTF-8" />
 		<meta name="description" content={description} />
 		<meta name="viewport" content="width=device-width" />
+		{/* SVG first for modern browsers; .ico is the Safari/older/crawler
+		    fallback, apple-touch-icon is the iOS home-screen tile. */}
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="icon" href="/favicon.ico" sizes="any" />
+		<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
 		<title>{title}</title>
 
     <link rel="canonical" href={canonicalURL} />
@@ -179,7 +184,10 @@ const isRTL = currentLocale === 'ar';
               <svg id="theme-icon-dark" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z"></path></svg>
             </button>
             
-            <a href={getNavLink('/download')} style="height:40px; flex:none; white-space:nowrap; display:flex; align-items:center; padding:0 15px; border-radius:7px; background:var(--accent-solid); color:var(--on-accent); font:600 13px/1 inherit; text-decoration:none">{tl.download}</a>
+            <a href={getNavLink('/download')} style="height:40px; flex:none; white-space:nowrap; display:flex; align-items:center; gap:8px; padding:0 15px; border-radius:7px; background:var(--accent-solid); color:var(--on-accent); font:600 13px/1 inherit; text-decoration:none">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d={ICONS.chrome}></path></svg>
+              {tl.download}
+            </a>
           </div>
         </div>
       </header>

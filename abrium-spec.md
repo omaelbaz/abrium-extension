@@ -1545,3 +1545,178 @@ STILL OPEN: awaiting Antigravity's response.
       via HTTP-served dist/ AND a real Load Unpacked click in Chrome
       (screenshot: full design system rendering correctly). Closed.
 ```
+
+## Prompt 8.x — Root Cause Found: Duplicate Page System (Omar + Claude)
+Cloned the real repo (github.com/omaelbaz/abrium-extension) and read the
+actual page files directly, instead of working from the design reference
+alone. Found the real root cause of every "content still wrong" report:
+
+Two conflicting content systems exist side by side:
+1. src/pages/index.astro (EN homepage) — CORRECT. Uses useTranslations()
+   from ../i18n/utils, reading from src/i18n/ui.ts. ui.ts's EN and AR
+   objects are fully complete and match the design reference (Abrium.html)
+   literally — confirmed by direct comparison.
+2. EVERY OTHER PAGE — src/pages/features.astro, faq.astro, download.astro,
+   changelog.astro, terms.astro, contact.astro, cookie-preferences.astro
+   (English root), AND the entire src/pages/[lang]/ directory (AR/FR/ES/PT
+   for ALL pages, including the homepage) — is static leftover output from
+   the legacy generate-pages.cjs script (found in /website root), with old
+   generic hardcoded copy baked directly into each .astro file
+   ("Automatic Capture / Visual Gallery / 100% Private" etc — the exact
+   wrong text Omar kept screenshotting). These pages have NEVER been wired
+   to ui.ts and never will be just by editing ui.ts.
+This is why every previous fix to ui.ts kept appearing incomplete: 14 of
+15 pages don't read from it at all.
+
+DECISION (Omar/PM, autonomous per standing instruction):
+- Delete generate-pages.cjs, rebuild-batch1.cjs, and all one-off
+  extract*/fix*/test*.cjs/.mjs scripts in /website root (verify none run
+  as part of `npm run build` first).
+- Delete src/pages/[lang]/ entirely — regenerate properly, not hand-edited.
+- Rebuild every page (features, faq, download, changelog, terms, contact,
+  cookie-preferences; verify privacy.astro too) on index.astro's exact
+  pattern: shared markup/component + ui.ts as the single source of truth
+  for both the EN root page and the [lang] localized versions, so EN and
+  AR/FR/ES/PT structurally cannot diverge again.
+- ui.ts's FR/ES/PT objects are still incomplete (~11 of 40+ keys) — fresh
+  professional translations needed for every missing key, matching the
+  finalized EN copy's tone, explicitly flagged in Antigravity's response
+  for Omar's review (not literal extraction, since no source exists for
+  these three languages beyond the basic 11 keys).
+Prompt issued: delete legacy system, rebuild all pages on the index.astro
+pattern, translate FR/ES/PT gaps, verify per-page/per-language content
+against ui.ts key-by-key (not just "page renders").
+STILL OPEN: awaiting Antigravity's response.
+
+
+## Prompt 8.x — Implementation Plan Reviewed & Approved (Omar + Claude)
+Antigravity submitted implementation_plan.md: deletes legacy scripts
+(extract*/fix*/test*.cjs/.mjs, generate-pages.cjs, rebuild-batch1.cjs,
+rendered.html, test_template.html) + src/pages/[lang]/, rebuilds every
+page as a shared component under src/components/pages/ consumed by both
+the EN root page and [lang] localized routes via getStaticPaths, and
+supplied full FR/ES/PT translations for every previously-missing ui.ts
+key (sidePanel through terms — full parity with EN/AR reached).
+REVIEW RESULT: APPROVED, with one correction required before proceeding:
+ES backHome translation had a copy-paste error — "Voltar al inicio" mixes
+the Portuguese verb "Voltar" into Spanish; must be "Volver al inicio".
+Terminology question (Omar's call): "Vault" stays translated per-language
+(Coffre/Bóveda/Cofre — it's Abrium's own branding, not a Claude term).
+"Artifact" stays untranslated in all 5 languages — it's Claude's own
+product feature name (Claude Artifacts); translating it risks mismatching
+what the user sees in claude.ai's own UI across languages.
+Also required before deleting legacy scripts: explicit confirmation that
+none of them are referenced in package.json's build scripts (Antigravity
+viewed package.json already; needs to state the check's result plainly,
+not leave it implicit).
+STILL OPEN: awaiting Antigravity's corrected build + verification table.
+
+
+## Prompt 8.x — IMPLEMENTED DIRECTLY (Claude, not Antigravity)
+Per Omar's explicit correction, Claude wrote and verified the actual code
+directly instead of writing instructions for Antigravity to execute.
+
+Confirmed via package.json inspection: none of the legacy scripts were
+referenced in any npm script (dev/build/preview) — safe to delete outright.
+Deleted: extract.cjs, extract.mjs, extract_en.cjs, extract_scripts.cjs,
+extract_test.cjs, fix.cjs, fix_utils.cjs, generate-pages.cjs,
+rebuild-batch1.cjs, test.cjs, test2.cjs, test3.cjs, test_jsdom.cjs,
+test_puppeteer.cjs, rendered.html, test_template.html, and the old
+src/pages/[lang]/ directory.
+
+Merged full FR/ES/PT translations into src/i18n/ui.ts (ES "backHome" typo
+"Voltar al inicio" corrected to "Volver al inicio" before merging — all
+5 languages now have full key parity: heroTitle, featuresTitle, faqTitle,
+dlTitle, changelogTitle and every nested array/object, verified present
+for EN/AR/FR/ES/PT).
+
+Created src/lib/icons.ts (shared icon path constants) and 8 shared page
+components under src/components/pages/: Home, Features, Faq, Download,
+Changelog, Prose (shared by privacy+terms), Contact, CookiePreferences —
+each takes a `lang` prop, calls useTranslations(lang), zero hardcoded
+copy. Rewrote all 9 English root pages (src/pages/*.astro) to import
+Layout + the matching shared component. Recreated src/pages/[lang]/*.astro
+(8 pages) using getStaticPaths for ar/fr/es/pt, rendering the SAME shared
+components — English and the other 4 languages now share one component
+and one data source (ui.ts), so this bug class cannot recur silently.
+cookie-preferences.astro wired to the same localStorage 'cookie_consent'
+key/values as the existing CookieConsent.astro banner (verified by
+reading CookieConsent.astro directly before writing it).
+404.astro intentionally left as English-only, unchanged — matches Omar's
+prior explicit decision that 404 doesn't need full i18n treatment.
+
+VERIFICATION (real, not claimed): npm install + npm run build executed —
+46 static pages generated, zero errors. Spot-checked dist/ output
+directly: EN /features shows "Everything the Vault does." (was "Everything
+you need."); AR / homepage hero shows "لا تفقد أي Artifact من كلود بعد
+اليوم." (was the old paraphrased "لن تفقد أي قطعة أثرية..."); AR home
+feature cards now show "معرض وبحث"/"تصدير جماعي"/"خمس لغات ودعم RTL"
+(was generic "معرض مرئي"/"تصدير دفعي"); FR /features shows "Tout ce que
+fait le Coffre." (was falling back to English) — confirms ui.ts is now
+actually the live source for every page, in every language.
+Deliverable: abrium-website-fix.zip (all new/changed files, ready to
+drop into website/) + DELETE_THESE_FILES.txt (legacy files confirmed
+safe to remove) handed to Omar directly.
+
+STILL OPEN (Omar to do): drop the zip contents into the local repo,
+delete the files listed in DELETE_THESE_FILES.txt, run npm run build
+locally to reconfirm, visually spot-check a few pages in-browser
+(especially AR/RTL), then commit + push. Optional cleanup: remove now-
+unused cheerio/jsdom/puppeteer from website/package.json dependencies.
+unused cheerio/jsdom/puppeteer from website/package.json dependencies.
+
+
+## Prompt 8.x — RESOLVED via Claude Code (commit fd84188)
+The manual copy-paste session had lost more than the 18 page files —
+it also truncated ui.ts's FR/ES/PT blocks (17/78 keys each; EN/AR
+untouched at 79/78). Claude Code discovered this itself: the earlier
+`findstr "sidePanel"` sanity check was a false positive — "sidePanel"
+matched inside the EN/AR blocks, while being one of the 61 keys actually
+MISSING from French, so the check could never have caught the real gap.
+Symptom: dist/fr/features/index.html rendered the English fallback
+string instead of the French one.
+Claude Code correctly stopped and asked before touching ui.ts (which it
+had been explicitly told twice not to touch) rather than silently fixing
+it. Approved applying the doc's full ui.ts block. Diffed EN/AR
+byte-identical between disk and doc before applying, confirming zero
+regression risk to the two locales that were already correct.
+ALL SIX VERIFICATIONS NOW PASS: index.astro/[lang]/features.astro import
+checks, npm run build (46 pages, 0 errors), EN/AR/FR content spot-checks.
+All 5 locales report 78/78 keys in ui.ts.
+Committed as fd84188, pushed to main. 21 files: 18 pages + ui.ts + two
+untracked one-off files git add . picked up (antigravity-prompt.md,
+tools/apply-antigravity-blocks.mjs) — flagged for removal now that
+they've served their purpose, matching the earlier decision to delete
+one-off migration scripts (generate-pages.cjs etc.) once done.
+STILL OPEN (Omar): remove antigravity-prompt.md + tools/apply-antigravity-blocks.mjs
+from the repo; spot-check ES/PT dist output visually (only FR was
+string-verified explicitly, ES/PT share the identical fix but weren't
+individually re-confirmed).
+## ✅ PROMPT 8 (Website Content Fidelity + Duplicate Page System) — CLOSED
+## Prompt 9 — Visual/Asset Polish Pass (Omar, from live screenshots)
+Omar reviewed the live deployed site and flagged 6 issues needing a
+Claude Code investigation (visual/live-browser verification required,
+beyond what's checkable from source alone):
+1. Favicon — confirmed missing .ico fallback + apple-touch-icon in
+   Layout.astro (only SVG favicon link exists).
+2. Header "Download" button confirmed missing the Chrome icon (plain
+   text only) — inconsistent with the hero's iconed "Add to Chrome" CTA.
+3. Patreon icon on /contact — needs visual confirmation it renders
+   correctly (path exists in icons.ts but unverified visually).
+4. General icon pass across Features/Home cards — visual correctness
+   check.
+5. Unexplained floating black rounded bar overlapping card content in at
+   least 2 places on /features, visible in Omar's screenshot — root
+   cause unknown, flagged for live-browser reproduction rather than
+   guessed at from source.
+6. Feature/Download page frames still show literal "380 × 240 ·
+   Screenshot" placeholder text — Omar wants real extension screenshots
+   (side panel, popup, batch export, RTL) in their place.
+Also noted: footer tagline text in the screenshot showed what may be a
+stray leading period (".The open-source companion for Claude") — flagged
+for the icon-pass check to confirm against ui.ts's footerTag value, may
+just be a screenshot/rendering artifact.
+Prompt issued to Claude Code covering all 6 items, with instruction to
+verify each live (not assume) and explicitly report if item 5 cannot be
+reproduced rather than applying a speculative fix.
+STILL OPEN: awaiting Claude Code's findings + fixes.
