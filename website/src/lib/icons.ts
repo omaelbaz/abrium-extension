@@ -13,4 +13,6 @@ export const ICONS: Record<string, string> = {
   check: "m20 6-11 11-5-5",
   chevronRight: "m9 6 6 6-6 6",
   chevronLeft: "m15 18-6-6 6-6",
+  menu: "M4 7h16M4 12h16M4 17h16",
+  close: "M6 6l12 12M18 6 6 18",
 };

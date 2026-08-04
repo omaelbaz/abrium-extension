@@ -9,10 +9,10 @@ const { lang } = Astro.props;
 const t = useTranslations(lang);
 const faqs = t('faqs') as { q: string; a: string }[];
 ---
-<div style="max-width:760px; margin:0 auto; padding-block:72px 72px">
+<div class="r-page" style="max-width:760px; margin:0 auto">
   <div style="display:flex; flex-direction:column; gap:12px; padding-bottom:34px">
     <span style="font:500 11.5px/1 ui-monospace,Menlo,monospace; letter-spacing:0.12em; text-transform:uppercase; color:var(--accent-text)">{t('faqLabel')}</span>
-    <h1 style="margin:0; font-size:40px; font-weight:600; line-height:1.15; letter-spacing:-0.025em">{t('faqTitle')}</h1>
+    <h1 class="r-title" style="margin:0; font-weight:600; line-height:1.15; letter-spacing:-0.025em">{t('faqTitle')}</h1>
   </div>
   <div class="abr-faq-list" style="display:flex; flex-direction:column; gap:8px">
     {faqs.map((f, i: number) => (

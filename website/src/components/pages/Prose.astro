@@ -9,9 +9,9 @@ const { lang, kind } = Astro.props;
 const t = useTranslations(lang);
 const prose = t(kind) as { title: string; updated: string; sections: { h: string; p: string[] }[] };
 ---
-<div style="max-width:680px; margin:0 auto; padding-block:72px 72px">
+<div class="r-page" style="max-width:680px; margin:0 auto">
   <div style="display:flex; flex-direction:column; gap:10px; padding-bottom:34px; border-bottom:1px solid var(--border)">
-    <h1 style="margin:0; font-size:40px; font-weight:600; line-height:1.15; letter-spacing:-0.025em">{prose.title}</h1>
+    <h1 class="r-title" style="margin:0; font-weight:600; line-height:1.15; letter-spacing:-0.025em">{prose.title}</h1>
     <span style="font:400 12.5px/1 ui-monospace,Menlo,monospace; color:var(--muted)">{prose.updated}</span>
   </div>
   <div style="display:flex; flex-direction:column; gap:30px; padding-top:30px">

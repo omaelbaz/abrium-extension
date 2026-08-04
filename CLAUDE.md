@@ -1394,3 +1394,136 @@ Prompt issued to Claude Code covering all 6 items, with instruction to
 verify each live (not assume) and explicitly report if item 5 cannot be
 reproduced rather than applying a speculative fix.
 STILL OPEN: awaiting Claude Code's findings + fixes.
+
+
+## Prompt 9 — RESULTS (Claude Code, not yet committed)
+1. FAVICON — real bug found and fixed. Both files were Astro starter
+   defaults, not Abrium: favicon.svg was the stock Astro logo;
+   favicon.ico was a 32x32 PNG mislabeled .ico (invalid format). Replaced
+   with a real multi-size ICO (16/32/48) and the actual Abrium mark SVG.
+   Added apple-touch-icon.png (180x180, new square asset) — deliberately
+   NOT abrium-mark.png as the report assumed, since that file is
+   non-square (777x665) and too heavy (421KB) for a touch icon. Approved.
+2. CHROME ICON — header Download button fixed (was plain text). Audit
+   also caught a second instance the report didn't know about: Home.astro's
+   hero "Add to Chrome" button had a hardcoded download-arrow path instead
+   of ICONS.chrome — fixed too. Verified counts: 2 per homepage (header+hero),
+   1 per inner page (header only).
+3. PATREON ICON — verified correct via rasterization (2 connected parts =
+   bar+circle, the genuine Patreon mark structure). No change needed.
+4. ICON PASS — all 12 icons rasterized and verified rendering correctly,
+   sensible ink coverage, correct component counts. Judgment call flagged
+   but not acted on: ICONS.capture (circle+plus) is generic for "Capture"
+   but renders correctly — left as-is pending Omar's call.
+5. FLOATING BLACK BAR — could NOT reproduce. Scanned /features at 5 scroll
+   positions, zero dark positioned elements found; both named suspects
+   (#theme-btn, #lang-menu) structurally cleared (light-colored, static/
+   display:none). No speculative fix applied, per instruction. Likely a
+   browser/OS overlay unrelated to site code (Omar to retest in a private
+   window with extensions disabled if it recurs).
+6. REAL SCREENSHOTS — blocked, correctly not faked. No screenshots exist
+   anywhere in the repo. Blocked on: Load Unpacked requires a native file
+   picker (can't automate), and the screenshot compositor tool failed all
+   session. tools/dev-harness.html (renders the real side panel with 6
+   fixture artifacts, ?surface=popup for the popup) identified as the
+   path for Omar to capture these manually; Claude Code will wire the
+   <img> tags into Features.astro/Download.astro once files are dropped
+   into website/public/assets/screenshots/.
+npm run build passes: 46 pages, 0 errors. NOT YET COMMITTED — instructed
+Omar to commit items 1-4 now (Layout.astro, Home.astro, favicon files,
+apple-touch-icon.png).
+STILL OPEN: commit 1-4; Omar to manually capture real screenshots via
+dev-harness.html for item 6; item 5 deprioritized (likely non-code cause).
+
+
+## Prompt 9, item 6 (screenshots) — reassigned to Antigravity
+Claude Code's screenshot compositor failed all session, so item 6 was
+handed to Antigravity instead, using website/tools/dev-harness.html
+(renders the real side panel + ?surface=popup without needing Load
+Unpacked or a native file picker). Prompt issued: capture 5 images
+(side-panel-default, side-panel-filters, batch-select, popup, side-panel-rtl
+if supported) at ~380x240, save to website/public/assets/screenshots/,
+report success/failure per file honestly rather than fabricating any.
+Explicitly told not to wire the <img> tags in yet — that's a follow-up
+step once Omar confirms the captures look right.
+STILL OPEN: awaiting Antigravity's captures; items 1-4 (favicon/chrome
+icon fixes) still need Omar to commit (PowerShell && syntax issue was
+blocking this — resolved by running commands on separate lines).
+
+
+## Prompt 9, item 6 — screenshots captured (4/5), wiring prompt issued
+Antigravity captured via headless Puppeteer against the root extension's
+Vite dev server (localhost:5173 — dev-harness.html needs Vite's ?raw
+imports, so it's NOT served by the Astro website dev server as assumed).
+4/5 succeeded: side-panel-default.png, side-panel-filters.png,
+batch-select.png, popup.png — all 380x240, saved to
+website/public/assets/screenshots/. side-panel-rtl.png correctly skipped
+(no language toggle exists in the harness; refused to fake RTL by forcing
+dir="rtl" over English text).
+DECISION (Omar/PM): map the 4 real screenshots into Features.astro's
+Capture/Organize/Export/Privacy cards (Privacy reuses side-panel-default.png
+since there's no distinct "storage" UI) and Download.astro (popup.png).
+The Languages card (globe icon, frame "interface · RTL") KEEPS its
+placeholder — deliberately not filled with an English screenshot, since
+that card exists specifically to show the Arabic/RTL interface and a
+wrong-language image would misrepresent it.
+BACKLOG (not urgent): add a language/RTL toggle to tools/dev-harness.html
+so a genuine side-panel-rtl.png can be captured later for the Languages
+card.
+Prompt issued to wire the 4 images in with this exact mapping, verify
+build + confirm images copied to dist/.
+STILL OPEN: awaiting Antigravity's wiring + build confirmation; items 1-4
+(favicon/chrome icon) still need Omar to commit via PowerShell (separate
+lines, not &&).
+
+
+## Prompt 9, item 6 — screenshots wired in, verified, NOT yet committed
+Claude Code wired the 4 approved images into Features.astro/Download.astro
+per the mapping decided, then caught and fixed two real bugs of its own:
+1. /download frame is 758px wide; object-fit:cover was upscaling the
+   380px popup capture 2x to 758x479 and cropping 199px (only 58%
+   visible, blurry). Fixed: render at native 380px, centered.
+2. /features frame's 209px visible area (240px minus 30px chrome bar)
+   was cropping the capture with cover's default center anchor, cutting
+   ~15px off the TOP — exactly where the side panel's header/search live.
+   Fixed: object-position:top, so the crop comes off the bottom only.
+Verified: npm run build (46 pages, 0 errors), dist output has 4 <img>
+tags + exactly 1 placeholder (Languages card, as instructed), all 4
+files copied to dist/assets/screenshots/, alt text localizes correctly
+across AR/FR routes, live browser confirms zero broken images/console
+errors.
+Omar independently noted the floating black bar artifact recurred in a
+fresh screenshot at the same relative positions — further evidence
+(alongside Claude Code's earlier DOM scan finding nothing) that it's a
+browser/OS-level overlay (likely a screen-recording tool or extension),
+not a site bug. Deprioritized, not pursued further.
+STILL OPEN: Omar to commit (Features.astro, Download.astro changes) via
+PowerShell separate-line commands; items 1-4 (favicon/chrome icon) from
+earlier also still pending that same commit.
+## ✅ PROMPT 9 (Visual/Asset Polish: favicon, chrome icon, real screenshots) — READY TO COMMIT, CLOSING PENDING PUSH
+
+
+## Prompt 10 — Full Responsive Pass (Omar)
+Confirmed by reading the code: near-zero responsive design exists across
+the whole website — only 2 @media rules total (both in tokens.css, not
+layout-related). Every page uses fixed-px inline styles: 2-col/3-col
+grids, fixed 380px/758px image frames (758px frame is the exact one that
+caused the earlier object-fit upscale/crop bug), fixed 48px/40px font
+sizes, fixed row/row-reverse layouts. Breaks badly below ~900px.
+DECISION: assigned to Claude Code (live viewport testing needed across
+breakpoints, not a text/data fix). Breakpoints defined: mobile <640px,
+tablet 640-1023px, desktop >=1024px (current design's tuned width).
+Approach specified: move only the responsive properties into classes +
+scoped <style>/@media blocks per component (inline styles can't be
+media-queried), leave static inline styles untouched.
+Priority order: Layout.astro (header/nav → mobile menu), Home.astro
+(hero font scaling, CTA stacking, 2 grids → 1 col), Features.astro
+(biggest — alternating row layout + fixed 380px frame must stack + go
+fluid on mobile, re-verify the object-fit fix still holds), Download.astro
+(758px frame → fluid, re-verify its own earlier upscale fix), Contact.astro
+(2-col grid), then Faq/Changelog/Prose/CookiePreferences (verify only).
+Required: every fix re-verified in Arabic/RTL at the same breakpoints,
+not assumed to carry over from LTR. Verification required at 375/768/
+1024/1440px, both directions, before any commit — per-component/
+per-breakpoint pass/fail table required, not a general "looks good."
+STILL OPEN: awaiting Claude Code's pass/fail table before approving commit.

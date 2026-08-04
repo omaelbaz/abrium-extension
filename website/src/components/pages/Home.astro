@@ -15,19 +15,19 @@ const homeFeatureIcons: Record<string, string> = {
   globe: "M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10",
 };
 ---
-<div style="max-width:1080px; margin:0 auto; padding-block:72px 0">
+<div class="home-wrap" style="max-width:1080px; margin:0 auto">
 
   <div style="display:flex; flex-direction:row; gap:64px; align-items:center">
     <div style="flex:1; min-width:0; display:flex; flex-direction:column; gap:20px; max-width:720px">
       <span style="font:500 11.5px/1 ui-monospace,Menlo,monospace; letter-spacing:0.12em; text-transform:uppercase; color:var(--accent-text)">{t('eyebrow')}</span>
-      <h1 style="margin:0; font-size:48px; font-weight:600; line-height:1.1; letter-spacing:-0.025em; text-wrap:balance">{t('heroTitle')}</h1>
-      <p style="margin:0; font-size:18px; line-height:1.65; color:var(--text-3); text-wrap:pretty; max-width:48ch">{t('heroSub')}</p>
-      <div style="display:flex; flex-wrap:wrap; gap:10px; padding-top:4px">
-        <a href={downloadHref} style="height:48px; display:flex; align-items:center; gap:9px; padding:0 20px; border-radius:8px; background:var(--accent-solid); color:var(--on-accent); font:600 14.5px/1 inherit; cursor:pointer; text-decoration:none">
+      <h1 class="home-h1" style="margin:0; font-weight:600; line-height:1.1; letter-spacing:-0.025em; text-wrap:balance">{t('heroTitle')}</h1>
+      <p class="home-sub" style="margin:0; line-height:1.65; color:var(--text-3); text-wrap:pretty; max-width:48ch">{t('heroSub')}</p>
+      <div class="home-ctas" style="display:flex; gap:10px; padding-top:4px">
+        <a href={downloadHref} style="height:48px; display:flex; align-items:center; justify-content:center; gap:9px; padding:0 20px; border-radius:8px; background:var(--accent-solid); color:var(--on-accent); font:600 14.5px/1 inherit; cursor:pointer; text-decoration:none">
           <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d={ICONS.chrome}></path></svg>
           {t('addToChrome')}
         </a>
-        <a href="https://github.com/omaelbaz/abrium-extension" target="_blank" rel="noopener" style="height:48px; display:flex; align-items:center; gap:9px; padding:0 18px; border-radius:8px; border:1px solid var(--border); background:var(--surface); color:var(--text); font:600 14.5px/1 inherit; text-decoration:none">
+        <a href="https://github.com/omaelbaz/abrium-extension" target="_blank" rel="noopener" style="height:48px; display:flex; align-items:center; justify-content:center; gap:9px; padding:0 18px; border-radius:8px; border:1px solid var(--border); background:var(--surface); color:var(--text); font:600 14.5px/1 inherit; text-decoration:none">
           <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d={ICONS.github}></path></svg>
           {t('viewGithub')}
         </a>
@@ -43,7 +43,7 @@ const homeFeatureIcons: Record<string, string> = {
     </div>
   </div>
 
-  <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; padding-block:72px">
+  <div class="r-grid-2 home-features" style="gap:14px">
     {(t('homeFeatures') as {i: string, title: string, body: string}[]).map((f) => (
       <div style="border:1px solid var(--border); border-radius:8px; background:var(--surface); padding:22px; display:flex; flex-direction:column; gap:11px">
         <span style="width:36px; height:36px; border-radius:8px; border:1px solid var(--accent); display:flex; align-items:center; justify-content:center; background:var(--tint)">
@@ -55,12 +55,12 @@ const homeFeatureIcons: Record<string, string> = {
     ))}
   </div>
 
-  <div style="border-top:1px solid var(--border); padding-block:72px; display:flex; flex-direction:column; gap:26px">
+  <div class="home-how" style="border-top:1px solid var(--border); display:flex; flex-direction:column; gap:26px">
     <div style="display:flex; flex-direction:column; gap:8px; max-width:600px">
       <span style="font:500 11.5px/1 ui-monospace,Menlo,monospace; letter-spacing:0.12em; text-transform:uppercase; color:var(--accent-text)">{t('howLabel')}</span>
-      <h2 style="margin:0; font-size:32px; font-weight:600; line-height:1.2; letter-spacing:-0.02em">{t('howTitle')}</h2>
+      <h2 class="home-h2" style="margin:0; font-weight:600; line-height:1.2; letter-spacing:-0.02em">{t('howTitle')}</h2>
     </div>
-    <div style="display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:14px">
+    <div class="r-grid-3" style="gap:14px">
       {(t('steps') as {n: string, title: string, body: string}[]).map((s) => (
         <div style="display:flex; flex-direction:column; gap:10px; padding:20px; border:1px solid var(--border-2); border-radius:8px; background:var(--bg-alt)">
           <span style="width:26px; height:26px; border-radius:999px; border:1px solid var(--accent); display:flex; align-items:center; justify-content:center; font:600 12px/1 ui-monospace,Menlo,monospace; color:var(--accent-text)">{s.n}</span>
@@ -71,11 +71,45 @@ const homeFeatureIcons: Record<string, string> = {
     </div>
   </div>
 
-  <div style="border:1px solid var(--border); border-radius:8px; background:var(--bg-alt); padding:18px 22px; margin-bottom:72px; display:flex; flex-wrap:wrap; align-items:center; gap:14px; justify-content:space-between">
+  <div class="home-strip" style="border:1px solid var(--border); border-radius:8px; background:var(--bg-alt); padding:18px 22px; display:flex; flex-wrap:wrap; align-items:center; gap:14px; justify-content:space-between">
     <span style="font:500 13px/1.5 inherit; color:var(--text-2)">{t('trustStrip')}</span>
-    <a href={downloadHref} style="height:40px; display:flex; align-items:center; gap:8px; padding:0 16px; border-radius:7px; border:1px solid var(--accent); color:var(--accent-text); font:600 13px/1 inherit; cursor:pointer; text-decoration:none">
+    <a href={downloadHref} style="height:40px; display:flex; align-items:center; justify-content:center; gap:8px; padding:0 16px; border-radius:7px; border:1px solid var(--accent); color:var(--accent-text); font:600 13px/1 inherit; cursor:pointer; text-decoration:none">
       {t('getIt')}
       <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d={ICONS.chevronRight}></path></svg>
     </a>
   </div>
 </div>
+
+<style>
+  /* Desktop values match the original fixed design exactly. */
+  .home-wrap    { padding-block:72px 0; }
+  .home-h1      { font-size:48px; }
+  .home-h2      { font-size:32px; }
+  .home-sub     { font-size:18px; }
+  .home-features{ padding-block:72px; }
+  .home-how     { padding-block:72px; }
+  .home-strip   { margin-bottom:72px; }
+
+  @media (max-width: 1023px) {
+    .home-wrap    { padding-block:52px 0; }
+    .home-h1      { font-size:38px; }
+    .home-h2      { font-size:27px; }
+    .home-features{ padding-block:52px; }
+    .home-how     { padding-block:52px; }
+    .home-strip   { margin-bottom:52px; }
+  }
+
+  @media (max-width: 639px) {
+    .home-wrap    { padding-block:36px 0; }
+    /* 48px overflows a 375px viewport on the longest heading. */
+    .home-h1      { font-size:30px; }
+    .home-h2      { font-size:23px; }
+    .home-sub     { font-size:16px; }
+    .home-features{ padding-block:36px; }
+    .home-how     { padding-block:36px; }
+    .home-strip   { margin-bottom:36px; }
+    /* Stack full-width rather than wrapping mid-row. */
+    .home-ctas    { flex-direction:column; align-items:stretch; }
+    .home-strip > a { width:100%; }
+  }
+</style>

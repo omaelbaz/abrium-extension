@@ -88,7 +88,7 @@ const isRTL = currentLocale === 'ar';
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="description" content={description} />
-		<meta name="viewport" content="width=device-width" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		{/* SVG first for modern browsers; .ico is the Safari/older/crawler
 		    fallback, apple-touch-icon is the iOS home-screen tile. */}
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -133,21 +133,23 @@ const isRTL = currentLocale === 'ar';
     </script>
 	</head>
 	<body style="margin:0; background:var(--bg); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif; -webkit-font-smoothing:antialiased">
-    <div style="width:100%; max-width:1440px; margin:0 auto; background:var(--bg); color:var(--text); border-inline:1px solid var(--border-2); min-height:100vh; display:flex; flex-direction:column; position:relative; overflow:hidden">
+    {/* box-sizing so the 1px inline borders sit inside the 100% width —
+        without it the shell is 2px wider than the viewport at every size. */}
+    <div style="box-sizing:border-box; width:100%; max-width:1440px; margin:0 auto; background:var(--bg); color:var(--text); border-inline:1px solid var(--border-2); min-height:100vh; display:flex; flex-direction:column; position:relative; overflow:hidden">
       
-      <header style="position:sticky; top:0; z-index:40; background:var(--bg); border-bottom:1px solid var(--border); padding-inline:16px">
-        <div style="max-width:1080px; margin:0 auto; height:64px; display:flex; align-items:center; gap:14px">
+      <header class="site-header" style="position:sticky; top:0; z-index:40; background:var(--bg); border-bottom:1px solid var(--border)">
+        <div class="hdr-inner" style="max-width:1080px; margin:0 auto; align-items:center">
           <a href={getNavLink('/')} style="display:flex; align-items:center; gap:9px; margin-inline-end:auto; color:var(--text); text-decoration:none">
             <img src="/assets/abrium-mark.png" alt="Abrium" style="width:30px; height:auto; display:block">
             <span style="font:600 16px/1 inherit; letter-spacing:-0.01em">Abrium</span>
           </a>
 
-          <nav style="display:flex; align-items:center; gap:2px; min-width:0; overflow-x:auto">
+          <nav class="hdr-nav" style="align-items:center; gap:2px; min-width:0">
             <a href={getNavLink('/features')} style="height:40px; flex:none; white-space:nowrap; display:flex; align-items:center; padding:0 12px; border-radius:6px; font-size:13.5px; font-weight:500; color:var(--text-2); text-decoration:none; transition:background 160ms, color 160ms">{tl.features}</a>
             <a href={getNavLink('/faq')} style="height:40px; flex:none; white-space:nowrap; display:flex; align-items:center; padding:0 12px; border-radius:6px; font-size:13.5px; font-weight:500; color:var(--text-2); text-decoration:none; transition:background 160ms, color 160ms">{tl.faq}</a>
             <a href={getNavLink('/changelog')} style="height:40px; flex:none; white-space:nowrap; display:flex; align-items:center; padding:0 12px; border-radius:6px; font-size:13.5px; font-weight:500; color:var(--text-2); text-decoration:none; transition:background 160ms, color 160ms">{tl.changelog}</a>
           </nav>
-          
+
           <div style="display:flex; align-items:center; gap:6px; flex:none">
             <div style="position:relative; flex:none">
               <button id="lang-btn" style="height:40px; display:flex; align-items:center; gap:7px; padding:0 11px; border:1px solid var(--border); border-radius:7px; background:var(--surface); cursor:pointer; white-space:nowrap; color:var(--text)">
@@ -184,11 +186,27 @@ const isRTL = currentLocale === 'ar';
               <svg id="theme-icon-dark" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z"></path></svg>
             </button>
             
-            <a href={getNavLink('/download')} style="height:40px; flex:none; white-space:nowrap; display:flex; align-items:center; gap:8px; padding:0 15px; border-radius:7px; background:var(--accent-solid); color:var(--on-accent); font:600 13px/1 inherit; text-decoration:none">
+            <a class="hdr-dl" href={getNavLink('/download')} aria-label={tl.download} style="height:40px; flex:none; white-space:nowrap; align-items:center; gap:8px; border-radius:7px; background:var(--accent-solid); color:var(--on-accent); font:600 13px/1 inherit; text-decoration:none">
               <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d={ICONS.chrome}></path></svg>
-              {tl.download}
+              <span class="hdr-dl-label">{tl.download}</span>
             </a>
+
+            <button id="menu-btn" class="hdr-burger" aria-label="Menu" aria-expanded="false" aria-controls="mobile-menu" style="width:40px; height:40px; align-items:center; justify-content:center; border:1px solid var(--border); border-radius:7px; background:var(--surface); cursor:pointer; color:var(--text-2)">
+              <svg id="menu-icon-open" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d={ICONS.menu}></path></svg>
+              <svg id="menu-icon-close" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d={ICONS.close}></path></svg>
+            </button>
           </div>
+        </div>
+
+        {/* Mobile-only nav. Hidden entirely at >=640px, where .hdr-nav takes over. */}
+        <div id="mobile-menu" class="hdr-mobile" style="flex-direction:column; gap:2px; padding-bottom:12px; border-top:1px solid var(--border-2)">
+          <a href={getNavLink('/features')} style="min-height:44px; display:flex; align-items:center; padding:0 4px; font-size:14.5px; font-weight:500; color:var(--text-2); text-decoration:none">{tl.features}</a>
+          <a href={getNavLink('/faq')} style="min-height:44px; display:flex; align-items:center; padding:0 4px; font-size:14.5px; font-weight:500; color:var(--text-2); text-decoration:none">{tl.faq}</a>
+          <a href={getNavLink('/changelog')} style="min-height:44px; display:flex; align-items:center; padding:0 4px; font-size:14.5px; font-weight:500; color:var(--text-2); text-decoration:none">{tl.changelog}</a>
+          <a href={getNavLink('/download')} style="min-height:46px; margin-top:6px; display:flex; align-items:center; justify-content:center; gap:8px; border-radius:7px; background:var(--accent-solid); color:var(--on-accent); font:600 14px/1 inherit; text-decoration:none">
+            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d={ICONS.chrome}></path></svg>
+            {tl.download}
+          </a>
         </div>
       </header>
       
@@ -235,8 +253,50 @@ const isRTL = currentLocale === 'ar';
       <CookieConsent />
     </div>
 
+    <style is:global>
+      /* Header. Breakpoints mirror the responsive layer in global.css.
+         desktop  >=1024  full nav + labelled Download
+         tablet   640-1023 full nav, Download collapses to its icon
+         mobile   <640     nav + Download move into the burger menu */
+      .site-header { padding-inline:16px; }
+      .hdr-inner { height:64px; display:flex; gap:14px; }
+      .hdr-nav { display:flex; }
+      .hdr-dl { display:flex; padding-inline:15px; }
+      .hdr-burger { display:none; }
+      .hdr-mobile { display:none; }
+
+      @media (max-width: 1023px) {
+        .hdr-dl .hdr-dl-label { display:none; }
+        .hdr-dl { padding-inline:11px; }
+      }
+
+      @media (max-width: 639px) {
+        .site-header { padding-inline:12px; }
+        .hdr-inner { height:56px; gap:8px; }
+        .hdr-nav { display:none; }
+        .hdr-dl { display:none; }
+        .hdr-burger { display:flex; }
+        .hdr-mobile.is-open { display:flex; }
+      }
+    </style>
+
     <script is:inline>
       document.addEventListener('DOMContentLoaded', () => {
+        // Mobile menu toggle
+        const menuBtn = document.getElementById('menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const menuOpen = document.getElementById('menu-icon-open');
+        const menuClose = document.getElementById('menu-icon-close');
+        if (menuBtn && mobileMenu) {
+          menuBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const open = mobileMenu.classList.toggle('is-open');
+            menuBtn.setAttribute('aria-expanded', String(open));
+            menuOpen.style.display = open ? 'none' : 'block';
+            menuClose.style.display = open ? 'block' : 'none';
+          });
+        }
+
         // Language Menu Toggle
         const langBtn = document.getElementById('lang-btn');
         const langMenu = document.getElementById('lang-menu');

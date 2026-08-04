@@ -32,3 +32,56 @@ a { color:var(--accent-text); text-decoration:none; }
 a:hover { text-decoration:underline; }
 ::-webkit-scrollbar { width:8px; height:8px; }
 ::-webkit-scrollbar-thumb { background:#8A857A55; border-radius:4px; }
+
+/* ─────────────────────────────────────────────────────────────
+   Responsive layer — the single definition of the site's
+   breakpoints. Everything responsive uses these classes or
+   mirrors these exact widths:
+     mobile   < 640px
+     tablet   640px – 1023px
+     desktop  >= 1024px   (the original fixed design)
+   Inline styles win over stylesheets, so any property that has
+   to change by breakpoint lives here, not in a style attribute.
+   ───────────────────────────────────────────────────────────── */
+
+/* Two-column grid → single column on mobile. */
+.r-grid-2 { display:grid; grid-template-columns:1fr 1fr; }
+/* Three-column grid → two on tablet, one on mobile. */
+.r-grid-3 { display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); }
+
+/* Row that becomes a vertical stack on small screens. The
+   alternating row-reverse on /features is dropped there too:
+   below the breakpoint every section reads in the same order. */
+.r-split { display:flex; align-items:flex-start; }
+
+@media (max-width: 1023px) {
+  .r-split { flex-direction:column !important; gap:28px; }
+}
+
+@media (max-width: 639px) {
+  .r-grid-2, .r-grid-3 { grid-template-columns:1fr; }
+}
+
+@media (min-width: 640px) and (max-width: 1023px) {
+  .r-grid-3 { grid-template-columns:repeat(2, minmax(0, 1fr)); }
+}
+
+/* Media frames: never wider than the viewport, never upscaled
+   past the capture's native 380px. */
+.r-frame { width:100%; max-width:380px; }
+
+/* Standard page shell + page title. Used by the prose-style pages
+   (FAQ, Changelog, Privacy/Terms, Contact, Cookie preferences) so the
+   same three values aren't restated in five components. */
+.r-page  { padding-block:72px; }
+.r-title { font-size:40px; }
+
+@media (max-width: 1023px) {
+  .r-page  { padding-block:52px; }
+  .r-title { font-size:33px; }
+}
+
+@media (max-width: 639px) {
+  .r-page  { padding-block:36px; }
+  .r-title { font-size:27px; }
+}

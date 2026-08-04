@@ -9,10 +9,10 @@ const { lang } = Astro.props;
 const t = useTranslations(lang);
 const installSteps = t('installSteps') as { n: string; title: string; body: string }[];
 ---
-<div style="max-width:760px; margin:0 auto; padding-block:72px 72px; display:flex; flex-direction:column; gap:32px">
+<div class="dl-wrap" style="max-width:760px; margin:0 auto; display:flex; flex-direction:column; gap:32px">
   <div style="display:flex; flex-direction:column; align-items:center; gap:16px; text-align:center">
     <img src="/assets/abrium-mark.png" alt="Abrium" style="width:72px; height:auto; display:block" />
-    <h1 style="margin:0; font-size:40px; font-weight:600; line-height:1.15; letter-spacing:-0.025em">{t('dlTitle')}</h1>
+    <h1 class="dl-h1" style="margin:0; font-weight:600; line-height:1.15; letter-spacing:-0.025em">{t('dlTitle')}</h1>
     <p style="margin:0; max-width:44ch; font-size:16.5px; line-height:1.65; color:var(--text-3); text-wrap:pretty">{t('dlSub')}</p>
     <div style="display:flex; flex-direction:column; align-items:center; gap:10px; padding-top:6px">
       <span style="height:52px; display:flex; align-items:center; gap:10px; padding:0 26px; border-radius:8px; background:var(--accent-solid); color:var(--on-accent); font:600 15px/1 inherit; opacity:0.92">
@@ -26,7 +26,7 @@ const installSteps = t('installSteps') as { n: string; title: string; body: stri
     </div>
   </div>
 
-  <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:14px">
+  <div class="r-grid-3" style="gap:14px">
     {installSteps.map((s) => (
       <div style="display:flex; flex-direction:column; gap:10px; padding:20px; border:1px solid var(--border-2); border-radius:8px; background:var(--surface)">
         <span style="width:26px; height:26px; border-radius:999px; border:1px solid var(--accent); display:flex; align-items:center; justify-content:center; font:600 12px/1 ui-monospace,Menlo,monospace; color:var(--accent-text)">{s.n}</span>
@@ -36,12 +36,33 @@ const installSteps = t('installSteps') as { n: string; title: string; body: stri
     ))}
   </div>
 
-  <div style="border:1px solid var(--border); border-radius:10px; background:var(--surface); box-shadow:var(--shadow); overflow:hidden">
+  <div class="dl-frame" style="box-sizing:border-box; border:1px solid var(--border); border-radius:10px; background:var(--surface); box-shadow:var(--shadow); overflow:hidden">
     <div style="height:32px; display:flex; align-items:center; gap:8px; padding:0 12px; border-bottom:1px solid var(--border-2); background:var(--bg-alt)">
       <span style="font:500 10.5px/1 ui-monospace,Menlo,monospace; color:var(--muted); letter-spacing:0.06em">{t('sidePanel')} · 380px</span>
     </div>
-    <div style="height:280px; display:flex; align-items:center; justify-content:center; gap:9px; color:var(--muted)">
-      <span style="font:400 12px/1 ui-monospace,Menlo,monospace">{t('screenshot')}</span>
+    <div class="dl-shot" style="display:flex; align-items:center; justify-content:center; gap:9px; color:var(--muted); overflow:hidden">
+      {/* Rendered at its native 380px, centred by the flex parent. Stretching
+          it to the 758px frame would upscale 2x and crop ~40% of the capture. */}
+      <img src="/assets/screenshots/popup.png" alt={t('sidePanel')} style="width:380px; max-width:100%; height:auto; display:block" />
     </div>
   </div>
 </div>
+
+<style>
+  .dl-wrap { padding-block:72px; }
+  .dl-h1   { font-size:40px; }
+  .dl-shot { height:280px; }
+
+  @media (max-width: 1023px) {
+    .dl-wrap { padding-block:52px; }
+    .dl-h1   { font-size:33px; }
+  }
+
+  @media (max-width: 639px) {
+    .dl-wrap { padding-block:36px; }
+    .dl-h1   { font-size:27px; }
+    /* The capture is 240px tall and can only shrink from here, so a
+       fixed 280px box would leave a growing empty band beneath it. */
+    .dl-shot { height:auto; padding-block:16px; }
+  }
+</style>

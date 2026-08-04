@@ -7,9 +7,9 @@ interface Props {
 const { lang } = Astro.props;
 const t = useTranslations(lang);
 ---
-<div style="max-width:620px; margin:0 auto; padding-block:72px 72px; display:flex; flex-direction:column; gap:22px">
+<div class="r-page" style="max-width:620px; margin:0 auto; display:flex; flex-direction:column; gap:22px">
   <div style="display:flex; flex-direction:column; gap:12px">
-    <h1 style="margin:0; font-size:40px; font-weight:600; line-height:1.15; letter-spacing:-0.025em">{t('cookieTitle')}</h1>
+    <h1 class="r-title" style="margin:0; font-weight:600; line-height:1.15; letter-spacing:-0.025em">{t('cookieTitle')}</h1>
     <p style="margin:0; font-size:15px; line-height:1.75; color:var(--text-3); text-wrap:pretty">{t('cookieBody')}</p>
   </div>
   <div style="border:1px solid var(--border); border-radius:8px; background:var(--surface); padding:18px; display:flex; align-items:center; gap:12px">

@@ -8,22 +8,32 @@ interface Props {
 const { lang } = Astro.props;
 const t = useTranslations(lang);
 const featureSections = t('featureSections') as { i: string; title: string; frame: string; body: string; bullets: string[] }[];
+
+// Keyed by the section's icon key. "globe" (Languages) is deliberately absent:
+// that card exists to show the Arabic/RTL interface, so an English capture
+// would misrepresent it — it keeps the placeholder until a real RTL shot exists.
+const SCREENSHOTS: Record<string, string> = {
+  capture: 'side-panel-default.png',
+  search: 'side-panel-filters.png',
+  zip: 'batch-select.png',
+  lock: 'side-panel-default.png', // no distinct storage UI — the panel is the storage
+};
 ---
-<div style="max-width:1080px; margin:0 auto; padding-block:72px 72px">
-  <div style="display:flex; flex-direction:column; gap:12px; max-width:620px; padding-bottom:40px">
+<div class="feat-wrap" style="max-width:1080px; margin:0 auto">
+  <div class="feat-head" style="display:flex; flex-direction:column; gap:12px; max-width:620px">
     <span style="font:500 11.5px/1 ui-monospace,Menlo,monospace; letter-spacing:0.12em; text-transform:uppercase; color:var(--accent-text)">{t('featuresLabel')}</span>
-    <h1 style="margin:0; font-size:40px; font-weight:600; line-height:1.15; letter-spacing:-0.025em">{t('featuresTitle')}</h1>
+    <h1 class="feat-h1" style="margin:0; font-weight:600; line-height:1.15; letter-spacing:-0.025em">{t('featuresTitle')}</h1>
     <p style="margin:0; font-size:16.5px; line-height:1.65; color:var(--text-3); text-wrap:pretty">{t('featuresSub')}</p>
   </div>
 
   <div style="display:flex; flex-direction:column; gap:0">
     {featureSections.map((f, i: number) => (
-      <div style={`display:flex; flex-direction:${i % 2 === 1 ? 'row-reverse' : 'row'}; gap:56px; align-items:flex-start; padding-block:36px; border-top:1px solid var(--border)`}>
+      <div class:list={['feat-row', { 'is-rev': i % 2 === 1 }]} style="align-items:flex-start; border-top:1px solid var(--border)">
         <div style="flex:1; min-width:0; display:flex; flex-direction:column; gap:12px; max-width:520px">
           <span style="width:38px; height:38px; border-radius:8px; border:1px solid var(--accent); display:flex; align-items:center; justify-content:center; background:var(--tint)">
             <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d={ICONS[f.i]}></path></svg>
           </span>
-          <h2 style="margin:0; font-size:27px; font-weight:600; line-height:1.25; letter-spacing:-0.02em">{f.title}</h2>
+          <h2 class="feat-h2" style="margin:0; font-weight:600; line-height:1.25; letter-spacing:-0.02em">{f.title}</h2>
           <p style="margin:0; font-size:14.5px; line-height:1.7; color:var(--text-3); text-wrap:pretty">{f.body}</p>
           <div style="display:flex; flex-direction:column; gap:7px; padding-top:4px">
             {f.bullets.map((b: string) => (
@@ -34,16 +44,50 @@ const featureSections = t('featureSections') as { i: string; title: string; fram
             ))}
           </div>
         </div>
-        <div style="flex:none; width:380px; max-width:100%; height:240px; border:1px solid var(--border); border-radius:10px; background:var(--surface); box-shadow:var(--shadow); overflow:hidden; display:flex; flex-direction:column">
+        <div class="r-frame feat-frame" style="flex:none; height:240px; border:1px solid var(--border); border-radius:10px; background:var(--surface); box-shadow:var(--shadow); overflow:hidden; display:flex; flex-direction:column">
           <div style="height:30px; display:flex; align-items:center; gap:7px; padding:0 11px; border-bottom:1px solid var(--border-2); background:var(--bg-alt)">
             <span style="width:7px; height:7px; border-radius:999px; background:var(--border)"></span>
             <span style="font:500 10.5px/1 ui-monospace,Menlo,monospace; color:var(--muted); letter-spacing:0.06em">{f.frame}</span>
           </div>
-          <div style="flex:1; display:flex; align-items:center; justify-content:center; gap:9px; color:var(--muted)">
-            <span style="font:400 12px/1 ui-monospace,Menlo,monospace">380 × 240 · {t('screenshot')}</span>
+          <div style="flex:1; display:flex; align-items:center; justify-content:center; gap:9px; color:var(--muted); overflow:hidden">
+            {/* The 30px chrome bar leaves 209px for a 240px capture, so cover
+                crops 31px — anchored to the top so the panel header survives. */}
+            {SCREENSHOTS[f.i] ? (
+              <img src={`/assets/screenshots/${SCREENSHOTS[f.i]}`} alt={f.title} style="width:100%; height:100%; object-fit:cover; object-position:top; display:block" />
+            ) : (
+              <span style="font:400 12px/1 ui-monospace,Menlo,monospace">380 × 240 · {t('screenshot')}</span>
+            )}
           </div>
         </div>
       </div>
     ))}
   </div>
 </div>
+
+<style>
+  .feat-wrap { padding-block:72px; }
+  .feat-head { padding-bottom:40px; }
+  .feat-h1   { font-size:40px; }
+  .feat-h2   { font-size:27px; }
+  /* Alternating sides are a desktop-only device. */
+  .feat-row  { display:flex; gap:56px; padding-block:36px; }
+  .feat-row.is-rev { flex-direction:row-reverse; }
+  /* box-sizing so the frame's 1px border stays inside max-width:380px. */
+  .feat-frame { box-sizing:border-box; }
+
+  @media (max-width: 1023px) {
+    /* Text above frame, same order every section — the alternation
+       reads as inconsistent once the columns are stacked. */
+    .feat-row, .feat-row.is-rev { flex-direction:column; gap:24px; }
+    .feat-wrap { padding-block:52px; }
+    .feat-h1   { font-size:33px; }
+  }
+
+  @media (max-width: 639px) {
+    .feat-wrap { padding-block:36px; }
+    .feat-head { padding-bottom:28px; }
+    .feat-h1   { font-size:28px; }
+    .feat-h2   { font-size:22px; }
+    .feat-row  { padding-block:28px; }
+  }
+</style>

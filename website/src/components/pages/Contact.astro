@@ -9,12 +9,12 @@ const { lang } = Astro.props;
 const t = useTranslations(lang);
 const contactCards = t('contactCards') as { i: string; title: string; body: string; cta: string; placeholder: boolean }[];
 ---
-<div style="max-width:760px; margin:0 auto; padding-block:72px 72px">
+<div class="r-page" style="max-width:760px; margin:0 auto">
   <div style="display:flex; flex-direction:column; gap:12px; padding-bottom:32px">
-    <h1 style="margin:0; font-size:40px; font-weight:600; line-height:1.15; letter-spacing:-0.025em">{t('contactTitle')}</h1>
+    <h1 class="r-title" style="margin:0; font-weight:600; line-height:1.15; letter-spacing:-0.025em">{t('contactTitle')}</h1>
     <p style="margin:0; max-width:52ch; font-size:16.5px; line-height:1.65; color:var(--text-3)">{t('contactSub')}</p>
   </div>
-  <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px">
+  <div class="r-grid-2" style="gap:14px">
     {contactCards.map((c) => (
       <div style="border:1px solid var(--border); border-radius:8px; background:var(--surface); padding:24px; display:flex; flex-direction:column; gap:12px">
         <div style="display:flex; align-items:center; gap:10px">
