@@ -1,0 +1,285 @@
+{
+  "ext_name": {
+    "message": "Abrium — Bóveda de artefactos"
+  },
+  "ext_description": {
+    "message": "Cataloga tus artefactos de Claude.ai en local. Sin cuentas, sin rastreo, nada sale de tu navegador."
+  },
+  "action_title": {
+    "message": "Abrir Abrium"
+  },
+  "command_open_panel": {
+    "message": "Abrir el panel lateral de Abrium"
+  },
+  "sidepanel_title": {
+    "message": "Abrium — Bóveda de artefactos"
+  },
+  "gallery_label": {
+    "message": "Artefactos guardados"
+  },
+  "loading_label": {
+    "message": "Cargando artefactos…"
+  },
+  "search_placeholder": {
+    "message": "Buscar artefactos…"
+  },
+  "search_label": {
+    "message": "Buscar artefactos"
+  },
+  "search_clear": {
+    "message": "Borrar búsqueda"
+  },
+  "filter_group_label": {
+    "message": "Filtrar por tipo"
+  },
+  "filter_all": {
+    "message": "Todos"
+  },
+  "filter_code": {
+    "message": "Código"
+  },
+  "filter_html": {
+    "message": "HTML"
+  },
+  "filter_markdown": {
+    "message": "Markdown"
+  },
+  "filter_svg": {
+    "message": "SVG"
+  },
+  "filter_react": {
+    "message": "React"
+  },
+  "stats_summary": {
+    "message": "$1 · $2"
+  },
+  "size_unavailable": {
+    "message": "—",
+    "description": "Shown instead of a storage figure when getBytesInUse() could not measure it."
+  },
+  "artifact_count_one": {
+    "message": "$1 artefacto"
+  },
+  "artifact_count_other": {
+    "message": "$1 artefactos"
+  },
+  "action_select": {
+    "message": "Seleccionar"
+  },
+  "action_done": {
+    "message": "Listo"
+  },
+  "action_settings": {
+    "message": "Ajustes e información"
+  },
+  "action_view_vault": {
+    "message": "Ver la bóveda completa"
+  },
+  "popup_recent_heading": {
+    "message": "Recientes"
+  },
+  "action_download_named": {
+    "message": "Descargar $1"
+  },
+  "action_retry": {
+    "message": "Reintentar"
+  },
+  "action_reset_filters": {
+    "message": "Borrar búsqueda y filtros"
+  },
+  "action_cancel": {
+    "message": "Cancelar"
+  },
+  "action_export": {
+    "message": "Exportar"
+  },
+  "action_download_zip": {
+    "message": "Descargar ZIP"
+  },
+  "action_select_all": {
+    "message": "Seleccionar todo"
+  },
+  "action_clear_selection": {
+    "message": "Borrar"
+  },
+  "empty_title": {
+    "message": "Aún no hay artefactos"
+  },
+  "empty_body": {
+    "message": "Crea algo en Claude y aparecerá aquí automáticamente."
+  },
+  "no_results_title": {
+    "message": "Sin resultados"
+  },
+  "no_results_body": {
+    "message": "Prueba con otra palabra o borra los filtros."
+  },
+  "error_title": {
+    "message": "No se pudieron leer los artefactos de esta página"
+  },
+  "error_body": {
+    "message": "Actualiza claude.ai y vuelve a cargar la bóveda."
+  },
+  "batch_bar_label": {
+    "message": "Acciones de selección"
+  },
+  "batch_mode_entered": {
+    "message": "Modo de selección activado"
+  },
+  "batch_mode_exited": {
+    "message": "Modo de selección desactivado"
+  },
+  "selected_count_one": {
+    "message": "$1 seleccionado"
+  },
+  "selected_count_other": {
+    "message": "$1 seleccionados"
+  },
+  "status_download_started": {
+    "message": "Descarga iniciada"
+  },
+  "status_export_started": {
+    "message": "Exportación iniciada"
+  },
+  "status_zip_started": {
+    "message": "Creando el ZIP"
+  },
+  "status_action_failed": {
+    "message": "No se pudo completar — no se cambió nada"
+  },
+  "detail_label": {
+    "message": "Detalles del artefacto"
+  },
+  "action_back": {
+    "message": "Volver a la bóveda"
+  },
+  "action_pin": {
+    "message": "Fijar artefacto"
+  },
+  "action_unpin": {
+    "message": "Dejar de fijar"
+  },
+  "action_download": {
+    "message": "Descargar"
+  },
+  "action_delete": {
+    "message": "Eliminar"
+  },
+  "delete_confirm_title": {
+    "message": "¿Eliminar este artefacto?"
+  },
+  "delete_confirm_body": {
+    "message": "Esta acción no se puede deshacer."
+  },
+  "action_confirm_delete": {
+    "message": "Eliminar"
+  },
+  "detail_open_conversation": {
+    "message": "Abrir en Claude"
+  },
+  "detail_source_label": {
+    "message": "Código fuente"
+  },
+  "detail_preview_label": {
+    "message": "Vista previa"
+  },
+  "detail_preview_unavailable_title": {
+    "message": "Vista previa no disponible"
+  },
+  "detail_preview_unavailable_body": {
+    "message": "Descarga el archivo para verlo."
+  },
+  "detail_missing_title": {
+    "message": "Este artefacto ya no existe"
+  },
+  "detail_missing_body": {
+    "message": "Se eliminó o se quitó para liberar espacio."
+  },
+  "detail_error_title": {
+    "message": "No se pudo cargar este artefacto"
+  },
+  "status_pinned": {
+    "message": "Fijado"
+  },
+  "status_unpinned": {
+    "message": "Ya no está fijado"
+  },
+  "status_deleted": {
+    "message": "Artefacto eliminado"
+  },
+  "settings_label": {
+    "message": "Ajustes e información"
+  },
+  "settings_title": {
+    "message": "Ajustes"
+  },
+  "settings_language": {
+    "message": "Idioma"
+  },
+  "settings_theme": {
+    "message": "Apariencia"
+  },
+  "settings_storage": {
+    "message": "Almacenamiento"
+  },
+  "settings_privacy": {
+    "message": "Privacidad"
+  },
+  "settings_about": {
+    "message": "Información"
+  },
+  "settings_error_title": {
+    "message": "No se pudieron cargar tus ajustes"
+  },
+  "theme_system": {
+    "message": "Sistema"
+  },
+  "theme_light": {
+    "message": "Claro"
+  },
+  "theme_dark": {
+    "message": "Oscuro"
+  },
+  "language_system": {
+    "message": "Usar el idioma del navegador"
+  },
+  "action_export_backup": {
+    "message": "Exportar copia de seguridad"
+  },
+  "action_view_all": {
+    "message": "Ver todos los artefactos"
+  },
+  "privacy_note": {
+    "message": "Abrium lee el contenido de los artefactos de Claude en las páginas de claude.ai que visitas y lo guarda solo en el almacenamiento local de tu navegador. Nunca se envía nada a ningún servidor. Sin cuentas, sin rastreo, sin pagos."
+  },
+  "about_version": {
+    "message": "Versión $1"
+  },
+  "about_changelog": {
+    "message": "Registro de cambios"
+  },
+  "about_support": {
+    "message": "Apoyar a Abrium"
+  },
+  "about_open_source": {
+    "message": "Abrium es de código abierto (MIT)."
+  },
+  "about_repository": {
+    "message": "Ver en GitHub"
+  },
+  "status_settings_saved": {
+    "message": "Ajustes guardados"
+  },
+  "link_opens_new_tab": {
+    "message": "se abre en una pestaña nueva"
+  },
+  "preview_hint_title": {
+    "message": "No se pudo leer este artefacto"
+  },
+  "preview_hint_body": {
+    "message": "Cambia a la vista de Código para guardar este artefacto."
+  },
+  "action_dismiss": {
+    "message": "Descartar"
+  }
+}

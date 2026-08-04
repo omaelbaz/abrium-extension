@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Abrium — extraction test</title>
+  <style>
+    body { font: 13px/1.5 ui-monospace, Menlo, monospace; background:#12110F; color:#E7E3DA; padding:20px; }
+    h1 { font-size:15px; color:#F3F1EC; }
+    pre { white-space:pre-wrap; }
+  </style>
+</head>
+<body>
+  <h1>Abrium extraction test</h1>
+  <pre id="out">running…</pre>
+
+  <!--
+    DEV ONLY — never referenced by manifest.json, never built into dist/.
+
+    Runs lib/extract.ts and background/capture-intake.ts against saved
+    claude.ai markup in a real browser DOM. Prefers
+    tests/fixtures/claude-page.real.html (Omar's saved page, git-ignored) and
+    falls back to the SYNTHETIC stand-in, which proves the machinery only —
+    never the selector strings.
+  -->
+  <script type="module">
+    import synthetic from '../tests/fixtures/claude-page.synthetic.html?raw';
+    import * as extract from '../src/lib/extract.ts';
+
+    const NL = String.fromCharCode(10);
+    const lines = [];
+    let failures = 0;
+
+    function check(label, actual, expected) {
+      const ok = JSON.stringify(actual) === JSON.stringify(expected);
+      if (!ok) failures += 1;
+      lines.push(
+        (ok ? '  PASS  ' : 'X FAIL  ') + label +
+        NL + '         got      ' + JSON.stringify(actual) +
+        (ok ? '' : NL + '         expected ' + JSON.stringify(expected)),
+      );
+    }
+    function blank() { lines.push(''); }
+    function heading(text) { blank(); lines.push('--- ' + text + ' ---'); }
+    function render() { document.querySelector('#out').textContent = lines.join(NL); }
+
+    try {
+      // Prefer real saved DOM when it is present.
+      let source = synthetic;
+      let usingReal = false;
+      try {
+        const response = await fetch('/tests/fixtures/claude-page.real.html');
+        if (response.ok) {
+          const text = await response.text();
+          if (text.includes('<')) { source = text; usingReal = true; }
+        }
+      } catch { /* absent — expected */ }
+
+      lines.push(usingReal
+        ? '*** USING REAL SAVED claude.ai DOM (claude-page.real.html) ***'
+        : '*** SYNTHETIC STAND-IN — proves machinery only, NOT selector strings ***');
+
+      const doc = new DOMParser().parseFromString(source, 'text/html');
+      const HREF = 'https://claude.ai/chat/conv_TestId123';
+      const NOW = 1770000000000;
+
+      heading('conversation id from URL');
+      check('valid chat URL', extract.conversationIdFromUrl(HREF), 'conv_TestId123');
+      check('wrong host rejected', extract.conversationIdFromUrl('https://evil.example/chat/x'), null);
+      check('non-chat path', extract.conversationIdFromUrl('https://claude.ai/settings'), null);
+      check('garbage input', extract.conversationIdFromUrl('not a url'), null);
+
+      heading('type detection');
+      check('declared tsx to react', extract.detectType({ language: 'tsx', content: 'x' }), 'react');
+      check('declared svg', extract.detectType({ language: 'svg', content: 'x' }), 'svg');
+      check('sniffed svg', extract.detectType({ language: null, content: '<svg viewBox="0 0 1 1"></svg>' }), 'svg');
+      check('sniffed html', extract.detectType({ language: null, content: '<!doctype html><html></html>' }), 'html');
+      check('sniffed markdown', extract.detectType({ language: null, content: '# Title' + NL + NL + 'body' }), 'markdown');
+      check('react needs jsx AND react import',
+        extract.detectType({ language: null, content: "import React from 'react';" + NL + 'const A = () => <Foo />;' }), 'react');
+      check('declared sql stays code', extract.detectType({ language: 'sql', content: 'SELECT 1;' }), 'code');
+
+      heading('filename derivation');
+      check('react tsx', extract.toFilename('Pricing table with annual toggle', 'react', 'tsx'), 'pricing-table-with-annual-toggle.tsx');
+      check('svg', extract.toFilename('Onboarding flow diagram', 'svg', null), 'onboarding-flow-diagram.svg');
+      check('unsafe characters stripped', extract.toFilename('a/b:c', 'code', 'sql'), 'a-b-c.sql');
+      check('empty title falls back', extract.toFilename('', 'code', null), 'artifact.txt');
+
+      heading('id derivation and revision policy');
+      const base = { conversationId: 'c1', title: 'T', type: 'code', content: 'A' };
+      check('stable id wins', extract.deriveArtifactId({ ...base, stableId: 'abc123' }), 'art_abc123');
+      check('stable id sanitised', extract.deriveArtifactId({ ...base, stableId: 'a b/c!' }), 'art_abc');
+      const hashA = extract.deriveArtifactId({ ...base, stableId: null });
+      const hashAgain = extract.deriveArtifactId({ ...base, stableId: null });
+      const hashRevised = extract.deriveArtifactId({ ...base, stableId: null, content: 'A revised' });
+      check('same content gives same id (idempotent)', hashA === hashAgain, true);
+      check('revised content gives new id (separate entry)', hashA !== hashRevised, true);
+      check('id shape is storage-safe', /^art_[A-Za-z0-9_-]{1,80}$/.test(hashA), true);
+
+      heading('sweep over the saved page');
+      const result = extract.sweep(doc, { href: HREF, now: NOW });
+      lines.push('  containers matched : ' + result.containersSeen);
+      lines.push('  artifacts captured : ' + result.artifacts.length);
+      lines.push('  skipped            : ' + JSON.stringify(result.skipped));
+      blank();
+      for (const a of result.artifacts) {
+        lines.push('   - ' + a.type.padEnd(9) + String(a.language ?? '-').padEnd(7) +
+          String(a.bytes).padStart(5) + 'B  ' + a.filename);
+        lines.push('     id=' + a.id + '  conv=' + a.conversationId + '  "' + a.title.slice(0, 46) + '"');
+      }
+
+      if (!usingReal) {
+        heading('synthetic-fixture expectations');
+        const byTitle = Object.fromEntries(result.artifacts.map((a) => [a.title, a]));
+        check('12 containers matched', result.containersSeen, 12);
+        check('9 captured (12 minus 2 skipped minus 1 duplicate)', result.artifacts.length, 9);
+        check('preview-only gives no-source', result.skipped['no-source'], 1);
+        check('blank source gives empty-content', result.skipped['empty-content'], 1);
+        check('stable id used', byTitle['Pricing table with annual toggle']?.id, 'art_abc123XYZ');
+        check('typed react', byTitle['Pricing table with annual toggle']?.type, 'react');
+        check('language tsx', byTitle['Pricing table with annual toggle']?.language, 'tsx');
+        check('found via role/aria fallback', byTitle['Onboarding flow diagram']?.type, 'svg');
+        check('language from attribute', byTitle['Postgres migration']?.language, 'sql');
+        check('markdown sniffed', byTitle['API integration guide']?.type, 'markdown');
+        check('conversation id captured', byTitle['Postgres migration']?.conversationId, 'conv_TestId123');
+        check('createdAt injected', byTitle['Postgres migration']?.createdAt, NOW);
+        check('captured raw source not rendered output',
+          byTitle['Onboarding flow diagram']?.content.includes('<svg'), true);
+        check('titleless artifact still captured', result.artifacts.some((a) => a.type === 'html'), true);
+        check('duplicate collapsed to one',
+          result.artifacts.filter((a) => a.id === 'art_abc123XYZ').length, 1);
+
+        // The confirmed real-claude.ai structure: no <pre>, code inside
+        // .code-block__code. This is the case that proves the selector
+        // shipped in extract.ts actually reads the shape Omar observed.
+        const real = byTitle['Ailywood landing page'];
+        check('REAL STRUCTURE captured (no <pre> present)', Boolean(real), true);
+        check('REAL STRUCTURE typed react', real?.type, 'react');
+        check('REAL STRUCTURE language from code class', real?.language, 'tsx');
+        check('REAL STRUCTURE source is the code body',
+          real?.content.includes('export default function Landing()'), true);
+        check('REAL STRUCTURE title from scoped heading', real?.title, 'Ailywood landing page');
+
+        const realMd = byTitle['readme-template.md'];
+        check('REAL MARKDOWN captured via Document viewer', Boolean(realMd), true);
+        check('REAL MARKDOWN typed markdown', realMd?.type, 'markdown');
+        check('REAL MARKDOWN filename extracted from dockey', realMd?.filename, 'readme-template.md');
+        check('REAL MARKDOWN title fell back to filename', realMd?.title, 'readme-template.md');
+        check('REAL MARKDOWN source excludes gutters and normalises NBSP', 
+          realMd?.content, '# Project Name' + NL + NL + 'One-line description');
+
+        const htmlIframe = byTitle['simple_page.html'];
+        check('IFRAME TITLE captured', Boolean(htmlIframe), true);
+        check('IFRAME TITLE typed html', htmlIframe?.type, 'html');
+        check('IFRAME TITLE filename extracted from iframe', htmlIframe?.filename, 'simple_page.html');
+        check('IFRAME TITLE title fell back to iframe title', htmlIframe?.title, 'simple_page.html');
+
+        const headerTitle = byTitle['Simple Graphic'];
+        check('HEADER TITLE captured', Boolean(headerTitle), true);
+        check('HEADER TITLE typed svg', headerTitle?.type, 'svg');
+        check('HEADER TITLE title extracted from ancestor sibling h2', headerTitle?.title, 'Simple Graphic');
+      }
+
+      heading('resilience');
+      const bare = extract.sweep(new DOMParser().parseFromString('<p>nothing</p>', 'text/html'), { href: HREF });
+      check('page with no artifacts, no throw', [bare.containersSeen, bare.artifacts.length], [0, 0]);
+      check('detached container reported not thrown',
+        extract.extractArtifact(document.createElement('div'), { href: HREF }),
+        { ok: false, reason: 'container-detached' });
+
+      // end to end: extraction -> worker intake -> storage -> read back.
+      // "Verify the outcome, not the absence of an exception" applied to
+      // capture: a resolved save() is not proof anything landed.
+      heading('end to end into storage');
+
+      const vault = new Map();
+      globalThis.chrome = {
+        storage: {
+          local: {
+            get: async (q) => {
+              if (q === null || q === undefined) return Object.fromEntries(vault);
+              const keys = Array.isArray(q) ? q : [q];
+              return Object.fromEntries(keys.filter((k) => vault.has(k)).map((k) => [k, vault.get(k)]));
+            },
+            set: async (items) => { for (const [k, v] of Object.entries(items)) vault.set(k, v); },
+            remove: async (q) => { for (const k of (Array.isArray(q) ? q : [q])) vault.delete(k); },
+            getBytesInUse: async () => 0,
+          },
+          onChanged: { addListener() {}, removeListener() {} },
+        },
+      };
+
+      const intake = await import('../src/background/capture-intake.ts');
+      const storage = await import('../src/lib/storage.ts');
+
+      const first = await intake.storeCaptured(result.artifacts);
+      check('worker reports every artifact written', first.written, result.artifacts.length);
+      check('nothing rejected', first.rejected, 0);
+
+      const readBack = await storage.readArtifacts();
+      check('storage really holds them', readBack.length, result.artifacts.length);
+      check('one storage key per artifact',
+        [...vault.keys()].every((k) => k.startsWith('abrium.artifact.')), true);
+
+      const target = result.artifacts.find((a) => a.id === 'art_abc123XYZ') ?? result.artifacts[0];
+      const stored = readBack.find((a) => a.id === target.id);
+      check('content survived the round trip', stored?.content, target.content);
+      check('type survived the round trip', stored?.type, target.type);
+
+      const second = await intake.storeCaptured(result.artifacts);
+      check('re-capture writes again', second.written, result.artifacts.length);
+      check('re-capture creates no duplicates',
+        (await storage.readArtifacts()).length, result.artifacts.length);
+
+      await storage.setPinned(target.id, true);
+      await intake.storeCaptured(result.artifacts);
+      check('user pin survives a re-capture',
+        (await storage.readArtifact(target.id))?.pinned, true);
+
+      const beforeJunk = (await storage.readArtifacts()).length;
+      const junk = await intake.storeCaptured([
+        null, 42, {}, { id: 'nope' },
+        { ...target, id: '../../escape' },
+        { ...target, type: 'malware' },
+        { ...target, id: 'art_ok1', content: '' },
+      ]);
+      check('all malformed records rejected', junk.written, 0);
+      check('rejected count reported', junk.rejected, 7);
+      check('vault unchanged by malformed input',
+        (await storage.readArtifacts()).length, beforeJunk);
+
+      blank();
+      lines.push(failures === 0 ? 'ALL CHECKS PASSED' : failures + ' CHECK(S) FAILED');
+      render();
+      globalThis.__extractTest = { failures, usingReal, captured: result.artifacts.length };
+    } catch (error) {
+      blank();
+      lines.push('*** TEST RUN THREW ***');
+      lines.push(String((error && error.stack) || error));
+      render();
+      globalThis.__extractTest = { failures: -1, threw: String(error) };
+    }
+  </script>
+</body>
+</html>

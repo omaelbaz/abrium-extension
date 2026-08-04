@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm --version)",
+      "Bash(node tools/build-states-preview.mjs)",
+      "Bash(grep -nE '>[A-Z][a-z]{3,}[ <]' src/ui/sidepanel/templates.ts)",
+      "Bash(node -e ' *)",
+      "Bash(pnpm install *)",
+      "Bash(pnpm typecheck *)",
+      "Bash(sed -i -E \"s/\\\\.dataset\\\\.\\(id|action|filter|checked|longpress\\)\\\\b/.dataset['\\\\1']/g\" src/ui/sidepanel/sidepanel.ts)",
+      "Bash(sed -i -E \"s/\\\\bcandidate\\\\.\\(id|title|filename|content|bytes|createdAt|pinned|type\\)\\\\b/candidate['\\\\1']/g\" src/lib/storage.ts)",
+      "Bash(pnpm build *)",
+      "Bash(node tools/check-no-network.mjs)",
+      "Bash(pnpm check:no-network)",
+      "Bash(sed -n '/^## Rules/,/^## Data/p' CLAUDE.md)",
+      "Bash(sed -n '/Known issues/,$p' CLAUDE.md)",
+      "Bash(python -)",
+      "Bash(pnpm preview:states)",
+      "Bash(sed -i 's|\"build\": \"tsc --noEmit \\\\&\\\\& vite build\"|\"build\": \"tsc --noEmit \\\\&\\\\& vite build \\\\&\\\\& node tools/verify-dist.mjs\"|; s|\"check:no-network\": \"node tools/check-no-network.mjs\"|\"check:no-network\": \"node tools/check-no-network.mjs\",\\\\n    \"verify:dist\": \"node tools/verify-dist.mjs\",\\\\n    \"serve:dist\": \"node tools/serve-dist.mjs\"|' package.json)",
+      "Bash(node -e \"console.log\\(JSON.stringify\\(JSON.parse\\(require\\('fs'\\).readFileSync\\('package.json','utf8'\\)\\).scripts,null,2\\)\\)\")",
+      "Bash(sed -i 's|^dist/$|dist/\\\\ndist-dev/|' .gitignore)",
+      "Bash(rm -rf dist dist-dev)"
+    ]
+  }
+}

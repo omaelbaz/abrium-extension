@@ -1,0 +1,285 @@
+{
+  "ext_name": {
+    "message": "Abrium — Artifact Vault"
+  },
+  "ext_description": {
+    "message": "Catalog your Claude.ai artifacts locally. No accounts, no tracking, nothing leaves your browser."
+  },
+  "action_title": {
+    "message": "Open Abrium"
+  },
+  "command_open_panel": {
+    "message": "Open the Abrium side panel"
+  },
+  "sidepanel_title": {
+    "message": "Abrium — Artifact Vault"
+  },
+  "gallery_label": {
+    "message": "Saved artifacts"
+  },
+  "loading_label": {
+    "message": "Loading artifacts…"
+  },
+  "search_placeholder": {
+    "message": "Search artifacts…"
+  },
+  "search_label": {
+    "message": "Search artifacts"
+  },
+  "search_clear": {
+    "message": "Clear search"
+  },
+  "filter_group_label": {
+    "message": "Filter by type"
+  },
+  "filter_all": {
+    "message": "All"
+  },
+  "filter_code": {
+    "message": "Code"
+  },
+  "filter_html": {
+    "message": "HTML"
+  },
+  "filter_markdown": {
+    "message": "Markdown"
+  },
+  "filter_svg": {
+    "message": "SVG"
+  },
+  "filter_react": {
+    "message": "React"
+  },
+  "stats_summary": {
+    "message": "$1 · $2"
+  },
+  "size_unavailable": {
+    "message": "—",
+    "description": "Shown instead of a storage figure when getBytesInUse() could not measure it."
+  },
+  "artifact_count_one": {
+    "message": "$1 artifact"
+  },
+  "artifact_count_other": {
+    "message": "$1 artifacts"
+  },
+  "action_select": {
+    "message": "Select"
+  },
+  "action_done": {
+    "message": "Done"
+  },
+  "action_settings": {
+    "message": "Settings and about"
+  },
+  "action_view_vault": {
+    "message": "View full Vault"
+  },
+  "popup_recent_heading": {
+    "message": "Recent"
+  },
+  "action_download_named": {
+    "message": "Download $1"
+  },
+  "action_retry": {
+    "message": "Try again"
+  },
+  "action_reset_filters": {
+    "message": "Clear search and filters"
+  },
+  "action_cancel": {
+    "message": "Cancel"
+  },
+  "action_export": {
+    "message": "Export"
+  },
+  "action_download_zip": {
+    "message": "Download ZIP"
+  },
+  "action_select_all": {
+    "message": "Select all"
+  },
+  "action_clear_selection": {
+    "message": "Clear"
+  },
+  "empty_title": {
+    "message": "No artifacts yet"
+  },
+  "empty_body": {
+    "message": "Build something in Claude and it'll show up here automatically."
+  },
+  "no_results_title": {
+    "message": "No matches"
+  },
+  "no_results_body": {
+    "message": "Try another word, or clear the filters."
+  },
+  "error_title": {
+    "message": "Couldn't read this page's artifacts"
+  },
+  "error_body": {
+    "message": "Try refreshing claude.ai, then load the vault again."
+  },
+  "batch_bar_label": {
+    "message": "Selection actions"
+  },
+  "batch_mode_entered": {
+    "message": "Selection mode on"
+  },
+  "batch_mode_exited": {
+    "message": "Selection mode off"
+  },
+  "selected_count_one": {
+    "message": "$1 selected"
+  },
+  "selected_count_other": {
+    "message": "$1 selected"
+  },
+  "status_download_started": {
+    "message": "Download started"
+  },
+  "status_export_started": {
+    "message": "Export started"
+  },
+  "status_zip_started": {
+    "message": "Building ZIP"
+  },
+  "status_action_failed": {
+    "message": "That didn't work — nothing was changed"
+  },
+  "detail_label": {
+    "message": "Artifact details"
+  },
+  "action_back": {
+    "message": "Back to vault"
+  },
+  "action_pin": {
+    "message": "Pin artifact"
+  },
+  "action_unpin": {
+    "message": "Unpin artifact"
+  },
+  "action_download": {
+    "message": "Download"
+  },
+  "action_delete": {
+    "message": "Delete"
+  },
+  "delete_confirm_title": {
+    "message": "Delete this artifact?"
+  },
+  "delete_confirm_body": {
+    "message": "This cannot be undone."
+  },
+  "action_confirm_delete": {
+    "message": "Delete"
+  },
+  "detail_open_conversation": {
+    "message": "Open in Claude"
+  },
+  "detail_source_label": {
+    "message": "Source"
+  },
+  "detail_preview_label": {
+    "message": "Preview"
+  },
+  "detail_preview_unavailable_title": {
+    "message": "Preview not available"
+  },
+  "detail_preview_unavailable_body": {
+    "message": "Download the file to view it."
+  },
+  "detail_missing_title": {
+    "message": "This artifact no longer exists"
+  },
+  "detail_missing_body": {
+    "message": "It was deleted, or removed to free up storage space."
+  },
+  "detail_error_title": {
+    "message": "Couldn't load this artifact"
+  },
+  "status_pinned": {
+    "message": "Pinned"
+  },
+  "status_unpinned": {
+    "message": "Unpinned"
+  },
+  "status_deleted": {
+    "message": "Artifact deleted"
+  },
+  "settings_label": {
+    "message": "Settings and about"
+  },
+  "settings_title": {
+    "message": "Settings"
+  },
+  "settings_language": {
+    "message": "Language"
+  },
+  "settings_theme": {
+    "message": "Appearance"
+  },
+  "settings_storage": {
+    "message": "Storage"
+  },
+  "settings_privacy": {
+    "message": "Privacy"
+  },
+  "settings_about": {
+    "message": "About"
+  },
+  "settings_error_title": {
+    "message": "Couldn't load your settings"
+  },
+  "theme_system": {
+    "message": "System"
+  },
+  "theme_light": {
+    "message": "Light"
+  },
+  "theme_dark": {
+    "message": "Dark"
+  },
+  "language_system": {
+    "message": "Use browser language"
+  },
+  "action_export_backup": {
+    "message": "Export backup"
+  },
+  "action_view_all": {
+    "message": "View all artifacts"
+  },
+  "privacy_note": {
+    "message": "Abrium reads Claude Artifact content on claude.ai pages you visit and stores it only in your browser's local storage. Nothing is ever sent to any server. No accounts, no tracking, no payments."
+  },
+  "about_version": {
+    "message": "Version $1"
+  },
+  "about_changelog": {
+    "message": "Changelog"
+  },
+  "about_support": {
+    "message": "Support Abrium"
+  },
+  "about_open_source": {
+    "message": "Abrium is open source (MIT)."
+  },
+  "about_repository": {
+    "message": "View on GitHub"
+  },
+  "status_settings_saved": {
+    "message": "Settings saved"
+  },
+  "link_opens_new_tab": {
+    "message": "opens in a new tab"
+  },
+  "preview_hint_title": {
+    "message": "Couldn't read this artifact"
+  },
+  "preview_hint_body": {
+    "message": "Switch to Code view to save this artifact."
+  },
+  "action_dismiss": {
+    "message": "Dismiss"
+  }
+}

@@ -1,0 +1,291 @@
+/* ==========================================================================
+   Abrium — Design tokens
+   Single source of truth for colour, type, space, radius, motion, elevation.
+   Nothing in the codebase may hardcode a hex, px size, or duration.
+   ========================================================================== */
+
+:root {
+  /* ---------------------------------------------------------------------
+     1. PALETTE (raw values — never referenced directly by components,
+        only by the semantic layer below)
+     --------------------------------------------------------------------- */
+
+  /* Light */
+  --l-bg:            #EFECE4;
+  --l-bg-alt:        #F7EAE4;
+  --l-surface:       #FAF9F6;
+  --l-border:        #DDD8CD;
+  --l-border-subtle: #E7E3DA;
+  --l-accent:        #BE5C3E;
+  --l-text:          #262420;
+  --l-text-2:        #4A463F;
+  --l-text-muted:    #8A857A;
+
+  /* Light — derived. Same hue family as the accent, generated only where
+     the base accent cannot carry text at AA (see CONTRAST NOTES below). */
+  --l-accent-strong: #9C4829;  /* accent as text, incl. on --l-accent-wash */
+  --l-accent-solid:  #B0523A;  /* filled button surface under white text  */
+  --l-accent-hover:  #A34A2F;
+  --l-accent-active: #8F3F27;
+
+  /* Readable quiet text. #8A857A is 3.1:1 on beige — fine for glyphs and
+     rules, not for anything a user has to read. This is its text-safe twin. */
+  --l-text-3:        #6F6A60;
+  --l-accent-wash:   #F3E2DB;  /* tinted fill: chips, selected rows       */
+  --l-accent-wash-2: #EAD2C8;  /* tinted fill, pressed                    */
+
+  /* Dark */
+  --d-bg:            #1B1A18;
+  --d-bg-alt:        #201F1C;
+  --d-surface:       #232220;
+  --d-border:        #3A3630;
+  --d-border-subtle: #2E2C28;
+  --d-accent:        #E9CDC1;
+  --d-text:          #F3F1EC;
+  --d-text-2:        #B6B0A3;
+  --d-text-muted:    #7C776D;
+
+  /* Dark — derived */
+  --d-accent-hover:  #F2DACF;
+  --d-accent-active: #D9B9AB;
+  --d-accent-wash:   #33291F;
+  --d-accent-wash-2: #40332A;
+  --d-text-3:        #8E887C;   /* text-safe twin of #7C776D */
+
+  /* Status (used sparingly — errors, empty-state warnings) */
+  --l-danger:      #A33A2A;
+  --l-danger-wash: #F5E1DC;
+  --d-danger:      #E39A88;
+  --d-danger-wash: #3A2620;
+}
+
+/* ==========================================================================
+   2. SEMANTIC LAYER — light is the default, dark overrides.
+      Theme is applied by stamping data-theme on <html>; the media query
+      only supplies the "system" default so an explicit user choice wins.
+   ========================================================================== */
+
+/* Written as attribute selectors rather than :root[…] so a theme can also be
+   scoped to a subtree — needed for side-by-side previews and for the settings
+   theme picker to render its own swatch. Root usage is unchanged. */
+:root,
+[data-theme='light'] {
+  --color-bg:            var(--l-bg);
+  --color-bg-alt:        var(--l-bg-alt);
+  --color-surface:       var(--l-surface);
+  --color-surface-hover: #F3F1EB;
+  --color-border:        var(--l-border);
+  --color-border-subtle: var(--l-border-subtle);
+
+  --color-accent:        var(--l-accent);         /* borders, icons, rules */
+  --color-accent-text:   var(--l-accent-strong);  /* accent-coloured text  */
+  --color-accent-solid:  var(--l-accent-solid);   /* filled surfaces       */
+  --color-accent-hover:  var(--l-accent-hover);
+  --color-accent-active: var(--l-accent-active);
+  --color-accent-wash:   var(--l-accent-wash);
+  --color-accent-wash-2: var(--l-accent-wash-2);
+  --color-on-accent:     #FFFFFF;                 /* text on accent-solid  */
+
+  --color-text:          var(--l-text);
+  --color-text-2:        var(--l-text-2);
+  --color-text-3:        var(--l-text-3);      /* quiet but readable text  */
+  --color-text-muted:    var(--l-text-muted);  /* glyphs & rules ONLY      */
+
+  --color-danger:        var(--l-danger);
+  --color-danger-wash:   var(--l-danger-wash);
+
+  --shadow-card:  0 1px 2px rgba(38, 36, 32, 0.05);
+  --shadow-lift:  0 2px 6px rgba(38, 36, 32, 0.08);
+  --shadow-pop:   0 6px 20px rgba(38, 36, 32, 0.12);
+
+  color-scheme: light;
+}
+
+[data-theme='dark'] {
+  --color-bg:            var(--d-bg);
+  --color-bg-alt:        var(--d-bg-alt);
+  --color-surface:       var(--d-surface);
+  --color-surface-hover: #2A2825;
+  --color-border:        var(--d-border);
+  --color-border-subtle: var(--d-border-subtle);
+
+  --color-accent:        var(--d-accent);
+  --color-accent-text:   var(--d-accent);
+  --color-accent-solid:  var(--d-accent);
+  --color-accent-hover:  var(--d-accent-hover);
+  --color-accent-active: var(--d-accent-active);
+  --color-accent-wash:   var(--d-accent-wash);
+  --color-accent-wash-2: var(--d-accent-wash-2);
+  --color-on-accent:     #241C17;   /* dark ink on the light terracotta   */
+
+  --color-text:          var(--d-text);
+  --color-text-2:        var(--d-text-2);
+  --color-text-3:        var(--d-text-3);
+  --color-text-muted:    var(--d-text-muted);
+
+  --color-danger:        var(--d-danger);
+  --color-danger-wash:   var(--d-danger-wash);
+
+  /* On dark, elevation reads through a lighter surface, not a heavier
+     shadow — keep shadows barely there. */
+  --shadow-card:  0 1px 2px rgba(0, 0, 0, 0.28);
+  --shadow-lift:  0 2px 6px rgba(0, 0, 0, 0.36);
+  --shadow-pop:   0 6px 20px rgba(0, 0, 0, 0.48);
+
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --color-bg:            var(--d-bg);
+    --color-bg-alt:        var(--d-bg-alt);
+    --color-surface:       var(--d-surface);
+    --color-surface-hover: #2A2825;
+    --color-border:        var(--d-border);
+    --color-border-subtle: var(--d-border-subtle);
+    --color-accent:        var(--d-accent);
+    --color-accent-text:   var(--d-accent);
+    --color-accent-solid:  var(--d-accent);
+    --color-accent-hover:  var(--d-accent-hover);
+    --color-accent-active: var(--d-accent-active);
+    --color-accent-wash:   var(--d-accent-wash);
+    --color-accent-wash-2: var(--d-accent-wash-2);
+    --color-on-accent:     #241C17;
+    --color-text:          var(--d-text);
+    --color-text-2:        var(--d-text-2);
+    --color-text-3:        var(--d-text-3);
+    --color-text-muted:    var(--d-text-muted);
+    --color-danger:        var(--d-danger);
+    --color-danger-wash:   var(--d-danger-wash);
+    --shadow-card:  0 1px 2px rgba(0, 0, 0, 0.28);
+    --shadow-lift:  0 2px 6px rgba(0, 0, 0, 0.36);
+    --shadow-pop:   0 6px 20px rgba(0, 0, 0, 0.48);
+    color-scheme: dark;
+  }
+}
+
+/* ==========================================================================
+   3. TYPOGRAPHY
+   ========================================================================== */
+
+:root {
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica,
+               Arial, sans-serif;
+  --font-mono: ui-monospace, Menlo, monospace;
+
+  /* Type scale — compact. Four roles only; resist adding a fifth. */
+  --text-heading-size:   17px;
+  --text-heading-lh:     1.3;
+  --text-heading-weight: 600;
+  --text-heading-ls:     -0.01em;
+
+  --text-subhead-size:   15px;   /* card titles, section headers */
+  --text-subhead-lh:     1.35;
+  --text-subhead-weight: 600;
+
+  --text-body-size:      14px;
+  --text-body-lh:        1.5;
+  --text-body-weight:    400;
+
+  --text-caption-size:   12px;   /* timestamps, counts, meta */
+  --text-caption-lh:     1.4;
+  --text-caption-weight: 500;
+
+  --text-overline-size:  11px;   /* group labels, all-caps */
+  --text-overline-ls:    0.06em;
+
+  --text-code-size:      12.5px;
+  --text-code-lh:        1.55;
+}
+
+/* ==========================================================================
+   4. SPACE, SIZE, RADIUS, MOTION
+   ========================================================================== */
+
+:root {
+  /* 4px base. Narrow UI — nothing above space-6 belongs inside a panel. */
+  --space-0: 0;
+  --space-1: 2px;
+  --space-2: 4px;
+  --space-3: 6px;
+  --space-4: 8px;
+  --space-5: 12px;
+  --space-6: 16px;
+  --space-7: 20px;
+  --space-8: 24px;
+
+  /* Control heights — thumb/pointer targets in a 320–400px column */
+  --control-h-sm: 26px;   /* chips, badges          */
+  --control-h:    32px;   /* buttons, inputs        */
+  --control-h-lg: 36px;   /* primary CTA, search    */
+  --icon-btn:     30px;   /* square icon button     */
+  --icon-btn-sm:  24px;   /* inline card affordance */
+
+  --radius-sm:   6px;
+  --radius-md:   8px;
+  --radius-pill: 999px;
+
+  --border-w: 1px;
+
+  --dur-fast: 150ms;
+  --dur:      200ms;
+  --ease:     cubic-bezier(0.2, 0, 0.2, 1);
+
+  /* Focus ring — one definition, used by every interactive element */
+  --focus-ring-w:      2px;
+  --focus-ring-offset: 2px;
+  --focus-ring-color:  var(--color-accent-text);
+
+  /* Panel widths this system is designed against */
+  --w-popup-min:     320px;
+  --w-popup-max:     360px;
+  --w-sidepanel-min: 360px;
+  --w-sidepanel-max: 400px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 1ms;
+    --dur:      1ms;
+  }
+}
+
+/* ==========================================================================
+   CONTRAST NOTES — WCAG 2.1 AA. Every ratio below was measured on the
+   rendered page (design-system.html), not calculated by hand.
+
+   All nine supplied colours are used verbatim. Three derived values exist
+   only because two of the supplied ones cannot legally carry small text.
+
+   --- accent ---------------------------------------------------------------
+   #BE5C3E stays --color-accent and is used for borders, icon strokes, rules
+   and active indicators, where the 3:1 non-text threshold applies:
+     #BE5C3E border on #FAF9F6 ..... 3.86:1  ✓ AA non-text
+   As small text or as a fill under white text it fails, hence:
+     white on #BE5C3E .............. 4.35:1  ✗  → --color-accent-solid #B0523A
+     white on #B0523A .............. 5.07:1  ✓
+     #BE5C3E on #EFECE4 ............ 3.69:1  ✗  → --color-accent-text #9C4829
+     #9C4829 on #EFECE4 ............ 5.31:1  ✓
+     #9C4829 on #F3E2DB (wash) ..... 4.99:1  ✓  ← active chip / ghost:active
+
+   --- muted ----------------------------------------------------------------
+   #8A857A and #7C776D are kept verbatim as --color-text-muted but are
+   GLYPH-AND-RULE tokens, not text tokens:
+     #8A857A on #EFECE4 ............ 3.11:1  ✗ as text, ✓ as a 3:1 glyph
+     #7C776D on #1B1A18 ............ 3.91:1  ✗ as text, ✓ as a 3:1 glyph
+   Anything a user reads — placeholders, counts, overlines, timestamps — uses
+   --color-text-3 instead:
+     #6F6A60 on #EFECE4 ............ 4.55:1  ✓   (5.11:1 on #FAF9F6)
+     #8E887C on #1B1A18 ............ 4.94:1  ✓   (4.52:1 on #232220)
+
+   --- dark accent ----------------------------------------------------------
+   #E9CDC1 needs no derivation; it is high-contrast in both directions:
+     #E9CDC1 on #1B1A18 ........... 11.6:1  ✓ AAA
+     #241C17 on #E9CDC1 ........... 10.1:1  ✓ AAA
+
+   --- body -----------------------------------------------------------------
+     #262420 on #FAF9F6 ........... 14.9:1  ✓ AAA
+     #4A463F on #FAF9F6 ............ 9.05:1  ✓ AAA
+     #F3F1EC on #232220 ........... 14.1:1  ✓ AAA
+     #B6B0A3 on #232220 ............ 7.40:1  ✓ AAA
+   ========================================================================== */

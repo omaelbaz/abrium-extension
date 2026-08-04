@@ -1,0 +1,10 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const changelogSchema = { "@context": "https://schema.org", "@type": "ItemList", "itemListElement": [ { "@type": "ListItem", "position": 1, "name": "v0.1.0 - Initial release" } ] };
+
+---
+<Layout title="Changelog" description="Changelog">
+  <script type="application/ld+json" set:html={JSON.stringify(changelogSchema)} slot="head" />
+  <h1>Changelog</h1><ul><li><strong>v0.1.0</strong> &mdash; Initial release.</li></ul>
+</Layout>

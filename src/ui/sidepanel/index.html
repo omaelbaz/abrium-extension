@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{sidepanel_title}}</title>
+  <link rel="stylesheet" href="../styles/tokens.css" />
+  <link rel="stylesheet" href="../styles/base.css" />
+  <link rel="stylesheet" href="../styles/components.css" />
+  <link rel="stylesheet" href="./sidepanel.css" />
+</head>
+<body>
+  <!--
+    The shell is the only static markup. Header, list and action bar are
+    rendered by sidepanel.ts from templates.ts so there is exactly one
+    definition of each; `{{key}}` placeholders in this file are resolved by
+    i18n.hydrate() on first paint.
+  -->
+  <div class="sp-shell" id="sp-shell">
+    <!-- Two views, one panel. The gallery keeps its scroll and search state
+         while the detail view is up, so Back returns to exactly where you
+         were rather than re-running the load. -->
+    <div class="sp-view" id="sp-gallery">
+      <header class="abr-toolbar abr-toolbar--stack sp-header" id="sp-header"></header>
+
+      <main class="sp-body">
+        <ul class="abr-stack sp-list" id="sp-results" role="list" aria-busy="true"></ul>
+      </main>
+
+      <div id="sp-actionbar"></div>
+    </div>
+
+    <div class="sp-view" id="sp-detail-root" hidden></div>
+
+    <div class="sp-view" id="sp-settings-root" hidden></div>
+  </div>
+
+  <!-- Politeness channel for result counts and batch changes. -->
+  <p class="abr-visually-hidden" id="sp-live" role="status" aria-live="polite"></p>
+
+  <script type="module" src="./sidepanel.ts"></script>
+</body>
+</html>

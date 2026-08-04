@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{ext_name}}</title>
+  <link rel="stylesheet" href="../styles/tokens.css" />
+  <link rel="stylesheet" href="../styles/base.css" />
+  <link rel="stylesheet" href="../styles/components.css" />
+  <link rel="stylesheet" href="./popup.css" />
+</head>
+<body class="pop-page">
+  <!--
+    The shell is the only static markup. Header, list and footer are rendered
+    by popup.ts from templates.ts so there is exactly one definition of each;
+    `{{key}}` placeholders in this file are resolved by i18n.hydrate() on first
+    paint.
+  -->
+  <div class="pop-shell" id="pop-shell">
+    <header class="abr-toolbar pop-header" id="pop-header"></header>
+
+    <main class="pop-body">
+      <div id="pop-heading"></div>
+      <ul class="abr-stack pop-list" id="pop-results" role="list" aria-busy="true"></ul>
+    </main>
+
+    <div id="pop-footer"></div>
+  </div>
+
+  <!-- Politeness channel for result counts. -->
+  <p class="abr-visually-hidden" id="pop-live" role="status" aria-live="polite"></p>
+
+  <script type="module" src="./popup.ts"></script>
+</body>
+</html>

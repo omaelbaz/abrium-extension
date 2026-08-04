@@ -1,0 +1,786 @@
+/* ==========================================================================
+   Abrium — component tokens
+   Every component below is authored with logical properties only
+   (inline/block, start/end) so an RTL panel needs no separate stylesheet.
+   Depends on tokens.css + base.css.
+   ========================================================================== */
+
+/* ==========================================================================
+   BUTTON
+   Three intents (primary / secondary / ghost) × four states
+   (default / hover / active / disabled), plus :focus-visible from base.css.
+   ========================================================================== */
+
+.abr-btn {
+  /* per-component tokens — variants only re-point these */
+  --btn-bg:        transparent;
+  --btn-fg:        var(--color-text);
+  --btn-border:    transparent;
+  --btn-shadow:    none;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+
+  block-size: var(--control-h);
+  padding-inline: var(--space-5);
+  padding-block: 0;
+
+  font-family: inherit;
+  font-size: var(--text-body-size);
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+
+  background: var(--btn-bg);
+  color: var(--btn-fg);
+  border: var(--border-w) solid var(--btn-border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--btn-shadow);
+
+  cursor: pointer;
+  user-select: none;
+  transition:
+    background-color var(--dur-fast) var(--ease),
+    border-color     var(--dur-fast) var(--ease),
+    color            var(--dur-fast) var(--ease),
+    box-shadow       var(--dur-fast) var(--ease);
+}
+
+.abr-btn > svg {
+  inline-size: 15px;
+  block-size: 15px;
+  flex: none;
+}
+
+/* Full-width CTA — the default shape in a 320px popup */
+.abr-btn--block {
+  display: flex;
+  inline-size: 100%;
+  block-size: var(--control-h-lg);
+}
+
+.abr-btn--sm {
+  block-size: var(--control-h-sm);
+  padding-inline: var(--space-4);
+  font-size: var(--text-caption-size);
+}
+
+/* --- primary ------------------------------------------------------------ */
+.abr-btn--primary {
+  --btn-bg:     var(--color-accent-solid);
+  --btn-fg:     var(--color-on-accent);
+  --btn-border: var(--color-accent-solid);
+  --btn-shadow: var(--shadow-card);
+}
+.abr-btn--primary:hover:not(:disabled) {
+  --btn-bg:     var(--color-accent-hover);
+  --btn-border: var(--color-accent-hover);
+}
+.abr-btn--primary:active:not(:disabled) {
+  --btn-bg:     var(--color-accent-active);
+  --btn-border: var(--color-accent-active);
+  --btn-shadow: none;
+}
+
+/* --- secondary ---------------------------------------------------------- */
+.abr-btn--secondary {
+  --btn-bg:     var(--color-surface);
+  --btn-fg:     var(--color-text);
+  --btn-border: var(--color-border);
+}
+.abr-btn--secondary:hover:not(:disabled) {
+  --btn-bg:     var(--color-surface-hover);
+  --btn-border: var(--color-accent);
+  --btn-fg:     var(--color-accent-text);
+}
+.abr-btn--secondary:active:not(:disabled) {
+  --btn-bg:     var(--color-accent-wash);
+  --btn-border: var(--color-accent);
+}
+
+/* --- ghost -------------------------------------------------------------- */
+.abr-btn--ghost {
+  --btn-bg:     transparent;
+  --btn-fg:     var(--color-text-2);
+  --btn-border: transparent;
+}
+.abr-btn--ghost:hover:not(:disabled) {
+  --btn-bg: var(--color-surface-hover);
+  --btn-fg: var(--color-text);
+}
+.abr-btn--ghost:active:not(:disabled) {
+  --btn-bg: var(--color-accent-wash);
+  --btn-fg: var(--color-accent-text);
+}
+
+/* --- danger (destructive confirm: "Delete artifact") -------------------- */
+.abr-btn--danger {
+  --btn-bg:     transparent;
+  --btn-fg:     var(--color-danger);
+  --btn-border: var(--color-border);
+}
+.abr-btn--danger:hover:not(:disabled) {
+  --btn-bg:     var(--color-danger-wash);
+  --btn-border: var(--color-danger);
+}
+.abr-btn--danger:active:not(:disabled) {
+  --btn-bg: var(--color-danger-wash);
+}
+
+/* --- disabled (shared across all intents) ------------------------------- */
+.abr-btn:disabled,
+.abr-btn[aria-disabled='true'] {
+  opacity: 0.45;
+  cursor: not-allowed;
+  box-shadow: none;
+  /* No colour change: dimming a stated colour keeps hue meaning intact and
+     survives both themes without a second disabled palette. */
+}
+
+/* Async state — keeps its own width so the row doesn't reflow mid-download */
+.abr-btn[data-loading='true'] {
+  pointer-events: none;
+  color: transparent;
+  position: relative;
+}
+.abr-btn[data-loading='true']::after {
+  content: '';
+  position: absolute;
+  inline-size: 14px;
+  block-size: 14px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  border-block-start-color: transparent;
+  color: var(--btn-fg);
+  animation: abr-spin 700ms linear infinite;
+}
+@keyframes abr-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ==========================================================================
+   ICON BUTTON
+   Icon-only ⇒ always needs aria-label (enforced in review).
+   ========================================================================== */
+
+.abr-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+
+  inline-size: var(--icon-btn);
+  block-size: var(--icon-btn);
+  padding: 0;
+
+  background: transparent;
+  color: var(--color-text-2);
+  border: var(--border-w) solid transparent;
+  border-radius: var(--radius-sm);
+
+  cursor: pointer;
+  transition:
+    background-color var(--dur-fast) var(--ease),
+    color            var(--dur-fast) var(--ease),
+    border-color     var(--dur-fast) var(--ease);
+}
+
+.abr-icon-btn > svg {
+  inline-size: 16px;
+  block-size: 16px;
+}
+
+.abr-icon-btn:hover:not(:disabled) {
+  background: var(--color-surface-hover);
+  color: var(--color-text);
+}
+
+.abr-icon-btn:active:not(:disabled) {
+  background: var(--color-accent-wash);
+  color: var(--color-accent-text);
+}
+
+/* Toggled on — pin, favourite, active view mode */
+.abr-icon-btn[aria-pressed='true'] {
+  background: var(--color-accent-wash);
+  color: var(--color-accent-text);
+  border-color: var(--color-accent);
+}
+
+.abr-icon-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.abr-icon-btn--sm {
+  inline-size: var(--icon-btn-sm);
+  block-size: var(--icon-btn-sm);
+}
+.abr-icon-btn--sm > svg {
+  inline-size: 14px;
+  block-size: 14px;
+}
+
+/* On a card, actions stay hidden until hover/focus-within — but never hidden
+   from keyboard users, and always shown on coarse pointers. */
+.abr-card__actions {
+  display: flex;
+  gap: var(--space-1);
+  opacity: 0;
+  transition: opacity var(--dur-fast) var(--ease);
+}
+.abr-card:hover .abr-card__actions,
+.abr-card:focus-within .abr-card__actions {
+  opacity: 1;
+}
+@media (hover: none) {
+  .abr-card__actions { opacity: 1; }
+}
+
+/* ==========================================================================
+   INPUT / SEARCH FIELD
+   ========================================================================== */
+
+.abr-field {
+  position: relative;
+  display: flex;
+  align-items: center;
+  inline-size: 100%;
+}
+
+.abr-input {
+  inline-size: 100%;
+  block-size: var(--control-h-lg);
+
+  padding-inline: var(--space-5);
+  padding-block: 0;
+
+  font-family: inherit;
+  font-size: var(--text-body-size);
+  color: var(--color-text);
+
+  background: var(--color-surface);
+  border: var(--border-w) solid var(--color-border);
+  border-radius: var(--radius-sm);
+
+  transition:
+    border-color var(--dur-fast) var(--ease),
+    background-color var(--dur-fast) var(--ease),
+    box-shadow var(--dur-fast) var(--ease);
+}
+
+.abr-input::placeholder {
+  color: var(--color-text-3);
+}
+
+.abr-input:hover:not(:disabled) {
+  border-color: var(--color-text-muted);
+}
+
+/* Focus on an input reads as a border change + soft ring, not the global
+   outline — an offset outline on a full-width field looks broken at 320px. */
+.abr-input:focus,
+.abr-input:focus-visible {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px var(--color-accent-wash);
+}
+
+.abr-input:disabled {
+  background: var(--color-bg-alt);
+  color: var(--color-text-3);
+  cursor: not-allowed;
+}
+
+.abr-input[aria-invalid='true'] {
+  border-color: var(--color-danger);
+}
+.abr-input[aria-invalid='true']:focus {
+  box-shadow: 0 0 0 3px var(--color-danger-wash);
+}
+
+/* --- select ------------------------------------------------------------- */
+/* The design system had no <select>; settings needs one for the language
+   picker, where six options make a native listbox better than a chip row.
+   Shares the field metrics so it lines up with .abr-input. */
+.abr-select {
+  inline-size: 100%;
+  block-size: var(--control-h-lg);
+
+  padding-inline: var(--space-5);
+  padding-block: 0;
+
+  font-family: inherit;
+  font-size: var(--text-body-size);
+  color: var(--color-text);
+
+  background: var(--color-surface);
+  border: var(--border-w) solid var(--color-border);
+  border-radius: var(--radius-sm);
+
+  cursor: pointer;
+  transition:
+    border-color var(--dur-fast) var(--ease),
+    box-shadow var(--dur-fast) var(--ease);
+}
+
+.abr-select:hover:not(:disabled) {
+  border-color: var(--color-text-3);
+}
+
+.abr-select:focus,
+.abr-select:focus-visible {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px var(--color-accent-wash);
+}
+
+.abr-select:disabled {
+  background: var(--color-bg-alt);
+  color: var(--color-text-3);
+  cursor: not-allowed;
+}
+
+/* --- search variant: leading icon + trailing clear ---------------------- */
+.abr-field--search .abr-input {
+  padding-inline-start: calc(var(--space-6) + var(--space-7));
+  padding-inline-end: calc(var(--space-6) + var(--space-6));
+}
+
+.abr-field__icon {
+  position: absolute;
+  inset-inline-start: var(--space-5);
+  inline-size: 16px;
+  block-size: 16px;
+  color: var(--color-text-3);
+  pointer-events: none;
+}
+
+.abr-field__clear {
+  position: absolute;
+  inset-inline-end: var(--space-3);
+}
+
+.abr-field__hint {
+  margin-block-start: var(--space-3);
+  font-size: var(--text-caption-size);
+  color: var(--color-text-2);
+}
+.abr-field__hint--error {
+  color: var(--color-danger);
+}
+
+/* ==========================================================================
+   FILTER CHIP
+   Horizontally scrolling row — All / Code / HTML / MD / SVG / React does not
+   fit on one line at 360px, so the row scrolls rather than wraps.
+   ========================================================================== */
+
+.abr-chip-row {
+  display: flex;
+  gap: var(--space-3);
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-block: var(--space-2);
+  padding-inline: var(--space-5);
+  margin-inline: calc(var(--space-5) * -1);
+  scroll-padding-inline: var(--space-5);
+}
+.abr-chip-row::-webkit-scrollbar { display: none; }
+
+.abr-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex: none;
+
+  block-size: var(--control-h-sm);
+  padding-inline: var(--space-5);
+
+  font-family: inherit;
+  font-size: var(--text-caption-size);
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+
+  background: var(--color-surface);
+  color: var(--color-text-2);
+  border: var(--border-w) solid var(--color-border);
+  border-radius: var(--radius-pill);
+
+  cursor: pointer;
+  transition:
+    background-color var(--dur-fast) var(--ease),
+    border-color     var(--dur-fast) var(--ease),
+    color            var(--dur-fast) var(--ease);
+}
+
+.abr-chip:hover:not(:disabled) {
+  border-color: var(--color-accent);
+  color: var(--color-text);
+}
+
+/* Active/selected — announced with aria-pressed, not colour alone. The count
+   suffix and the filled shape carry the state redundantly. */
+.abr-chip[aria-pressed='true'] {
+  background: var(--color-accent-wash);
+  border-color: var(--color-accent);
+  color: var(--color-accent-text);
+}
+.abr-chip[aria-pressed='true']:hover {
+  background: var(--color-accent-wash-2);
+}
+
+.abr-chip:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.abr-chip__count {
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-3);
+  unicode-bidi: isolate;
+}
+.abr-chip[aria-pressed='true'] .abr-chip__count {
+  color: var(--color-accent-text);
+  opacity: 0.75;
+}
+
+/* ==========================================================================
+   BADGE / COUNT INDICATOR
+   ========================================================================== */
+
+.abr-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-inline-size: 18px;
+  block-size: 18px;
+  padding-inline: var(--space-3);
+
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  unicode-bidi: isolate;
+
+  background: var(--color-accent-solid);
+  color: var(--color-on-accent);
+  border-radius: var(--radius-pill);
+}
+
+/* Quiet count — "12 artifacts" next to a section header */
+.abr-badge--neutral {
+  background: var(--color-bg-alt);
+  color: var(--color-text-2);
+  border: var(--border-w) solid var(--color-border-subtle);
+}
+
+/* Type tag on a card — CODE / SVG / MD / REACT / HTML */
+.abr-badge--type {
+  block-size: 18px;
+  padding-inline: var(--space-4);
+  font-size: var(--text-overline-size);
+  letter-spacing: var(--text-overline-ls);
+  text-transform: uppercase;
+  background: var(--color-bg-alt);
+  color: var(--color-text-2);
+  border: var(--border-w) solid var(--color-border-subtle);
+  border-radius: var(--radius-sm);
+}
+
+/* Overlay count on the toolbar-icon mock / tab header */
+.abr-badge--dot {
+  min-inline-size: 8px;
+  inline-size: 8px;
+  block-size: 8px;
+  padding: 0;
+  background: var(--color-accent-solid);
+}
+
+/* ==========================================================================
+   CARD — the artifact list item
+   ========================================================================== */
+
+.abr-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+
+  padding-block: var(--space-5);
+  padding-inline: var(--space-5);
+
+  background: var(--color-surface);
+  border: var(--border-w) solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+
+  text-align: start;
+  cursor: pointer;
+  transition:
+    border-color var(--dur) var(--ease),
+    background-color var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease);
+}
+
+.abr-card:hover {
+  border-color: var(--color-border);
+  box-shadow: var(--shadow-lift);
+}
+
+.abr-card:active {
+  box-shadow: none;
+}
+
+/* Batch-selection mode */
+.abr-card[aria-selected='true'] {
+  border-color: var(--color-accent);
+  background: var(--color-accent-wash);
+}
+
+.abr-card__head {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-4);
+}
+
+.abr-card__title {
+  flex: 1 1 auto;
+  min-inline-size: 0;   /* required for truncation inside flex */
+}
+
+.abr-card__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  color: var(--color-text-2);
+}
+
+/* Separator between meta items — a middle dot that needs no mirroring */
+.abr-card__meta > * + *::before {
+  content: '·';
+  margin-inline-end: var(--space-4);
+  color: var(--color-text-3);
+}
+
+.abr-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+/* --- card, non-interactive container variant (settings groups) ---------- */
+.abr-card--static {
+  cursor: default;
+  box-shadow: none;
+}
+.abr-card--static:hover {
+  border-color: var(--color-border-subtle);
+  box-shadow: none;
+}
+
+/* Title + the two meta rows need tighter rhythm than the card's own gap. */
+.abr-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+/* --- list rhythm -------------------------------------------------------- */
+/* Doubles as the <ul> reset: both the gallery and the popup render cards into
+   a list, so the rows need no class of their own. */
+.abr-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.abr-stack > li {
+  display: block;
+  min-inline-size: 0;
+}
+
+/* ==========================================================================
+   SKELETON — loading state for cards. One shimmer, reduced-motion aware.
+   ========================================================================== */
+
+.abr-skeleton {
+  background: var(--color-border-subtle);
+  border-radius: var(--radius-sm);
+  block-size: 10px;
+  position: relative;
+  overflow: hidden;
+}
+.abr-skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--color-surface-hover),
+    transparent
+  );
+  transform: translateX(-100%);
+  animation: abr-shimmer 1.4s ease-in-out infinite;
+}
+[dir='rtl'] .abr-skeleton::after {
+  animation-direction: reverse;
+}
+@keyframes abr-shimmer {
+  to { transform: translateX(100%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .abr-skeleton::after { animation: none; }
+}
+
+/* ==========================================================================
+   DIVIDER / TOOLBAR — shared shells the screens in Prompt 1 will sit inside
+   ========================================================================== */
+
+.abr-divider {
+  block-size: var(--border-w);
+  inline-size: 100%;
+  background: var(--color-border-subtle);
+  border: none;
+  margin: 0;
+}
+
+.abr-toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding-block: var(--space-5);
+  padding-inline: var(--space-5);
+  background: var(--color-bg);
+  border-block-end: var(--border-w) solid var(--color-border-subtle);
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 1;
+}
+
+.abr-toolbar__spacer {
+  flex: 1 1 auto;
+}
+
+/* Multi-row toolbar. The gallery header stacks search, filter chips and the
+   summary line; the popup keeps the single-row default. */
+.abr-toolbar--stack {
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-5);
+}
+
+/* ==========================================================================
+   ACTION BAR — sticky bottom counterpart of .abr-toolbar, for transient
+   modes (batch selection today, multi-delete confirm later).
+   ========================================================================== */
+
+.abr-actionbar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+
+  padding-block: var(--space-5);
+  padding-inline: var(--space-5);
+
+  background: var(--color-bg);
+  border-block-start: var(--border-w) solid var(--color-border-subtle);
+  box-shadow: var(--shadow-pop);
+
+  position: sticky;
+  inset-block-end: 0;
+  z-index: 1;
+}
+
+.abr-actionbar__row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+/* ==========================================================================
+   NOTICE — the text-only block behind empty / no-results / error states.
+   Deliberately illustration-free: a 380px panel has no room for artwork and
+   the tool should read as calm utility, not onboarding.
+   ========================================================================== */
+
+.abr-notice {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+
+  padding-block: var(--space-8);
+  padding-inline: var(--space-6);
+
+  text-align: center;
+  text-wrap: pretty;
+}
+
+.abr-notice .abr-body {
+  max-inline-size: 30ch;   /* keeps the sentence off the panel edges */
+}
+
+.abr-notice .abr-btn {
+  margin-block-start: var(--space-2);
+}
+
+.abr-notice__icon {
+  display: inline-flex;
+  color: var(--color-danger);
+}
+.abr-notice__icon > svg {
+  inline-size: 20px;
+  block-size: 20px;
+}
+
+/* ==========================================================================
+   CARD ACTIVATION TARGET
+   The title button carries an ::after that covers the whole card, so the
+   entire surface is clickable while exactly one control receives focus.
+   Action buttons sit above the overlay via .abr-card__actions.
+   ========================================================================== */
+
+.abr-card {
+  position: relative;
+}
+
+.abr-card__open {
+  all: unset;
+  cursor: pointer;
+  display: block;
+  inline-size: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.abr-card__open::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+
+.abr-card__actions {
+  position: relative;
+  z-index: 1;
+}
+
+/* Focus belongs to the card, not to the invisible overlay. */
+.abr-card__open:focus-visible {
+  outline: none;
+}
+.abr-card:has(.abr-card__open:focus-visible),
+.abr-card[role='option']:focus-visible {
+  outline: var(--focus-ring-w) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}

@@ -1,0 +1,36 @@
+{
+  "name": "abrium",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Catalog your Claude.ai artifacts locally. No accounts, no tracking, no network.",
+  "license": "MIT",
+  "type": "module",
+  "packageManager": "pnpm@10.30.3",
+  "engines": {
+    "node": ">=22.6"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build && node tools/verify-dist.mjs",
+    "preview:states": "node tools/build-states-preview.mjs",
+    "typecheck": "tsc --noEmit",
+    "check:no-network": "node tools/check-no-network.mjs",
+    "verify:dist": "node tools/verify-dist.mjs",
+    "serve:dist": "node tools/serve-dist.mjs",
+    "test:extract": "echo \"open http://localhost:5173/tools/extract-test.html with pnpm dev running\""
+  },
+  "dependencies": {
+    "jszip": "^3.10.1"
+  },
+  "devDependencies": {
+    "@crxjs/vite-plugin": "^2.2.0",
+    "@types/chrome": "^0.1.34",
+    "typescript": "^5.9.3",
+    "vite": "^6.3.6"
+  }
+}

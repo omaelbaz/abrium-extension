@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<style>
+  body { margin:0; background:#EFECE4; }
+  a { color:#BE5C3E; text-decoration:none; }
+  a:hover { color:#9C452B; text-decoration:underline; }
+  ::-webkit-scrollbar { width:6px; height:6px; }
+  ::-webkit-scrollbar-thumb { background:#00000022; border-radius:3px; }
+</style>
+</helmet>
+
+<div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif; color:#262420; padding:56px 64px 96px; display:flex; flex-direction:column; gap:64px; -webkit-font-smoothing:antialiased">
+
+  <header style="display:flex; flex-direction:column; gap:10px; max-width:720px">
+    <div style="font:500 12px/1 ui-monospace,SFMono-Regular,Menlo,monospace; letter-spacing:0.14em; text-transform:uppercase; color:#8A857A">Chrome extension · design language</div>
+    <h1 style="margin:0; font:600 34px/1.15 inherit; letter-spacing:-0.02em">Artifact Vault</h1>
+    <p style="margin:0; font:400 15px/1.6 inherit; color:#5F5B53; text-wrap:pretty">A local-first catalog for Claude Artifacts. The system is built to sit quietly beside claude.ai — warm neutral surfaces, one restrained accent, line icons, and layouts that hold up at 340–400px.</p>
+  </header>
+
+  <!-- ============ DESIGN SYSTEM ============ -->
+  <section style="display:flex; flex-direction:column; gap:28px">
+    <div style="display:flex; align-items:baseline; gap:12px; border-bottom:1px solid #DDD8CD; padding-bottom:10px">
+      <h2 style="margin:0; font:600 18px/1 inherit; letter-spacing:-0.01em">Foundations</h2>
+      <span style="font:400 13px/1 inherit; color:#8A857A">tokens · type · spacing · icons</span>
+    </div>
+
+    <div style="display:flex; flex-wrap:wrap; gap:24px">
+
+      <!-- palettes -->
+      <div style="flex:1 1 460px; background:#FFFFFF; border:1px solid #E7E3DA; border-radius:10px; padding:22px; display:flex; flex-direction:column; gap:18px">
+        <div style="font:600 13px/1 inherit; letter-spacing:0.02em">Accent options</div>
+        <sc-for list="{{ palettes }}" as="p" hint-placeholder-count="3">
+          <div style="display:flex; flex-direction:column; gap:8px">
+            <div style="display:flex; align-items:center; gap:8px">
+              <span style="font:600 12.5px/1 inherit">{{ p.name }}</span>
+              <span style="font:400 12px/1 inherit; color:#8A857A">{{ p.note }}</span>
+              <sc-if value="{{ p.chosen }}" hint-placeholder-val="{{ true }}">
+                <span style="font:500 10px/1 ui-monospace,Menlo,monospace; letter-spacing:0.1em; text-transform:uppercase; color:#BE5C3E; border:1px solid #E9CDC1; border-radius:4px; padding:4px 6px">selected</span>
+              </sc-if>
+            </div>
+            <div style="display:flex; gap:8px">
+              <div style="flex:1; height:44px; border-radius:7px; border:1px solid #00000010; background:{{ p.light }}"></div>
+              <div style="flex:1; height:44px; border-radius:7px; border:1px solid #00000010; background:{{ p.dark }}"></div>
+              <div style="flex:1; height:44px; border-radius:7px; border:1px solid #00000010; background:{{ p.soft }}"></div>
+              <div style="flex:1; height:44px; border-radius:7px; border:1px solid #00000010; background:{{ p.deep }}"></div>
+            </div>
+            <div style="display:flex; gap:8px; font:400 10.5px/1 ui-monospace,Menlo,monospace; color:#8A857A">
+              <span style="flex:1">{{ p.light }}</span><span style="flex:1">{{ p.dark }}</span><span style="flex:1">{{ p.soft }}</span><span style="flex:1">{{ p.deep }}</span>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+
+      <!-- neutrals -->
+      <div style="flex:1 1 420px; background:#FFFFFF; border:1px solid #E7E3DA; border-radius:10px; padding:22px; display:flex; flex-direction:column; gap:16px">
+        <div style="font:600 13px/1 inherit; letter-spacing:0.02em">Neutral surfaces</div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px">
+          <div style="display:flex; flex-direction:column; gap:7px">
+            <div style="font:500 11px/1 ui-monospace,Menlo,monospace; letter-spacing:0.08em; text-transform:uppercase; color:#8A857A">Light</div>
+            <sc-for list="{{ lightTokens }}" as="t" hint-placeholder-count="6">
+              <div style="display:flex; align-items:center; gap:9px">
+                <span style="width:22px; height:22px; border-radius:5px; border:1px solid #00000014; flex:none; background:{{ t.hex }}"></span>
+                <span style="font:500 11.5px/1 inherit; flex:1">{{ t.name }}</span>
+                <span style="font:400 10.5px/1 ui-monospace,Menlo,monospace; color:#8A857A">{{ t.hex }}</span>
+              </div>
+            </sc-for>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:7px">
+            <div style="font:500 11px/1 ui-monospace,Menlo,monospace; letter-spacing:0.08em; text-transform:uppercase; color:#8A857A">Dark</div>
+            <sc-for list="{{ darkTokens }}" as="t" hint-placeholder-count="6">
+              <div style="display:flex; align-items:center; gap:9px">
+                <span style="width:22px; height:22px; border-radius:5px; border:1px solid #00000014; flex:none; background:{{ t.hex }}"></span>
+                <span style="font:500 11.5px/1 inherit; flex:1">{{ t.name }}</span>
+                <span style="font:400 10.5px/1 ui-monospace,Menlo,monospace; color:#8A857A">{{ t.hex }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+
+      <!-- type -->
+      <div style="flex:1 1 400px; background:#FFFFFF; border:1px solid #E7E3DA; border-radius:10px; padding:22px; display:flex; flex-direction:column; gap:14px">
+        <div style="font:600 13px/1 inherit; letter-spacing:0.02em">Type scale</div>
+        <div style="font:400 11.5px/1.5 inherit; color:#8A857A">System stack — <span style="font-family:ui-monospace,Menlo,monospace; font-size:11px">-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica</span>. Mono for code and IDs.</div>
+        <sc-for list="{{ typeScale }}" as="t" hint-placeholder-count="6">
+          <div style="display:flex; align-items:baseline; gap:14px; border-top:1px solid #F0EDE6; padding-top:9px">
+            <span style="width:82px; flex:none; font:400 10.5px/1 ui-monospace,Menlo,monospace; color:#8A857A">{{ t.spec }}</span>
+            <span style="flex:1; color:#262420; font-size:{{ t.px }}; font-weight:{{ t.weight }}; line-height:1.25; letter-spacing:{{ t.ls }}">{{ t.label }}</span>
+          </div>
+        </sc-for>
+      </div>
+
+      <!-- spacing + radius -->
+      <div style="flex:1 1 300px; background:#FFFFFF; border:1px solid #E7E3DA; border-radius:10px; padding:22px; display:flex; flex-direction:column; gap:14px">
+        <div style="font:600 13px/1 inherit; letter-spacing:0.02em">Spacing · 4px base</div>
+        <sc-for list="{{ spacing }}" as="s" hint-placeholder-count="6">
+          <div style="display:flex; align-items:center; gap:12px">
+            <span style="width:46px; flex:none; font:400 10.5px/1 ui-monospace,Menlo,monospace; color:#8A857A">{{ s.name }}</span>
+            <span style="height:10px; border-radius:2px; background:#E2D6CE; width:{{ s.px }}"></span>
+            <span style="font:400 10.5px/1 ui-monospace,Menlo,monospace; color:#B0AA9E">{{ s.px }}</span>
+          </div>
+        </sc-for>
+        <div style="border-top:1px solid #F0EDE6; padding-top:14px; display:flex; flex-direction:column; gap:10px">
+          <div style="font:600 13px/1 inherit">Radius</div>
+          <div style="display:flex; gap:10px; align-items:flex-end">
+            <div style="display:flex; flex-direction:column; gap:6px; align-items:center"><span style="width:44px;height:36px;background:#F3F1EC;border:1px solid #E2DED4;border-radius:6px"></span><span style="font:400 10px/1 ui-monospace,Menlo,monospace;color:#8A857A">6 · card</span></div>
+            <div style="display:flex; flex-direction:column; gap:6px; align-items:center"><span style="width:44px;height:36px;background:#F3F1EC;border:1px solid #E2DED4;border-radius:8px"></span><span style="font:400 10px/1 ui-monospace,Menlo,monospace;color:#8A857A">8 · panel</span></div>
+            <div style="display:flex; flex-direction:column; gap:6px; align-items:center"><span style="width:44px;height:36px;background:#F3F1EC;border:1px solid #E2DED4;border-radius:999px"></span><span style="font:400 10px/1 ui-monospace,Menlo,monospace;color:#8A857A">pill · chip</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- icons -->
+      <div style="flex:1 1 420px; background:#FFFFFF; border:1px solid #E7E3DA; border-radius:10px; padding:22px; display:flex; flex-direction:column; gap:14px">
+        <div style="font:600 13px/1 inherit; letter-spacing:0.02em">Icons</div>
+        <div style="font:400 11.5px/1.5 inherit; color:#8A857A">Lucide-style line set · 1.6px stroke, round caps, 24px grid, rendered at 16px (18px for toolbar). Never filled, never emoji.</div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(72px,1fr)); gap:10px">
+          <sc-for list="{{ iconRef }}" as="i" hint-placeholder-count="12">
+            <div style="display:flex; flex-direction:column; align-items:center; gap:6px; padding:10px 4px; border:1px solid #F0EDE6; border-radius:8px">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#4A463F" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="{{ i.d }}"></path></svg>
+              <span style="font:400 10px/1 ui-monospace,Menlo,monospace; color:#8A857A">{{ i.name }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============ SCREENS ============ -->
+  <section style="display:flex; flex-direction:column; gap:28px">
+    <div style="display:flex; align-items:baseline; gap:12px; border-bottom:1px solid #DDD8CD; padding-bottom:10px">
+      <h2 style="margin:0; font:600 18px/1 inherit; letter-spacing:-0.01em">Screens</h2>
+      <span style="font:400 13px/1 inherit; color:#8A857A">side panel 380px · popup 340px</span>
+    </div>
+
+    <div style="display:flex; flex-wrap:wrap; gap:40px; align-items:flex-start">
+
+      <!-- 1. GALLERY LIGHT -->
+      <div style="display:flex; flex-direction:column; gap:10px">
+        <div style="font:600 12px/1 inherit">01 · Side panel — Gallery <span style="font-weight:400; color:#8A857A">light</span></div>
+        <div style="width:380px; height:720px; background:#FAF9F6; border:1px solid #DDD8CD; border-radius:10px; box-shadow:0 12px 32px -18px #2624201f; overflow:hidden; display:flex; flex-direction:column">
+
+          <div style="padding:14px 14px 10px; display:flex; flex-direction:column; gap:12px; background:#FAF9F6; border-bottom:1px solid #EBE7DE">
+            <div style="display:flex; align-items:center; gap:10px">
+              <span style="width:26px; height:26px; border-radius:7px; display:flex; align-items:center; justify-content:center; background:{{ accentSoft }}">
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="{{ accent }}" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zM3 7l2-4h14l2 4M10 12h4"></path></svg>
+              </span>
+              <span style="font:600 14px/1 inherit; flex:1">Artifact Vault</span>
+              <span style="font:400 11.5px/1 ui-monospace,Menlo,monospace; color:#8A857A">142 saved</span>
+              <button style="width:30px; height:30px; border:none; background:none; border-radius:6px; display:flex; align-items:center; justify-content:center; cursor:pointer" style-hover="background:#F0EDE6">
+                <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#6E6A61" stroke-width="1.6" stroke-linecap="round"><path d="M12 5h.01M12 12h.01M12 19h.01"></path></svg>
+              </button>
+            </div>
+
+            <label style="display:flex; align-items:center; gap:9px; height:40px; padding:0 12px; background:#FFFFFF; border:1px solid #E2DED4; border-radius:8px">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#9A958A" stroke-width="1.7" stroke-linecap="round"><path d="M11 4a7 7 0 1 0 0 14a7 7 0 0 0 0-14M20 20l-4-4"></path></svg>
+              <span style="font:400 13px/1 inherit; color:#A19C90">Search titles, code, conversations…</span>
+            </label>
+
+            <div style="display:flex; gap:6px; overflow-x:auto; padding-bottom:2px">
+              <sc-for list="{{ filters }}" as="f" hint-placeholder-count="6">
+                <span style="flex:none; height:30px; display:flex; align-items:center; padding:0 12px; border-radius:999px; font:500 12px/1 inherit; border:1px solid #E2DED4; background:#FFFFFF; color:#5F5B53; cursor:pointer; background:{{ f.bg }}; color:{{ f.fg }}; border-color:{{ f.bd }}">{{ f.label }}</span>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="flex:1; overflow:hidden; padding:10px 14px 14px; display:flex; flex-direction:column; gap:8px">
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:2px 2px 4px">
+              <span style="font:500 11px/1 ui-monospace,Menlo,monospace; letter-spacing:0.08em; text-transform:uppercase; color:#9A958A">Recent</span>
+              <div style="display:flex; gap:2px">
+                <span style="width:28px; height:28px; border-radius:6px; display:flex; align-items:center; justify-content:center; background:#EFEBE2">
+                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#4A463F" stroke-width="1.6" stroke-linecap="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"></path></svg>
+                </span>
+                <span style="width:28px; height:28px; border-radius:6px; display:flex; align-items:center; justify-content:center">
+                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#9A958A" stroke-width="1.6" stroke-linejoin="round"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"></path></svg>
+                </span>
+              </div>
+            </div>
+
+            <sc-for list="{{ artifacts }}" as="a" hint-placeholder-count="8">
+              <div style="display:flex; gap:10px; padding:10px; min-height:44px; background:#FFFFFF; border:1px solid #E7E3DA; border-radius:8px; cursor:pointer; align-items:flex-start" style-hover="border-color:#D6D0C3; box-shadow:0 2px 8px -4px #26242026">
+                <span style="width:32px; height:32px; flex:none; border-radius:7px; display:flex; align-items:center; justify-content:center; background:{{ a.tint }}">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" stroke="{{ a.ink }}"><path d="{{ a.d }}"></path></svg>
+                </span>
+                <div style="flex:1; min-width:0; display:flex; flex-direction:column; gap:3px">
+                  <div style="font:600 13px/1.35 inherit; color:#262420; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">{{ a.title }}</div>
+                  <div style="font:400 11.5px/1.3 inherit; color:#8A857A; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">{{ a.conv }}</div>
+                  <div style="display:flex; align-items:center; gap:6px; font:400 11px/1 ui-monospace,Menlo,monospace; color:#A8A296">
+                    <span>{{ a.type }}</span><span>·</span><span>{{ a.date }}</span>
+                  </div>
+                </div>
+                <span style="width:28px; height:28px; flex:none; border-radius:6px; display:flex; align-items:center; justify-content:center">
+                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" stroke="{{ a.pinInk }}" fill="{{ a.pinFill }}"><path d="M12 17v5M9 3h6l-1 6 3 3v2H7v-2l3-3z"></path></svg>
+                </span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. GALLERY DARK -->
+      <div style="display:flex; flex-direction:column; gap:10px">
+        <div style="font:600 12px/1 inherit">02 · Gallery <span style="font-weight:400; color:#8A857A">dark</span></div>
+        <div style="width:380px; height:720px; background:#1B1A18; border:1px solid #302D28; border-radius:10px; box-shadow:0 12px 32px -18px #0000006b; overflow:hidden; display:flex; flex-direction:column">
+
+          <div style="padding:14px 14px 10px; display:flex; flex-direction:column; gap:12px; border-bottom:1px solid #302D28">
+            <div style="display:flex; align-items:center; gap:10px">
+              <span style="width:26px; height:26px; border-radius:7px; display:flex; align-items:center; justify-content:center; background:#3A2A23">
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="{{ accentDark }}" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zM3 7l2-4h14l2 4M10 12h4"></path></svg>
+              </span>
+              <span style="font:600 14px/1 inherit; flex:1; color:#EDEAE3">Artifact Vault</span>
+              <span style="font:400 11.5px/1 ui-monospace,Menlo,monospace; color:#8B857A">142 saved</span>
+              <span style="width:30px; height:30px; border-radius:6px; display:flex; align-items:center; justify-content:center">
+                <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#9C978C" stroke-width="1.6" stroke-linecap="round"><path d="M12 5h.01M12 12h.01M12 19h.01"></path></svg>
+              </span>
+            </div>
+
+            <label style="display:flex; align-items:center; gap:9px; height:40px; padding:0 12px; background:#232220; border:1px solid #3A3630; border-radius:8px">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#7C776D" stroke-width="1.7" stroke-linecap="round"><path d="M11 4a7 7 0 1 0 0 14a7 7 0 0 0 0-14M20 20l-4-4"></path></svg>
+              <span style="font:400 13px/1 inherit; color:#7C776D">Search titles, code, conversations…</span>
+            </label>
+
+            <div style="display:flex; gap:6px; overflow-x:auto; padding-bottom:2px">
+              <sc-for list="{{ filtersDark }}" as="f" hint-placeholder-count="6">
+                <span style="flex:none; height:30px; display:flex; align-items:center; padding:0 12px; border-radius:999px; font:500 12px/1 inherit; border:1px solid #3A3630; background:{{ f.bg }}; color:{{ f.fg }}; border-color:{{ f.bd }}">{{ f.label }}</span>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="flex:1; overflow:hidden; padding:10px 14px 14px; display:flex; flex-direction:column; gap:8px">
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:2px 2px 4px">
+              <span style="font:500 11px/1 ui-monospace,Menlo,monospace; letter-spacing:0.08em; text-transform:uppercase; color:#7C776D">Recent</span>
+              <div style="display:flex; gap:2px">
+                <span style="width:28px; height:28px; border-radius:6px; display:flex; align-items:center; justify-content:center; background:#2C2A27">
+                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#D5D0C6" stroke-width="1.6" stroke-linecap="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"></path></svg>
+                </span>
+                <span style="width:28px; height:28px; border-radius:6px; display:flex; align-items:center; justify-content:center">
+                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#7C776D" stroke-width="1.6" stroke-linejoin="round"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"></path></svg>
+                </span>
+              </div>
+            </div>
+
+            <sc-for list="{{ artifactsDark }}" as="a" hint-placeholder-count="8">
+              <div style="display:flex; gap:10px; padding:10px; min-height:44px; background:#232220; border:1px solid #322F2A; border-radius:8px; align-items:flex-start">
+                <span style="width:32px; height:32px; flex:none; border-radius:7px; display:flex; align-items:center; justify-content:center; background:{{ a.tint }}">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" stroke="{{ a.ink }}"><path d="{{ a.d }}"></path></svg>
+                </span>
+                <div style="flex:1; min-width:0; display:flex; flex-direction:column; gap:3px">
+                  <div style="font:600 13px/1.35 inherit; color:#EDEAE3; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">{{ a.title }}</div>
+                  <div style="font:400 11.5px/1.3 inherit; color:#9C978C; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">{{ a.conv }}</div>
+                  <div style="display:flex; align-items:center; gap:6px; font:400 11px/1 ui-monospace,Menlo,monospace; color:#7C776D">
+                    <span>{{ a.type }}</span><span>·</span><span>{{ a.date }}</span>
+                  </div>
+                </div>
+                <span style="width:28px; height:28px; flex:none; border-radius:6px; display:flex; align-items:center; justify-content:center">
+                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" stroke="{{ a.pinInk }}" fill="{{ a.pinFill }}"><path d="M12 17v5M9 3h6l-1 6 3 3v2H7v-2l3-3z"></path></svg>
+                </span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. EMPTY STATE -->
+      <div style="display:flex; flex-direction:column; gap:10px">
+        <div style="font:600 12px/1 inherit">03 · Gallery <span style="font-weight:400; color:#8A857A">empty state</span></div>
+        <div style="width:380px; height:720px; background:#FAF9F6; border:1px solid #DDD8CD; border-radius:10px; box-shadow:0 12px 32px -18px #2624201f; overflow:hidden; display:flex; flex-direction:column">
+          <div style="padding:14px 14px 10px; display:flex; flex-direction:column; gap:12px; border-bottom:1px solid #EBE7DE">
+            <div style="display:flex; align-items:center; gap:10px">
+              <span style="width:26px; height:26px; border-radius:7px; display:flex; align-items:center; justify-content:center; background:{{ accentSoft }}">
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="{{ accent }}" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zM3 7l2-4h14l2 4M10 12h4"></path></svg>
+              </span>
+              <span style="font:600 14px/1 inherit; flex:1">Artifact Vault</span>
+              <span style="font:400 11.5px/1 ui-monospace,Menlo,monospace; color:#A8A296">0 saved</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:9px; height:40px; padding:0 12px; background:#F5F3ED; border:1px solid #E7E3DA; border-radius:8px">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#BDB8AC" stroke-width="1.7" stroke-linecap="round"><path d="M11 4a7 7 0 1 0 0 14a7 7 0 0 0 0-14M20 20l-4-4"></path></svg>
+              <span style="font:400 13px/1 inherit; color:#BDB8AC">Search</span>
+            </div>
+          </div>
+          <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; padding:32px 40px; text-align:center">
+            <span style="width:56px; height:56px; border-radius:14px; border:1px dashed #DCD6C9; display:flex; align-items:center; justify-content:center">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#B6B0A3" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13h4l2 3h4l2-3h4M4 13 6.5 5h11L20 13v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"></path></svg>
+            </span>
+            <div style="display:flex; flex-direction:column; gap:6px">
+              <div style="font:600 15px/1.3 inherit">No artifacts captured yet</div>
+              <div style="font:400 12.5px/1.55 inherit; color:#8A857A; text-wrap:pretty">Open a Claude conversation and generate an artifact — the Vault saves it automatically, on your machine only.</div>
+            </div>
+            <a href="#" style="height:40px; display:flex; align-items:center; padding:0 16px; border-radius:8px; font:600 13px/1 inherit; color:#FFFFFF; background:{{ accent }}">Open claude.ai</a>
+            <div style="font:400 11px/1 ui-monospace,Menlo,monospace; color:#B6B0A3">auto-capture · on</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. POPUP -->
+      <div style="display:flex; flex-direction:column; gap:10px">
+        <div style="font:600 12px/1 inherit">04 · Toolbar popup <span style="font-weight:400; color:#8A857A">340 × 470</span></div>
+        <div style="width:340px; height:470px; background:#FAF9F6; border:1px solid #DDD8CD; border-radius:10px; box-shadow:0 16px 40px -20px #26242033; overflow:hidden; display:flex; flex-direction:column">
+          <div style="padding:12px 12px 10px; display:flex; flex-direction:column; gap:10px; border-bottom:1px solid #EBE7DE">
+            <div style="display:flex; align-items:center; gap:8px">
+              <span style="width:22px; height:22px; border-radius:6px; display:flex; align-items:center; justify-content:center; background:{{ accentSoft }}">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="{{ accent }}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zM3 7l2-4h14l2 4M10 12h4"></path></svg>
+              </span>
+              <span style="font:600 13px/1 inherit; flex:1">Artifact Vault</span>
+              <span style="height:22px; display:flex; align-items:center; padding:0 7px; border-radius:5px; font:500 10.5px/1 ui-monospace,Menlo,monospace; color:#4E7A4A; background:#E9F0E5">capturing</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:8px; height:38px; padding:0 11px; background:#FFFFFF; border:1px solid #E2DED4; border-radius:8px">
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#9A958A" stroke-width="1.7" stroke-linecap="round"><path d="M11 4a7 7 0 1 0 0 14a7 7 0 0 0 0-14M20 20l-4-4"></path></svg>
+              <span style="font:400 12.5px/1 inherit; color:#A19C90">Search the Vault</span>
+            </div>
+          </div>
+          <div style="flex:1; padding:10px 12px; display:flex; flex-direction:column; gap:6px; overflow:hidden">
+            <span style="font:500 10.5px/1 ui-monospace,Menlo,monospace; letter-spacing:0.08em; text-transform:uppercase; color:#9A958A; padding:2px 2px 4px">Last 5 captured</span>
+            <sc-for list="{{ popupItems }}" as="a" hint-placeholder-count="5">
+              <div style="display:flex; gap:10px; align-items:center; min-height:44px; padding:8px 8px; border-radius:7px; cursor:pointer" style-hover="background:#F1EEE7">
+                <span style="width:28px; height:28px; flex:none; border-radius:6px; display:flex; align-items:center; justify-content:center; background:{{ a.tint }}">
+                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" stroke="{{ a.ink }}"><path d="{{ a.d }}"></path></svg>
+                </span>
+                <div style="flex:1; min-width:0; display:flex; flex-direction:column; gap:2px">
+                  <div style="font:600 12.5px/1.3 inherit; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">{{ a.title }}</div>
+                  <div style="font:400 11px/1 ui-monospace,Menlo,monospace; color:#A8A296">{{ a.date }}</div>
+                </div>
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#B6B0A3" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 11l5 5 5-5M4 20h16"></path></svg>
+              </div>
+            </sc-for>
+          </div>
+          <div style="padding:10px 12px; border-top:1px solid #EBE7DE; display:flex; gap:8px">
+            <a href="#" style="flex:1; height:40px; display:flex; align-items:center; justify-content:center; gap:7px; border-radius:8px; font:600 12.5px/1 inherit; color:#FFFFFF; background:{{ accent }}">
+              View full Vault
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"></path></svg>
+            </a>
+            <span style="width:40px; height:40px; display:flex; align-items:center; justify-content:center; border:1px solid #E2DED4; border-radius:8px; background:#FFFFFF; cursor:pointer">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#6E6A61" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15a3 3 0 1 0 0-6a3 3 0 0 0 0 6M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-2.9 1.2v.2a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-3-1.2l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0-1.2-2.9H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.2-3l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 2.9-1.2V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 3 1.2l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0 1.2 2.9h.2a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.6 1"></path></svg>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. DETAIL -->
+      <div style="display:flex; flex-direction:column; gap:10px">
+        <div style="font:600 12px/1 inherit">05 · Artifact detail</div>
+        <div style="width:380px; height:720px; background:#FAF9F6; border:1px solid #DDD8CD; border-radius:10px; box-shadow:0 12px 32px -18px #2624201f; overflow:hidden; display:flex; flex-direction:column">
+          <div style="padding:10px 12px; display:flex; align-items:center; gap:6px; border-bottom:1px solid #EBE7DE">
+            <span style="width:32px; height:32px; border-radius:7px; display:flex; align-items:center; justify-content:center; cursor:pointer" style-hover="background:#F0EDE6">
+              <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#4A463F" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg>
+            </span>
+            <span style="font:500 12.5px/1 inherit; color:#6E6A61; flex:1">Back to Vault</span>
+            <span style="width:32px; height:32px; border-radius:7px; display:flex; align-items:center; justify-content:center; background:{{ accentSoft }}">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" stroke="{{ accent }}" fill="{{ accentSoft }}"><path d="M12 17v5M9 3h6l-1 6 3 3v2H7v-2l3-3z"></path></svg>
+            </span>
+            <span style="width:32px; height:32px; border-radius:7px; display:flex; align-items:center; justify-content:center">
+              <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#6E6A61" stroke-width="1.6" stroke-linecap="round"><path d="M12 5h.01M12 12h.01M12 19h.01"></path></svg>
+            </span>
+          </div>
+
+          <div style="flex:1; overflow:hidden; display:flex; flex-direction:column">
+            <div style="padding:16px 16px 12px; display:flex; flex-direction:column; gap:10px; border-bottom:1px solid #EBE7DE">
+              <div style="display:flex; gap:10px; align-items:flex-start">
+                <span style="width:34px; height:34px; flex:none; border-radius:8px; display:flex; align-items:center; justify-content:center; background:#E7EFF2">
+                  <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#3E6F81" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m18 16 4-4-4-4M6 8l-4 4 4 4M14.5 4l-5 16"></path></svg>
+                </span>
+                <div style="flex:1; min-width:0; display:flex; flex-direction:column; gap:4px">
+                  <div style="font:600 15px/1.3 inherit; text-wrap:pretty">rate_limiter.py</div>
+                  <div style="font:400 11.5px/1 ui-monospace,Menlo,monospace; color:#8A857A">Python · 3.2 KB · v3</div>
+                </div>
+              </div>
+              <div style="display:flex; gap:8px">
+                <button style="flex:1; height:40px; display:flex; align-items:center; justify-content:center; gap:7px; border:none; border-radius:8px; font:600 12.5px/1 inherit; color:#FFFFFF; cursor:pointer; background:{{ accent }}">
+                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 11l5 5 5-5M4 20h16"></path></svg>
+                  Download
+                </button>
+                <button style="height:40px; padding:0 14px; display:flex; align-items:center; gap:7px; border:1px solid #E2DED4; background:#FFFFFF; border-radius:8px; font:600 12.5px/1 inherit; color:#4A463F; cursor:pointer" style-hover="border-color:#CFC9BB">
+                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#4A463F" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2"></path></svg>
+                  Copy
+                </button>
+              </div>
+            </div>
+
+            <div style="flex:1; margin:12px 16px; border:1px solid #E7E3DA; border-radius:8px; background:#FFFFFF; overflow:hidden; display:flex; flex-direction:column">
+              <div style="display:flex; align-items:center; gap:8px; padding:8px 10px; border-bottom:1px solid #F0EDE6; background:#FBFAF7">
+                <span style="font:500 10.5px/1 ui-monospace,Menlo,monospace; letter-spacing:0.08em; text-transform:uppercase; color:#9A958A; flex:1">Preview</span>
+                <span style="font:400 10.5px/1 ui-monospace,Menlo,monospace; color:#B6B0A3">96 lines</span>
+              </div>
+              <pre style="margin:0; padding:12px; font:400 11px/1.65 ui-monospace,SFMono-Regular,Menlo,monospace; color:#4A463F; overflow:hidden; white-space:pre">import time
+from collections import deque
+
+class SlidingWindow:
+    """Token-bucket limiter with a
+    sliding one-minute window."""
+
+    def __init__(self, limit=60):
+        self.limit = limit
+        self.hits = deque()
+
+    def allow(self, now=None):
+        now = now or time.time()
+        while self.hits and \
+              now - self.hits[0] > 60:
+            self.hits.popleft()
+        if len(self.hits) >= self.limit:
+            return False
+        self.hits.append(now)
+        return True</pre>
+            </div>
+
+            <div style="padding:0 16px 16px; display:flex; flex-direction:column; gap:2px">
+              <sc-for list="{{ meta }}" as="m" hint-placeholder-count="4">
+                <div style="display:flex; align-items:center; gap:10px; min-height:34px; border-top:1px solid #F0EDE6">
+                  <span style="width:96px; flex:none; font:400 11.5px/1 inherit; color:#9A958A">{{ m.k }}</span>
+                  <span style="flex:1; font:500 12px/1.3 inherit; color:#4A463F; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">{{ m.v }}</span>
+                </div>
+              </sc-for>
+              <a href="#" style="display:flex; align-items:center; gap:7px; min-height:40px; font:600 12.5px/1 inherit; margin-top:6px">
+                Open source conversation
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="{{ accent }}" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 6. BATCH -->
+      <div style="display:flex; flex-direction:column; gap:10px">
+        <div style="font:600 12px/1 inherit">06 · Batch selection</div>
+        <div style="width:380px; height:720px; background:#FAF9F6; border:1px solid #DDD8CD; border-radius:10px; box-shadow:0 12px 32px -18px #2624201f; overflow:hidden; display:flex; flex-direction:column; position:relative">
+          <div style="padding:12px 14px; display:flex; align-items:center; gap:10px; border-bottom:1px solid #EBE7DE; background:{{ accentSoft }}">
+            <span style="width:30px; height:30px; border-radius:7px; display:flex; align-items:center; justify-content:center; cursor:pointer">
+              <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke-width="1.7" stroke-linecap="round" stroke="{{ accent }}"><path d="M18 6 6 18M6 6l12 12"></path></svg>
+            </span>
+            <span style="flex:1; font:600 13.5px/1 inherit; color:{{ accentDeep }}">3 selected</span>
+            <span style="font:500 12px/1 inherit; color:{{ accent }}; cursor:pointer">Select all</span>
+          </div>
+
+          <div style="flex:1; overflow:hidden; padding:10px 14px 90px; display:flex; flex-direction:column; gap:8px">
+            <sc-for list="{{ batchItems }}" as="a" hint-placeholder-count="8">
+              <div style="display:flex; gap:10px; padding:10px; min-height:44px; border-radius:8px; align-items:center; background:{{ a.rowBg }}; border:1px solid {{ a.rowBd }}">
+                <span style="width:20px; height:20px; flex:none; border-radius:5px; display:flex; align-items:center; justify-content:center; border:1.5px solid {{ a.boxBd }}; background:{{ a.boxBg }}">
+                  <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" stroke="{{ a.tick }}"><path d="m20 6-11 11-5-5"></path></svg>
+                </span>
+                <span style="width:30px; height:30px; flex:none; border-radius:7px; display:flex; align-items:center; justify-content:center; background:{{ a.tint }}">
+                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" stroke="{{ a.ink }}"><path d="{{ a.d }}"></path></svg>
+                </span>
+                <div style="flex:1; min-width:0; display:flex; flex-direction:column; gap:3px">
+                  <div style="font:600 12.5px/1.3 inherit; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">{{ a.title }}</div>
+                  <div style="font:400 11px/1 ui-monospace,Menlo,monospace; color:#A8A296">{{ a.type }} · {{ a.date }}</div>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="position:absolute; left:0; right:0; bottom:0; padding:12px 14px 14px; background:#FFFFFF; border-top:1px solid #E7E3DA; box-shadow:0 -10px 24px -18px #26242040; display:flex; gap:8px">
+            <button style="flex:1; height:44px; display:flex; align-items:center; justify-content:center; gap:7px; border:none; border-radius:8px; font:600 12.5px/1 inherit; color:#FFFFFF; cursor:pointer; background:{{ accent }}">
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#FFFFFF" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zM3 7l2-4h14l2 4M10 12h4"></path></svg>
+              Download ZIP
+            </button>
+            <button style="height:44px; padding:0 14px; display:flex; align-items:center; gap:7px; border:1px solid #E2DED4; background:#FFFFFF; border-radius:8px; font:600 12.5px/1 inherit; color:#4A463F; cursor:pointer">
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#4A463F" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5M9 3h6l-1 6 3 3v2H7v-2l3-3z"></path></svg>
+              Pin
+            </button>
+            <button style="width:44px; height:44px; display:flex; align-items:center; justify-content:center; border:1px solid #E2DED4; background:#FFFFFF; border-radius:8px; cursor:pointer">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#9A5B4C" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13M10 11v6M14 11v6"></path></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;accent&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#BE5C3E&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;options&quot;:[&quot;#BE5C3E&quot;,&quot;#5B7553&quot;,&quot;#2F6F6B&quot;],&quot;section&quot;:&quot;Theme&quot;},&quot;accentSoft&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#F7EAE4&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;options&quot;:[&quot;#F7EAE4&quot;,&quot;#EAEFE6&quot;,&quot;#E4EFEE&quot;],&quot;section&quot;:&quot;Theme&quot;}}">
+const ICON = {
+  code: "m18 16 4-4-4-4M6 8l-4 4 4 4M14.5 4l-5 16",
+  html: "M12 3a9 9 0 1 0 0 18a9 9 0 0 0 0-18M3 12h18M12 3c2.4 2.6 3.6 5.6 3.6 9S14.4 18.4 12 21M12 3C9.6 5.6 8.4 8.6 8.4 12s1.2 6.4 3.6 9",
+  md: "M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8zM14 3v5h5M9 13h6M9 17h4",
+  svg: "M3 4h7v7H3zM17.5 21a3.5 3.5 0 1 0 0-7a3.5 3.5 0 0 0 0 7M14 4h7l-3.5 6z",
+  react: "M12 10.6a1.4 1.4 0 1 0 0 2.8a1.4 1.4 0 0 0 0-2.8M12 3c5 0 9 4 9 9s-4 9-9 9-9-4-9-9 4-9 9-9M3.5 8.5c3-1.8 14-1.8 17 0M3.5 15.5c3 1.8 14 1.8 17 0",
+  search: "M11 4a7 7 0 1 0 0 14a7 7 0 0 0 0-14M20 20l-4-4",
+  pin: "M12 17v5M9 3h6l-1 6 3 3v2H7v-2l3-3z",
+  download: "M12 3v12M7 11l5 5 5-5M4 20h16",
+  zip: "M3 7h18v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zM3 7l2-4h14l2 4M10 12h4",
+  link: "M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6",
+  check: "m20 6-11 11-5-5",
+  trash: "M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13M10 11v6M14 11v6",
+  list: "M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01",
+  grid: "M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z",
+  more: "M12 5h.01M12 12h.01M12 19h.01",
+  close: "M18 6 6 18M6 6l12 12",
+  copy: "M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2",
+  inbox: "M4 13h4l2 3h4l2-3h4M4 13 6.5 5h11L20 13v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"
+};
+
+const TYPE = {
+  Code:     { d: ICON.code,  tint: "#E7EFF2", ink: "#3E6F81", dTint: "#223034", dInk: "#7FB2C4" },
+  HTML:     { d: ICON.html,  tint: "#F3EDE4", ink: "#8A6A43", dTint: "#332B22", dInk: "#C7A276" },
+  Markdown: { d: ICON.md,    tint: "#EDEFE9", ink: "#5E7350", dTint: "#262B23", dInk: "#9BB68B" },
+  SVG:      { d: ICON.svg,   tint: "#F1EBF0", ink: "#7A5B77", dTint: "#2E262E", dInk: "#B994B5" },
+  React:    { d: ICON.react, tint: "#E9EEF3", ink: "#4E6785", dTint: "#232A33", dInk: "#8FA9C6" }
+};
+
+const DATA = [
+  { title: "rate_limiter.py", type: "Code", conv: "API throttling strategy", date: "2h ago", pinned: true },
+  { title: "Onboarding email sequence", type: "Markdown", conv: "Lifecycle copy review", date: "5h ago" },
+  { title: "Pricing table — 3 tiers", type: "React", conv: "Pricing page redesign", date: "Yesterday", pinned: true },
+  { title: "topology-diagram.svg", type: "SVG", conv: "Infra doc illustrations", date: "Yesterday" },
+  { title: "Interactive gantt prototype", type: "HTML", conv: "Q3 roadmap tooling", date: "Jul 28" },
+  { title: "useDebouncedFetch.ts", type: "Code", conv: "Search input perf", date: "Jul 28" },
+  { title: "Research synthesis — churn", type: "Markdown", conv: "Retention interviews", date: "Jul 26" },
+  { title: "KanbanBoard.jsx", type: "React", conv: "Internal tools sprint", date: "Jul 25" },
+  { title: "brand-mark-variants.svg", type: "SVG", conv: "Logo exploration", date: "Jul 24" },
+  { title: "Migration runbook v2", type: "Markdown", conv: "Postgres 16 upgrade", date: "Jul 22" }
+];
+
+class Component extends DCLogic {
+  renderVals() {
+    const accent = this.props.accent ?? "#BE5C3E";
+    const accentSoft = this.props.accentSoft ?? "#F7EAE4";
+    const accentDeep = "#8E4029";
+    const accentDark = "#E08765";
+
+    const map = (o, dark) => {
+      const t = TYPE[o.type];
+      return {
+        ...o,
+        d: t.d,
+        tint: dark ? t.dTint : t.tint,
+        ink: dark ? t.dInk : t.ink,
+        pinInk: o.pinned ? accent : (dark ? "#5C5850" : "#CFC9BB"),
+        pinFill: o.pinned ? (dark ? "#3A2A23" : accentSoft) : "none"
+      };
+    };
+
+    const chip = (label, on) => ({
+      label,
+      bg: on ? accent : "#FFFFFF",
+      fg: on ? "#FFFFFF" : "#5F5B53",
+      bd: on ? accent : "#E2DED4"
+    });
+    const chipD = (label, on) => ({
+      label,
+      bg: on ? accentDark : "#232220",
+      fg: on ? "#1B1A18" : "#9C978C",
+      bd: on ? accentDark : "#3A3630"
+    });
+    const names = ["All", "Code", "HTML", "Markdown", "SVG", "React", "Pinned"];
+
+    const selected = [0, 2, 5];
+    const batchItems = DATA.slice(0, 8).map((o, i) => {
+      const on = selected.includes(i);
+      return {
+        ...map(o, false),
+        rowBg: on ? accentSoft : "#FFFFFF",
+        rowBd: on ? "#E9CDC1" : "#E7E3DA",
+        boxBd: on ? accent : "#CFC9BB",
+        boxBg: on ? accent : "#FFFFFF",
+        tick: on ? "#FFFFFF" : "transparent"
+      };
+    });
+
+    return {
+      accent, accentSoft, accentDeep, accentDark,
+      artifacts: DATA.map(o => map(o, false)),
+      artifactsDark: DATA.map(o => map(o, true)),
+      popupItems: DATA.slice(0, 5).map(o => map(o, false)),
+      batchItems,
+      filters: names.map((n, i) => chip(n, i === 0)),
+      filtersDark: names.map((n, i) => chipD(n, i === 0)),
+      meta: [
+        { k: "Type", v: "Code · Python" },
+        { k: "Captured", v: "Jul 31, 2026 · 09:14" },
+        { k: "Conversation", v: "API throttling strategy" },
+        { k: "Versions", v: "3 saved · latest shown" },
+        { k: "Storage", v: "Local (IndexedDB)" }
+      ],
+      palettes: [
+        { name: "Clay", note: "warm, closest to claude.ai", chosen: true, light: "#BE5C3E", dark: "#E08765", soft: "#F7EAE4", deep: "#8E4029" },
+        { name: "Moss", note: "quiet, low-alarm", chosen: false, light: "#5B7553", dark: "#93B089", soft: "#EAEFE6", deep: "#3F5639" },
+        { name: "Ink Teal", note: "cooler, more technical", chosen: false, light: "#2F6F6B", dark: "#6FB3AE", soft: "#E4EFEE", deep: "#1F4F4C" }
+      ],
+      lightTokens: [
+        { name: "canvas", hex: "#FAF9F6" }, { name: "surface", hex: "#FFFFFF" },
+        { name: "surface-2", hex: "#F3F1EC" }, { name: "border", hex: "#E7E3DA" },
+        { name: "text", hex: "#262420" }, { name: "text-muted", hex: "#8A857A" }
+      ],
+      darkTokens: [
+        { name: "canvas", hex: "#1B1A18" }, { name: "surface", hex: "#232220" },
+        { name: "surface-2", hex: "#2C2A27" }, { name: "border", hex: "#322F2A" },
+        { name: "text", hex: "#EDEAE3" }, { name: "text-muted", hex: "#9C978C" }
+      ],
+      typeScale: [
+        { spec: "20 / 600 / -.01", px: "20px", weight: 600, ls: "-0.01em", label: "Screen title" },
+        { spec: "15 / 600", px: "15px", weight: 600, ls: "0", label: "Artifact name" },
+        { spec: "13 / 600", px: "13px", weight: 600, ls: "0", label: "Card title" },
+        { spec: "12.5 / 400", px: "12.5px", weight: 400, ls: "0", label: "Body & descriptions" },
+        { spec: "11.5 / 400", px: "11.5px", weight: 400, ls: "0", label: "Secondary metadata" },
+        { spec: "11 / 500 mono", px: "11px", weight: 500, ls: "0.08em", label: "LABELS · DATES" }
+      ],
+      spacing: [
+        { name: "space-1", px: "4px" }, { name: "space-2", px: "8px" },
+        { name: "space-3", px: "12px" }, { name: "space-4", px: "16px" },
+        { name: "space-5", px: "24px" }, { name: "space-6", px: "32px" }
+      ],
+      iconRef: [
+        { name: "code", d: ICON.code }, { name: "html", d: ICON.html },
+        { name: "markdown", d: ICON.md }, { name: "svg", d: ICON.svg },
+        { name: "react", d: ICON.react }, { name: "search", d: ICON.search },
+        { name: "pin", d: ICON.pin }, { name: "download", d: ICON.download },
+        { name: "zip", d: ICON.zip }, { name: "link", d: ICON.link },
+        { name: "check", d: ICON.check }, { name: "trash", d: ICON.trash },
+        { name: "list", d: ICON.list }, { name: "grid", d: ICON.grid },
+        { name: "more", d: ICON.more }, { name: "inbox", d: ICON.inbox }
+      ]
+    };
+  }
+}
+
+</script>
+</body>
+</html>

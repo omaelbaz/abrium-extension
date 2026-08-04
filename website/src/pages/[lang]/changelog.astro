@@ -1,0 +1,14 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const changelogSchema = { "@context": "https://schema.org", "@type": "ItemList", "itemListElement": [ { "@type": "ListItem", "position": 1, "name": "v0.1.0 - Initial release" } ] };
+
+export function getStaticPaths() { return [ { params: { lang: 'ar' } }, { params: { lang: 'fr' } }, { params: { lang: 'es' } }, { params: { lang: 'pt' } } ]; }
+const { lang } = Astro.params;
+const translations = {"ar":{"title":"سجل التغييرات","html":"<h1>سجل التغييرات</h1><ul><li><strong>v0.1.0</strong> &mdash; الإصدار الأولي.</li></ul>"},"fr":{"title":"Journal des modifications","html":"<h1>Journal des modifications</h1><ul><li><strong>v0.1.0</strong> &mdash; Sortie initiale.</li></ul>"},"es":{"title":"Registro de cambios","html":"<h1>Registro de cambios</h1><ul><li><strong>v0.1.0</strong> &mdash; Lanzamiento inicial.</li></ul>"},"pt":{"title":"Registro de alterações","html":"<h1>Registro de alterações</h1><ul><li><strong>v0.1.0</strong> &mdash; Lançamento inicial.</li></ul>"}};
+const t = translations[lang as keyof typeof translations];
+---
+<Layout title={t.title} description={t.title}>
+  <script type="application/ld+json" set:html={JSON.stringify(changelogSchema)} slot="head" />
+  <div set:html={t.html} />
+</Layout>

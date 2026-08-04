@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>SYNTHETIC claude.ai stand-in</title></head>
+<body>
+<!--
+  ⚠⚠ THIS IS NOT REAL claude.ai DOM. ⚠⚠
+
+  It is a hand-authored stand-in, written without access to a live claude.ai
+  session. It exercises the EXTRACTION MACHINERY — candidate-selector
+  fallback, type detection, id derivation, dedup, defensive skipping — but it
+  proves NOTHING about whether the selector strings in lib/extract.ts match
+  the real product. Passing against this file must never be reported as
+  "capture works on claude.ai".
+
+  TO REPLACE WITH THE REAL THING:
+    1. Open a claude.ai conversation containing several artifacts.
+    2. Ctrl+S → "Webpage, Complete" (or DevTools → Elements → right-click
+       <html> → Copy → Copy outerHTML, paste into a file).
+    3. Save it as  tests/fixtures/claude-page.real.html
+    4. Re-run the extraction test page; it prefers the real file when present.
+  claude-page.real.html is git-ignored, because a saved conversation is
+  personal content and must not land in a public repo.
+
+  Each container below deliberately models a DIFFERENT shape so the ordered
+  candidate lists in SELECTORS are all exercised.
+-->
+
+<!-- 1. Best case: explicit testid AND a stable artifact id. -->
+<div data-testid="artifact-panel" data-artifact-id="abc123XYZ">
+  <h2 data-testid="artifact-title">Pricing table with annual toggle</h2>
+  <div data-testid="artifact-code">
+    <pre><code class="language-tsx">import { useState } from 'react';
+
+export function PricingTable({ plans }: Props) {
+  const [annual, setAnnual] = useState(false);
+  return &lt;div className="grid"&gt;{plans.length}&lt;/div&gt;;
+}
+</code></pre>
+  </div>
+</div>
+
+<!-- 2. No testid: must fall through to the role/aria candidate. -->
+<div role="dialog" aria-label="Artifact: Onboarding flow diagram">
+  <h3>Onboarding flow diagram</h3>
+  <pre><code class="language-svg">&lt;svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400"&gt;
+  &lt;rect width="800" height="400" fill="#EFECE4"/&gt;
+&lt;/svg&gt;
+</code></pre>
+</div>
+
+<!-- 3. Language declared by attribute rather than class. -->
+<div data-testid="artifact">
+  <h2 data-testid="artifact-title">Postgres migration</h2>
+  <span data-testid="artifact-language" data-language="SQL">SQL</span>
+  <pre><code>CREATE INDEX CONCURRENTLY idx_events_tenant_created
+  ON events (tenant_id, created_at DESC);
+</code></pre>
+</div>
+
+<!-- 4. Markdown with no declared language — sniffed from the content. -->
+<div data-testid="artifact">
+  <h2 data-testid="artifact-title">API integration guide</h2>
+  <pre><code># API integration guide
+
+## Authentication
+
+Every request needs a bearer token.
+</code></pre>
+</div>
+
+<!-- 5. RENDERED PREVIEW ONLY, no source node. Must be SKIPPED, not captured
+     from the iframe — the iframe holds output, not the artifact. -->
+<div data-testid="artifact-panel" data-artifact-id="preview-only-1">
+  <h2 data-testid="artifact-title">Email receipt template</h2>
+  <iframe title="preview" srcdoc="&lt;p&gt;rendered output, not source&lt;/p&gt;"></iframe>
+</div>
+
+<!-- 6. Empty source. Must be SKIPPED. -->
+<div data-testid="artifact-panel" data-artifact-id="empty-1">
+  <h2 data-testid="artifact-title">Empty artifact</h2>
+  <pre><code>   </code></pre>
+</div>
+
+<!-- 7. Duplicate of #1 (same panel rendered twice, e.g. list + detail).
+     Must collapse to ONE entry via the stable id. -->
+<div data-testid="artifact-panel" data-artifact-id="abc123XYZ">
+  <h2 data-testid="artifact-title">Pricing table with annual toggle</h2>
+  <div data-testid="artifact-code">
+    <pre><code class="language-tsx">import { useState } from 'react';
+
+export function PricingTable({ plans }: Props) {
+  const [annual, setAnnual] = useState(false);
+  return &lt;div className="grid"&gt;{plans.length}&lt;/div&gt;;
+}
+</code></pre>
+  </div>
+</div>
+
+<!-- 8. No title element at all — falls back to aria-label, then a default. -->
+<div data-testid="artifact">
+  <pre><code class="language-html">&lt;!doctype html&gt;
+&lt;html&gt;&lt;body&gt;&lt;p&gt;hello&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
+</code></pre>
+</div>
+
+<!-- 9. THE REAL STRUCTURE, transcribed from live claude.ai (round 2).
+     Confirmed by clipboard observation on a React/TSX artifact:
+       div.contents > div.ease-out.duration-200 > div.w-full.h-full
+         > div.w-full.h-full > div.code-block__code.!my-0 > code.language-tsx
+     Note there is NO <pre> anywhere — this case exists specifically so the
+     confirmed `.code-block__code code` selector is exercised by the suite
+     rather than merely written down in extract.ts. -->
+<div aria-label="Artifact: Ailywood landing page">
+  <h2>Ailywood landing page</h2>
+  <div class="contents">
+    <div class="ease-out duration-200">
+      <div class="w-full h-full">
+        <div class="w-full h-full">
+          <div class="code-block__code !my-0"><code class="language-tsx">import { useState } from 'react';
+
+export default function Landing() {
+  const [open, setOpen] = useState(false);
+  return &lt;main className="hero"&gt;{open ? 'open' : 'closed'}&lt;/main&gt;;
+}
+</code></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 10. THE REAL MARKDOWN/DOCUMENT STRUCTURE, confirmed via DOM diagnostics.
+     Uses [data-skill-file-viewer="true"] as container, data-prose-review-dockey
+     for filename, and #wiggle-file-content holding .group/line rows. -->
+<div data-skill-file-viewer="true" data-prose-review-dockey="file:|::/mnt/user-data/outputs/readme-template.md">
+  <div id="wiggle-file-content">
+    <div class="group/line"><span data-line-number="1">1</span><code class="font-mono"># Project Name</code></div>
+    <div class="group/line"><span data-line-number="2">2</span><code class="font-mono">&nbsp;</code></div>
+    <div class="group/line"><span data-line-number="3">3</span><code class="font-mono">One-line description</code></div>
+  </div>
+</div>
+
+<!-- 11. HTML artifact with iframe title (Code/HTML/SVG strategy)
+     The title is stored on an iframe inside the container. -->
+<div data-testid="artifact">
+  <iframe title="simple_page.html" srcdoc="<p>preview</p>"></iframe>
+  <pre><code class="language-html">&lt;!doctype html&gt;
+&lt;html&gt;&lt;body&gt;&lt;h1&gt;simple page&lt;/h1&gt;&lt;/body&gt;&lt;/html&gt;
+</code></pre>
+</div>
+
+<!-- 12. SVG artifact with header bar title (Fourth strategy)
+     The title is in an h2 inside a header bar that is a sibling of an ancestor. -->
+<div>
+  <div class="flex items-center justify-between px-2 py-2 bg-bg-000 gap-2">
+    <h2>Simple Graphic</h2>
+  </div>
+  <div>
+    <div data-testid="artifact">
+      <pre><code class="language-svg">&lt;svg viewBox="0 0 100 100"&gt;&lt;/svg&gt;</code></pre>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

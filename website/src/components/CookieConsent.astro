@@ -1,0 +1,58 @@
+---
+const currentLocale = Astro.currentLocale || 'en';
+
+const cookieTranslations = {
+  en: { text: "We use optional cookies to understand how people use our website through Google Analytics. No other tracking is used.", accept: "Accept All", reject: "Reject All" },
+  ar: { text: "نستخدم ملفات تعريف ارتباط اختيارية لفهم كيفية استخدام الأشخاص لموقعنا من خلال Google Analytics. لا يتم استخدام أي تتبع آخر.", accept: "قبول الكل", reject: "رفض الكل" },
+  fr: { text: "Nous utilisons des cookies facultatifs pour comprendre comment les internautes utilisent notre site Web via Google Analytics. Aucun autre suivi n'est utilisé.", accept: "Tout accepter", reject: "Tout refuser" },
+  es: { text: "Usamos cookies opcionales para comprender cómo las personas usan nuestro sitio web a través de Google Analytics. No se utiliza ningún otro seguimiento.", accept: "Aceptar todo", reject: "Rechazar todo" },
+  pt: { text: "Usamos cookies opcionais para entender como as pessoas usam nosso site através do Google Analytics. Nenhum outro rastreamento é usado.", accept: "Aceitar tudo", reject: "Rejeitar tudo" }
+};
+
+const t = cookieTranslations[currentLocale as keyof typeof cookieTranslations] || cookieTranslations.en;
+---
+<div id="cookie-banner" style="display:none; position:sticky; bottom:0; z-index:50; padding:14px 16px 18px; background:var(--surface); border-top:1px solid var(--border); box-shadow:0 -8px 24px -20px rgba(38,36,32,.4)">
+  <div style="max-width:1080px; margin:0 auto; display:flex; flex-wrap:wrap; align-items:center; gap:14px">
+    <div style="flex:1; min-width:240px; display:flex; gap:11px; align-items:flex-start">
+      <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none; margin-top:2px"><path d="M12 3a9 9 0 1 0 9 9 4 4 0 0 1-5-5 4 4 0 0 1-4-4M9 10h.01M13 15h.01M8 15h.01"></path></svg>
+      <span style="font-size:13px; line-height:1.6; color:var(--text-2); text-wrap:pretty">{t.text}</span>
+    </div>
+    <div style="display:flex; flex-wrap:wrap; gap:8px">
+      <button id="cookie-reject" style="height:36px; display:flex; align-items:center; padding:0 16px; border-radius:6px; border:1px solid var(--border); background:var(--surface); color:var(--text); font:600 12.5px/1 inherit; cursor:pointer">{t.reject}</button>
+      <button id="cookie-accept" style="height:36px; display:flex; align-items:center; padding:0 16px; border-radius:6px; background:var(--accent-solid); color:var(--on-accent); border:none; font:600 12.5px/1 inherit; cursor:pointer">{t.accept}</button>
+    </div>
+  </div>
+</div>
+
+<script is:inline>
+  document.addEventListener('DOMContentLoaded', () => {
+    const banner = document.getElementById('cookie-banner');
+    const acceptBtn = document.getElementById('cookie-accept');
+    const rejectBtn = document.getElementById('cookie-reject');
+
+    if (!localStorage.getItem('cookie_consent')) {
+      banner.style.display = 'block';
+    }
+
+    const setConsent = (value) => {
+      localStorage.setItem('cookie_consent', value);
+      banner.style.display = 'none';
+      
+      if (value === 'accepted') {
+        window.gtag('consent', 'update', {
+          'analytics_storage': 'granted'
+        });
+        const script = document.createElement('script');
+        script.src = 'https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX';
+        script.async = true;
+        document.head.appendChild(script);
+        script.onload = () => {
+          window.gtag('config', 'G-XXXXXXXXXX');
+        };
+      }
+    };
+
+    acceptBtn.addEventListener('click', () => setConsent('accepted'));
+    rejectBtn.addEventListener('click', () => setConsent('rejected'));
+  });
+</script>

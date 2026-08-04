@@ -1,0 +1,861 @@
+<!DOCTYPE html><html><head><style>
+    .sc-placeholder{background:color-mix(in srgb,currentColor 8%,transparent);
+      border:1px solid color-mix(in srgb,currentColor 50%,transparent);
+      border-radius:2px;box-sizing:border-box;overflow:hidden}
+    @keyframes sc-shine{0%{background-position:100% 50%}100%{background-position:0% 50%}}
+    html.sc-dc-streaming .sc-placeholder,
+    html.sc-dc-streaming .sc-interp.sc-missing{position:relative;
+      background:color-mix(in srgb,currentColor 5%,transparent);
+      border-color:transparent}
+    html.sc-dc-streaming .sc-placeholder::before,
+    html.sc-dc-streaming .sc-interp.sc-missing::before{content:'';
+      position:absolute;inset:0;pointer-events:none;
+      background:linear-gradient(90deg,rgba(217,119,87,0) 25%,rgba(247,225,211,.95) 37%,rgba(217,119,87,0) 63%);
+      background-size:400% 100%;animation:sc-shine 1.4s ease infinite}
+    html.sc-dc-streaming .sc-placeholder:nth-child(n+9 of .sc-placeholder)::before,
+    html.sc-dc-streaming .sc-interp.sc-missing:nth-child(n+9 of .sc-interp.sc-missing)::before{animation:none;
+      background:color-mix(in srgb,currentColor 8%,transparent)}
+    .sc-placeholder-error{padding:4px 8px;font:11px/1.4 ui-monospace,monospace;
+      color:color-mix(in srgb,currentColor 70%,transparent);word-break:break-word}
+    .sc-interp.sc-missing{display:inline-block;width:2em;height:1em;overflow:hidden;
+      vertical-align:text-bottom;background:rgba(255,255,255,.3);border:1px solid rgba(0,0,0,.5);
+      border-radius:2px;box-sizing:border-box;color:transparent;
+      user-select:none}
+    .sc-interp.sc-unresolved{font-family:ui-monospace,monospace;font-size:.85em;
+      color:color-mix(in srgb,currentColor 50%,transparent);
+      background:color-mix(in srgb,currentColor 10%,transparent);border-radius:3px;
+      padding:0 3px}
+    .sc-host.sc-has-error{position:relative}
+    .sc-logic-error{position:absolute;top:8px;left:8px;z-index:2147483647;max-width:60ch;
+      padding:6px 10px;background:#b00020;color:#fff;font:12px/1.4 ui-monospace,monospace;
+      border-radius:4px;white-space:pre-wrap;pointer-events:none}
+    /* Mirrors PRINT_BASELINE_CSS in apps/web deck-stage-export.ts — keep both
+       in sync until dc-runtime regains a build step. */
+    @media print {
+      @page { margin: 0.5cm; }
+      figure, table { break-inside: avoid; }
+      #dc-root, #dc-root > .sc-host { height: auto; }
+      *, *::before, *::after {
+        print-color-adjust: exact; -webkit-print-color-adjust: exact;
+        backdrop-filter: none !important; -webkit-backdrop-filter: none !important;
+        animation-delay: -99s !important; animation-duration: .001s !important;
+        animation-iteration-count: 1 !important; animation-fill-mode: both !important;
+        animation-play-state: running !important; transition-duration: 0s !important;
+      }
+    }
+  </style><script>window.__resources = {"https://unpkg.com/react@18.3.1/umd/react.production.min.js":"blob:null/64ad9779-1859-4120-9f76-2994ca9ceb25","https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js":"blob:null/f30581c7-bef3-4ed0-8a5a-02382c849ebb"};</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="blob:null/fdfdf976-d9bf-4a85-bb83-1b2c6a959499"></script>
+<style>x-dc{display:none!important}</style><script src="blob:null/64ad9779-1859-4120-9f76-2994ca9ceb25"></script><script src="blob:null/f30581c7-bef3-4ed0-8a5a-02382c849ebb"></script><style data-dc-tpl="1">
+  body { margin:0; background:#EFECE4; }
+  [data-theme="light"] {
+    --bg:#EFECE4; --bg-alt:#F7EAE4; --surface:#FAF9F6; --border:#DDD8CD; --border-2:#E7E3DA;
+    --accent:#BE5C3E; --accent-solid:#B0523A; --accent-text:#9C4829; --on-accent:#FAF9F6;
+    --text:#262420; --text-2:#4A463F; --text-3:#6F6A60; --muted:#8A857A;
+    --shadow:0 1px 2px rgba(38,36,32,.04), 0 8px 24px -18px rgba(38,36,32,.28);
+    --tint:#F7EAE4;
+  }
+  [data-theme="dark"] {
+    --bg:#1B1A18; --bg-alt:#201F1C; --surface:#232220; --border:#3A3630; --border-2:#302D28;
+    --accent:#E9CDC1; --accent-solid:#E9CDC1; --accent-text:#E9CDC1; --on-accent:#1B1A18;
+    --text:#F3F1EC; --text-2:#B6B0A3; --text-3:#9C978C; --muted:#7C776D;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 24px -18px rgba(0,0,0,.7);
+    --tint:#2C2924;
+  }
+  [dir="ltr"] { --flip:1; }
+  [dir="rtl"] { --flip:-1; }
+  a { color:var(--accent-text); text-decoration:none; }
+  a:hover { text-decoration:underline; }
+  ::-webkit-scrollbar { width:8px; height:8px; }
+  ::-webkit-scrollbar-thumb { background:#8A857A55; border-radius:4px; }
+</style></head>
+<body>
+
+<div id="dc-root"><div class="sc-host" data-sc-name="Abrium"><div data-dc-tpl="2" dir="ltr" data-theme="light" style="background: var(--bg); min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 0px; font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased;">
+
+  <div data-dc-tpl="3" style="width: 100%; max-width: 100%; background: var(--bg); color: var(--text); border-inline: 1px solid var(--border-2); min-height: 100vh; display: flex; flex-direction: column; position: relative; overflow: hidden;">
+
+    
+    <header data-dc-tpl="4" style="position: sticky; top: 0px; z-index: 40; background: var(--bg); border-bottom: 1px solid var(--border); padding-inline: 40px;">
+      <div data-dc-tpl="5" style="max-width: 1080px; margin: 0px auto; height: 64px; display: flex; align-items: center; gap: 14px;">
+        <div data-dc-tpl="6" style="display: flex; align-items: center; gap: 9px; cursor: pointer; margin-inline-end: auto;">
+          <img data-dc-tpl="7" src="blob:null/0372b608-d571-415b-8b71-ad8f1447443a" alt="Abrium" style="width: 30px; height: auto; display: block;">
+          <span data-dc-tpl="8" style="letter-spacing: -0.01em;">Abrium</span>
+        </div>
+
+        <nav data-dc-tpl="9" style="display: none; align-items: center; gap: 2px; min-width: 0px; overflow-x: auto;">
+          
+            <span data-dc-tpl="11" style="height: 40px; flex: 0 0 auto; white-space: nowrap; display: flex; align-items: center; padding: 0px 12px; border-radius: 6px; cursor: pointer; font-size: 13.5px; font-weight: 600; color: var(--text); background: var(--tint); transition: background 160ms, color 160ms;"><span class="sc-interp">Home</span></span>
+          
+            <span data-dc-tpl="11" style="height: 40px; flex: 0 0 auto; white-space: nowrap; display: flex; align-items: center; padding: 0px 12px; border-radius: 6px; cursor: pointer; font-size: 13.5px; font-weight: 500; color: var(--text-3); background: transparent; transition: background 160ms, color 160ms;"><span class="sc-interp">Features</span></span>
+          
+            <span data-dc-tpl="11" style="height: 40px; flex: 0 0 auto; white-space: nowrap; display: flex; align-items: center; padding: 0px 12px; border-radius: 6px; cursor: pointer; font-size: 13.5px; font-weight: 500; color: var(--text-3); background: transparent; transition: background 160ms, color 160ms;"><span class="sc-interp">FAQ</span></span>
+          
+            <span data-dc-tpl="11" style="height: 40px; flex: 0 0 auto; white-space: nowrap; display: flex; align-items: center; padding: 0px 12px; border-radius: 6px; cursor: pointer; font-size: 13.5px; font-weight: 500; color: var(--text-3); background: transparent; transition: background 160ms, color 160ms;"><span class="sc-interp">Download</span></span>
+          
+            <span data-dc-tpl="11" style="height: 40px; flex: 0 0 auto; white-space: nowrap; display: flex; align-items: center; padding: 0px 12px; border-radius: 6px; cursor: pointer; font-size: 13.5px; font-weight: 500; color: var(--text-3); background: transparent; transition: background 160ms, color 160ms;"><span class="sc-interp">Changelog</span></span>
+          
+        </nav>
+
+        <div data-dc-tpl="12" style="display: none; align-items: center; gap: 6px; flex: 0 0 auto;">
+          <div data-dc-tpl="13" style="position: relative; flex: 0 0 auto;">
+            <span data-dc-tpl="14" style="height: 40px; display: flex; align-items: center; gap: 7px; padding: 0px 11px; border: 1px solid var(--border); border-radius: 7px; background: var(--surface); cursor: pointer; white-space: nowrap;">
+              <svg data-dc-tpl="15" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="var(--text-2)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path data-dc-tpl="16" d="M12 3a9 9 0 1 0 0 18a9 9 0 0 0 0-18M3 12h18M12 3c2.4 2.6 3.6 5.6 3.6 9S14.4 18.4 12 21M12 3C9.6 5.6 8.4 8.6 8.4 12s1.2 6.4 3.6 9"></path></svg>
+              <span data-dc-tpl="17" style="font: 600 11.5px / 1 ui-monospace, Menlo, monospace; letter-spacing: 0.06em; color: var(--text);"><span class="sc-interp">EN</span></span>
+              <svg data-dc-tpl="18" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="var(--muted)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="transition: transform 160ms; transform: rotate(0deg);"><path data-dc-tpl="19" d="m6 9 6 6 6-6"></path></svg>
+            </span>
+            <div data-dc-tpl="20" style="display: none; position: absolute; top: 46px; inset-inline-end: 0px; z-index: 60; min-width: 148px; flex-direction: column; gap: 1px; padding: 5px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); box-shadow: var(--shadow);">
+              
+                <span data-dc-tpl="22" style="min-height: 40px; display: flex; align-items: center; gap: 9px; padding: 0px 10px; border-radius: 6px; cursor: pointer; background: var(--tint); transition: background 160ms;">
+                  <span data-dc-tpl="23" style="font: 600 11px / 1 ui-monospace, Menlo, monospace; letter-spacing: 0.06em; width: 24px; color: var(--accent-text);"><span class="sc-interp">EN</span></span>
+                  <span data-dc-tpl="24" style="flex: 1 1 0%; font-size: 13px; color: var(--accent-text);"><span class="sc-interp">English</span></span>
+                  <svg data-dc-tpl="25" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="var(--accent-text)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity: 1;"><path data-dc-tpl="26" d="m20 6-11 11-5-5"></path></svg>
+                </span>
+              
+                <span data-dc-tpl="22" style="min-height: 40px; display: flex; align-items: center; gap: 9px; padding: 0px 10px; border-radius: 6px; cursor: pointer; background: transparent; transition: background 160ms;">
+                  <span data-dc-tpl="23" style="font: 600 11px / 1 ui-monospace, Menlo, monospace; letter-spacing: 0.06em; width: 24px; color: var(--text-3);"><span class="sc-interp">AR</span></span>
+                  <span data-dc-tpl="24" style="flex: 1 1 0%; font-size: 13px; color: var(--text-3);"><span class="sc-interp">العربية</span></span>
+                  <svg data-dc-tpl="25" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="var(--text-3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0;"><path data-dc-tpl="26" d="m20 6-11 11-5-5"></path></svg>
+                </span>
+              
+                <span data-dc-tpl="22" style="min-height: 40px; display: flex; align-items: center; gap: 9px; padding: 0px 10px; border-radius: 6px; cursor: pointer; background: transparent; transition: background 160ms;">
+                  <span data-dc-tpl="23" style="font: 600 11px / 1 ui-monospace, Menlo, monospace; letter-spacing: 0.06em; width: 24px; color: var(--text-3);"><span class="sc-interp">FR</span></span>
+                  <span data-dc-tpl="24" style="flex: 1 1 0%; font-size: 13px; color: var(--text-3);"><span class="sc-interp">Français</span></span>
+                  <svg data-dc-tpl="25" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="var(--text-3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0;"><path data-dc-tpl="26" d="m20 6-11 11-5-5"></path></svg>
+                </span>
+              
+                <span data-dc-tpl="22" style="min-height: 40px; display: flex; align-items: center; gap: 9px; padding: 0px 10px; border-radius: 6px; cursor: pointer; background: transparent; transition: background 160ms;">
+                  <span data-dc-tpl="23" style="font: 600 11px / 1 ui-monospace, Menlo, monospace; letter-spacing: 0.06em; width: 24px; color: var(--text-3);"><span class="sc-interp">ES</span></span>
+                  <span data-dc-tpl="24" style="flex: 1 1 0%; font-size: 13px; color: var(--text-3);"><span class="sc-interp">Español</span></span>
+                  <svg data-dc-tpl="25" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="var(--text-3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0;"><path data-dc-tpl="26" d="m20 6-11 11-5-5"></path></svg>
+                </span>
+              
+                <span data-dc-tpl="22" style="min-height: 40px; display: flex; align-items: center; gap: 9px; padding: 0px 10px; border-radius: 6px; cursor: pointer; background: transparent; transition: background 160ms;">
+                  <span data-dc-tpl="23" style="font: 600 11px / 1 ui-monospace, Menlo, monospace; letter-spacing: 0.06em; width: 24px; color: var(--text-3);"><span class="sc-interp">PT</span></span>
+                  <span data-dc-tpl="24" style="flex: 1 1 0%; font-size: 13px; color: var(--text-3);"><span class="sc-interp">Português</span></span>
+                  <svg data-dc-tpl="25" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="var(--text-3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0;"><path data-dc-tpl="26" d="m20 6-11 11-5-5"></path></svg>
+                </span>
+              
+            </div>
+          </div>
+          <span data-dc-tpl="27" title="Theme" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border); border-radius: 7px; background: var(--surface); cursor: pointer;">
+            <svg data-dc-tpl="28" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="var(--text-2)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path data-dc-tpl="29" d="M21 13A9 9 0 1 1 11 3a7 7 0 0 0 10 10"></path></svg>
+          </span>
+          <span data-dc-tpl="30" style="height: 40px; flex: 0 0 auto; white-space: nowrap; display: flex; align-items: center; padding: 0px 15px; border-radius: 7px; background: var(--accent-solid); color: var(--on-accent); cursor: pointer;"><span class="sc-interp">Add to Chrome</span></span>
+        </div>
+
+        <span data-dc-tpl="31" style="display: flex; width: 40px; height: 40px; align-items: center; justify-content: center; border: 1px solid var(--border); border-radius: 7px; background: var(--surface); cursor: pointer;">
+          <svg data-dc-tpl="32" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--text)" stroke-width="1.7" stroke-linecap="round"><path data-dc-tpl="33" d="M3 6h18M3 12h18M3 18h18"></path></svg>
+        </span>
+      </div>
+
+      <div data-dc-tpl="34" style="display: none; flex-direction: column; gap: 2px; padding: 8px 0px 14px; border-top: 1px solid var(--border-2);">
+        
+          <span data-dc-tpl="36" style="min-height: 44px; display: flex; align-items: center; padding: 0px 8px; border-radius: 6px; cursor: pointer; font-size: 14.5px; font-weight: 600; color: var(--text); background: var(--tint);"><span class="sc-interp">Home</span></span>
+        
+          <span data-dc-tpl="36" style="min-height: 44px; display: flex; align-items: center; padding: 0px 8px; border-radius: 6px; cursor: pointer; font-size: 14.5px; font-weight: 500; color: var(--text-3); background: transparent;"><span class="sc-interp">Features</span></span>
+        
+          <span data-dc-tpl="36" style="min-height: 44px; display: flex; align-items: center; padding: 0px 8px; border-radius: 6px; cursor: pointer; font-size: 14.5px; font-weight: 500; color: var(--text-3); background: transparent;"><span class="sc-interp">FAQ</span></span>
+        
+          <span data-dc-tpl="36" style="min-height: 44px; display: flex; align-items: center; padding: 0px 8px; border-radius: 6px; cursor: pointer; font-size: 14.5px; font-weight: 500; color: var(--text-3); background: transparent;"><span class="sc-interp">Download</span></span>
+        
+          <span data-dc-tpl="36" style="min-height: 44px; display: flex; align-items: center; padding: 0px 8px; border-radius: 6px; cursor: pointer; font-size: 14.5px; font-weight: 500; color: var(--text-3); background: transparent;"><span class="sc-interp">Changelog</span></span>
+        
+        <div data-dc-tpl="37" style="display: flex; align-items: center; gap: 8px; padding-top: 10px;">
+          <div data-dc-tpl="38" style="display: flex; align-items: center; gap: 2px; border: 1px solid var(--border); border-radius: 7px; padding: 2px; background: var(--surface);">
+            
+              <span data-dc-tpl="40" style="min-width: 40px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 5px; cursor: pointer; font: 600 11px / 1 ui-monospace, Menlo, monospace; color: var(--accent-text); background: var(--tint);"><span class="sc-interp">EN</span></span>
+            
+              <span data-dc-tpl="40" style="min-width: 40px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 5px; cursor: pointer; font: 600 11px / 1 ui-monospace, Menlo, monospace; color: var(--text-3); background: transparent;"><span class="sc-interp">AR</span></span>
+            
+              <span data-dc-tpl="40" style="min-width: 40px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 5px; cursor: pointer; font: 600 11px / 1 ui-monospace, Menlo, monospace; color: var(--text-3); background: transparent;"><span class="sc-interp">FR</span></span>
+            
+              <span data-dc-tpl="40" style="min-width: 40px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 5px; cursor: pointer; font: 600 11px / 1 ui-monospace, Menlo, monospace; color: var(--text-3); background: transparent;"><span class="sc-interp">ES</span></span>
+            
+              <span data-dc-tpl="40" style="min-width: 40px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 5px; cursor: pointer; font: 600 11px / 1 ui-monospace, Menlo, monospace; color: var(--text-3); background: transparent;"><span class="sc-interp">PT</span></span>
+            
+          </div>
+          <span data-dc-tpl="41" style="width: 44px; height: 40px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border); border-radius: 7px; background: var(--surface); cursor: pointer;">
+            <svg data-dc-tpl="42" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="var(--text-2)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path data-dc-tpl="43" d="M21 13A9 9 0 1 1 11 3a7 7 0 0 0 10 10"></path></svg>
+          </span>
+          <span data-dc-tpl="44" style="flex: 1 1 0%; height: 44px; display: flex; align-items: center; justify-content: center; border-radius: 7px; background: var(--accent-solid); color: var(--on-accent); cursor: pointer;"><span class="sc-interp">Add to Chrome</span></span>
+        </div>
+      </div>
+    </header>
+
+    <main data-dc-tpl="45" style="flex: 1 1 0%; padding-inline: 40px;">
+
+      
+      
+        <div data-dc-tpl="47" style="max-width: 1080px; margin: 0px auto; padding-block: 72px 0px;">
+
+          <div data-dc-tpl="48" style="display: flex; flex-direction: row; gap: 56px; align-items: center;">
+            <div data-dc-tpl="49" style="flex: 1 1 0%; min-width: 0px; display: flex; flex-direction: column; gap: 20px; max-width: 720px;">
+              <span data-dc-tpl="50" style="font: 500 11.5px / 1 ui-monospace, Menlo, monospace; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent-text);"><span class="sc-interp">Chrome extension · v0.1.0</span></span>
+              <h1 data-dc-tpl="51" style="margin: 0px; font-size: 50px; font-weight: 600; line-height: 1.1; letter-spacing: -0.025em; text-wrap: balance;"><span class="sc-interp">Never lose a Claude Artifact again.</span></h1>
+              <p data-dc-tpl="52" style="margin: 0px; font-size: 16.5px; line-height: 1.65; color: var(--text-3); text-wrap: pretty; max-width: 48ch;"><span class="sc-interp">Abrium quietly catalogs every artifact you generate on claude.ai — code, documents, HTML, SVG — and keeps them searchable on your own machine. No account, no cloud, no tracking.</span></p>
+              <div data-dc-tpl="53" style="display: flex; flex-wrap: wrap; gap: 10px; padding-top: 4px;">
+                <span data-dc-tpl="54" style="height: 48px; display: flex; align-items: center; gap: 9px; padding: 0px 20px; border-radius: 8px; background: var(--accent-solid); color: var(--on-accent); cursor: pointer;">
+                  <svg data-dc-tpl="55" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path data-dc-tpl="56" d="M12 3a9 9 0 1 0 0 18a9 9 0 0 0 0-18M12 8.4a3.6 3.6 0 1 0 0 7.2a3.6 3.6 0 0 0 0-7.2M20.4 7.6H12M4.3 6 8.4 13.2M10.7 20.9 14.8 13.7"></path></svg>
+                  <span class="sc-interp">Add to Chrome</span>
+                </span>
+                <a data-dc-tpl="57" href="#" style="height: 48px; display: flex; align-items: center; gap: 9px; padding: 0px 18px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--text); text-decoration: none;">
+                  <svg data-dc-tpl="58" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path data-dc-tpl="59" d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.3 4.3 0 0 0-.1-3.2s-1.1-.3-3.5 1.3a12 12 0 0 0-6.2 0C6.5 2.8 5.4 3.1 5.4 3.1a4.3 4.3 0 0 0-.1 3.2A4.6 4.6 0 0 0 4 9.5c0 4.6 2.7 5.7 5.5 6-.4.4-.5.9-.5 1.6V21"></path></svg>
+                  <span class="sc-interp">View on GitHub</span>
+                </a>
+              </div>
+              <div data-dc-tpl="60" style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding-top: 8px;">
+                
+                  <span data-dc-tpl="62" style="display: flex; align-items: center; gap: 6px; color: var(--text-3);">
+                    <svg data-dc-tpl="63" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path data-dc-tpl="64" d="m20 6-11 11-5-5"></path></svg>
+                    <span class="sc-interp">Free forever</span>
+                  </span>
+                
+                  <span data-dc-tpl="62" style="display: flex; align-items: center; gap: 6px; color: var(--text-3);">
+                    <svg data-dc-tpl="63" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path data-dc-tpl="64" d="m20 6-11 11-5-5"></path></svg>
+                    <span class="sc-interp">Open source</span>
+                  </span>
+                
+                  <span data-dc-tpl="62" style="display: flex; align-items: center; gap: 6px; color: var(--text-3);">
+                    <svg data-dc-tpl="63" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path data-dc-tpl="64" d="m20 6-11 11-5-5"></path></svg>
+                    <span class="sc-interp">Local-only</span>
+                  </span>
+                
+                  <span data-dc-tpl="62" style="display: flex; align-items: center; gap: 6px; color: var(--text-3);">
+                    <svg data-dc-tpl="63" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path data-dc-tpl="64" d="m20 6-11 11-5-5"></path></svg>
+                    <span class="sc-interp">No tracking</span>
+                  </span>
+                
+              </div>
+            </div>
+
+          </div>
+
+          <div data-dc-tpl="65" style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; padding-block: 72px;">
+            
+              <div data-dc-tpl="67" style="border: 1px solid var(--border); border-radius: 8px; background: var(--surface); padding: 22px; display: flex; flex-direction: column; gap: 11px;">
+                <span data-dc-tpl="68" style="width: 36px; height: 36px; border-radius: 8px; border: 1px solid var(--accent); display: flex; align-items: center; justify-content: center; background: var(--tint);">
+                  <svg data-dc-tpl="69" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path data-dc-tpl="70" d="M12 3a9 9 0 1 0 0 18a9 9 0 0 0 0-18M12 8v8M8 12h8"></path></svg>
+                </span>
+                <h3 data-dc-tpl="71" style="margin: 0px; letter-spacing: -0.01em;"><span class="sc-interp">Auto-capture</span></h3>
+                <p data-dc-tpl="72" style="margin: 0px; font-size: 13.5px; line-height: 1.65; color: var(--text-3); text-wrap: pretty;"><span class="sc-interp">Every artifact you open in a conversation is saved the moment it renders — including each revision, so earlier versions stay recoverable.</span></p>
+              </div>
+            
+              <div data-dc-tpl="67" style="border: 1px solid var(--border); border-radius: 8px; background: var(--surface); padding: 22px; display: flex; flex-direction: column; gap: 11px;">
+                <span data-dc-tpl="68" style="width: 36px; height: 36px; border-radius: 8px; border: 1px solid var(--accent); display: flex; align-items: center; justify-content: center; background: var(--tint);">
+                  <svg data-dc-tpl="69" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path data-dc-tpl="70" d="M11 4a7 7 0 1 0 0 14a7 7 0 0 0 0-14M20 20l-4-4"></path></svg>
+                </span>
+                <h3 data-dc-tpl="71" style="margin: 0px; letter-spacing: -0.01em;"><span class="sc-interp">Gallery &amp; search</span></h3>
+                <p data-dc-tpl="72" style="margin: 0px; font-size: 13.5px; line-height: 1.65; color: var(--text-3); text-wrap: pretty;"><span class="sc-interp">A side panel that lists everything by type, conversation and date. Full-text search reaches into the artifact body, not just the title.</span></p>
+              </div>
+            
+              <div data-dc-tpl="67" style="border: 1px solid var(--border); border-radius: 8px; background: var(--surface); padding: 22px; display: flex; flex-direction: column; gap: 11px;">
+                <span data-dc-tpl="68" style="width: 36px; height: 36px; border-radius: 8px; border: 1px solid var(--accent); display: flex; align-items: center; justify-content: center; background: var(--tint);">
+                  <svg data-dc-tpl="69" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path data-dc-tpl="70" d="M3 7h18v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zM3 7l2-4h14l2 4M10 12h4"></path></svg>
+                </span>
+                <h3 data-dc-tpl="71" style="margin: 0px; letter-spacing: -0.01em;"><span class="sc-interp">Batch export</span></h3>
+                <p data-dc-tpl="72" style="margin: 0px; font-size: 13.5px; line-height: 1.65; color: var(--text-3); text-wrap: pretty;"><span class="sc-interp">Select any number of artifacts and download them as a folder-structured ZIP, with correct file extensions per type.</span></p>
+              </div>
+            
+              <div data-dc-tpl="67" style="border: 1px solid var(--border); border-radius: 8px; background: var(--surface); padding: 22px; display: flex; flex-direction: column; gap: 11px;">
+                <span data-dc-tpl="68" style="width: 36px; height: 36px; border-radius: 8px; border: 1px solid var(--accent); display: flex; align-items: center; justify-content: center; background: var(--tint);">
+                  <svg data-dc-tpl="69" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path data-dc-tpl="70" d="M12 3a9 9 0 1 0 0 18a9 9 0 0 0 0-18M3 12h18M12 3c2.4 2.6 3.6 5.6 3.6 9S14.4 18.4 12 21M12 3C9.6 5.6 8.4 8.6 8.4 12s1.2 6.4 3.6 9"></path></svg>
+                </span>
+                <h3 data-dc-tpl="71" style="margin: 0px; letter-spacing: -0.01em;"><span class="sc-interp">Five languages, real RTL</span></h3>
+                <p data-dc-tpl="72" style="margin: 0px; font-size: 13.5px; line-height: 1.65; color: var(--text-3); text-wrap: pretty;"><span class="sc-interp">English, Arabic, French, Spanish and Portuguese. Arabic mirrors the entire layout — navigation, icons and reading order.</span></p>
+              </div>
+            
+          </div>
+
+          <div data-dc-tpl="73" style="border-top: 1px solid var(--border); padding-block: 72px; display: flex; flex-direction: column; gap: 26px;">
+            <div data-dc-tpl="74" style="display: flex; flex-direction: column; gap: 8px; max-width: 600px;">
+              <span data-dc-tpl="75" style="font: 500 11.5px / 1 ui-monospace, Menlo, monospace; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent-text);"><span class="sc-interp">How it works</span></span>
+              <h2 data-dc-tpl="76" style="margin: 0px; font-size: 27px; font-weight: 600; line-height: 1.2; letter-spacing: -0.02em;"><span class="sc-interp">Three steps, then it disappears into the background.</span></h2>
+            </div>
+            <div data-dc-tpl="77" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;">
+              
+                <div data-dc-tpl="79" style="display: flex; flex-direction: column; gap: 10px; padding: 20px; border: 1px solid var(--border-2); border-radius: 8px; background: var(--bg-alt);">
+                  <span data-dc-tpl="80" style="width: 26px; height: 26px; border-radius: 999px; border: 1px solid var(--accent); display: flex; align-items: center; justify-content: center; font: 600 12px / 1 ui-monospace, Menlo, monospace; color: var(--accent-text);"><span class="sc-interp">1</span></span>
+                  <span data-dc-tpl="81"><span class="sc-interp">Install and pin</span></span>
+                  <span data-dc-tpl="82" style="font-size: 13px; line-height: 1.6; color: var(--text-3);"><span class="sc-interp">Add Abrium from the Chrome Web Store and pin it to the toolbar. No sign-up screen — there is no account.</span></span>
+                </div>
+              
+                <div data-dc-tpl="79" style="display: flex; flex-direction: column; gap: 10px; padding: 20px; border: 1px solid var(--border-2); border-radius: 8px; background: var(--bg-alt);">
+                  <span data-dc-tpl="80" style="width: 26px; height: 26px; border-radius: 999px; border: 1px solid var(--accent); display: flex; align-items: center; justify-content: center; font: 600 12px / 1 ui-monospace, Menlo, monospace; color: var(--accent-text);"><span class="sc-interp">2</span></span>
+                  <span data-dc-tpl="81"><span class="sc-interp">Work as usual</span></span>
+                  <span data-dc-tpl="82" style="font-size: 13px; line-height: 1.6; color: var(--text-3);"><span class="sc-interp">Keep using claude.ai. When an artifact appears in Code view, Abrium files it away with its title, type and source conversation.</span></span>
+                </div>
+              
+                <div data-dc-tpl="79" style="display: flex; flex-direction: column; gap: 10px; padding: 20px; border: 1px solid var(--border-2); border-radius: 8px; background: var(--bg-alt);">
+                  <span data-dc-tpl="80" style="width: 26px; height: 26px; border-radius: 999px; border: 1px solid var(--accent); display: flex; align-items: center; justify-content: center; font: 600 12px / 1 ui-monospace, Menlo, monospace; color: var(--accent-text);"><span class="sc-interp">3</span></span>
+                  <span data-dc-tpl="81"><span class="sc-interp">Find it later</span></span>
+                  <span data-dc-tpl="82" style="font-size: 13px; line-height: 1.6; color: var(--text-3);"><span class="sc-interp">Open the side panel, search or filter, then preview, copy, pin or export what you need.</span></span>
+                </div>
+              
+            </div>
+          </div>
+
+          <div data-dc-tpl="83" style="border: 1px solid var(--border); border-radius: 8px; background: var(--bg-alt); padding: 18px 22px; margin-bottom: 72px; display: flex; flex-wrap: wrap; align-items: center; gap: 14px; justify-content: space-between;">
+            <span data-dc-tpl="84" style="color: var(--text-2);"><span class="sc-interp">Free · Open source · Local-only · No tracking</span></span>
+            <span data-dc-tpl="85" style="height: 40px; display: flex; align-items: center; gap: 8px; padding: 0px 16px; border-radius: 7px; border: 1px solid var(--accent); color: var(--accent-text); cursor: pointer;">
+              <span class="sc-interp">Get Abrium</span>
+              <svg data-dc-tpl="86" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="transform: scaleX(var(--flip));"><path data-dc-tpl="87" d="m9 6 6 6-6 6"></path></svg>
+            </span>
+          </div>
+        </div>
+      
+
+      
+      
+
+      
+      
+
+      
+      
+
+      
+      
+
+      
+      
+
+      
+      
+
+      
+      
+
+      
+      
+
+      
+      
+
+    </main>
+
+    
+    <footer data-dc-tpl="290" style="border-top: 1px solid var(--border); background: var(--bg-alt); padding-inline: 40px;">
+      <div data-dc-tpl="291" style="max-width: 1080px; margin: 0px auto; padding-block: 40px 28px; display: flex; flex-wrap: wrap; gap: 36px;">
+        <div data-dc-tpl="292" style="flex: 1 1 0%; min-width: 220px; display: flex; flex-direction: column; gap: 10px;">
+          <div data-dc-tpl="293" style="display: flex; align-items: center; gap: 9px;">
+            <img data-dc-tpl="294" src="blob:null/0372b608-d571-415b-8b71-ad8f1447443a" alt="" style="width: 26px; height: auto; display: block;">
+            <span data-dc-tpl="295">Abrium</span>
+          </div>
+          <p data-dc-tpl="296" style="margin: 0px; max-width: 34ch; font-size: 13px; line-height: 1.65; color: var(--text-3);"><span class="sc-interp">A local-first catalog for Claude Artifacts. Free and open source.</span></p>
+          <span data-dc-tpl="297" style="font: 400 11.5px / 1 ui-monospace, Menlo, monospace; color: var(--muted);">abrium.onl</span>
+        </div>
+        
+          <div data-dc-tpl="299" style="min-width: 150px; display: flex; flex-direction: column; gap: 10px;">
+            <span data-dc-tpl="300" style="font: 500 11px / 1 ui-monospace, Menlo, monospace; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted);"><span class="sc-interp">Product</span></span>
+            
+              <span data-dc-tpl="302" style="min-height: 26px; display: flex; align-items: center; font-size: 13px; color: var(--text-3); cursor: pointer;"><span class="sc-interp">Features</span></span>
+            
+              <span data-dc-tpl="302" style="min-height: 26px; display: flex; align-items: center; font-size: 13px; color: var(--text-3); cursor: pointer;"><span class="sc-interp">Download</span></span>
+            
+              <span data-dc-tpl="302" style="min-height: 26px; display: flex; align-items: center; font-size: 13px; color: var(--text-3); cursor: pointer;"><span class="sc-interp">Changelog</span></span>
+            
+              <span data-dc-tpl="302" style="min-height: 26px; display: flex; align-items: center; font-size: 13px; color: var(--text-3); cursor: pointer;"><span class="sc-interp">Design system</span></span>
+            
+          </div>
+        
+          <div data-dc-tpl="299" style="min-width: 150px; display: flex; flex-direction: column; gap: 10px;">
+            <span data-dc-tpl="300" style="font: 500 11px / 1 ui-monospace, Menlo, monospace; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted);"><span class="sc-interp">Legal</span></span>
+            
+              <span data-dc-tpl="302" style="min-height: 26px; display: flex; align-items: center; font-size: 13px; color: var(--text-3); cursor: pointer;"><span class="sc-interp">Privacy</span></span>
+            
+              <span data-dc-tpl="302" style="min-height: 26px; display: flex; align-items: center; font-size: 13px; color: var(--text-3); cursor: pointer;"><span class="sc-interp">Terms</span></span>
+            
+              <span data-dc-tpl="302" style="min-height: 26px; display: flex; align-items: center; font-size: 13px; color: var(--text-3); cursor: pointer;"><span class="sc-interp">Contact</span></span>
+            
+              <span data-dc-tpl="302" style="min-height: 26px; display: flex; align-items: center; font-size: 13px; color: var(--text-3); cursor: pointer;"><span class="sc-interp">Cookie preferences</span></span>
+            
+          </div>
+        
+      </div>
+      <div data-dc-tpl="303" style="max-width: 1080px; margin: 0px auto; padding-block: 16px 26px; border-top: 1px solid var(--border); display: flex; flex-wrap: wrap; align-items: center; gap: 14px;">
+        <span data-dc-tpl="304" style="font-size: 12.5px; color: var(--text-3); flex: 1 1 0%;">© 2026 Abrium · <span class="sc-interp">Free · Open source · Local-only · No tracking</span></span>
+        <div data-dc-tpl="305" style="display: flex; gap: 8px;">
+          <a data-dc-tpl="306" href="#" style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border); border-radius: 7px; background: var(--surface);">
+            <svg data-dc-tpl="307" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="var(--text-2)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path data-dc-tpl="308" d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.3 4.3 0 0 0-.1-3.2s-1.1-.3-3.5 1.3a12 12 0 0 0-6.2 0C6.5 2.8 5.4 3.1 5.4 3.1a4.3 4.3 0 0 0-.1 3.2A4.6 4.6 0 0 0 4 9.5c0 4.6 2.7 5.7 5.5 6-.4.4-.5.9-.5 1.6V21"></path></svg>
+          </a>
+          <a data-dc-tpl="309" href="#" style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border); border-radius: 7px; background: var(--surface);">
+            <svg data-dc-tpl="310" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="var(--text-2)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path data-dc-tpl="311" d="M4 3v18M14.5 3a5.8 5.8 0 1 1 0 11.6a5.8 5.8 0 0 1 0-11.6"></path></svg>
+          </a>
+        </div>
+      </div>
+    </footer>
+
+    
+    <div data-dc-tpl="312" style="display: block; position: sticky; bottom: 0px; z-index: 50; padding: 14px 40px 18px; background: var(--surface); border-top: 1px solid var(--border); box-shadow: rgba(38, 36, 32, 0.4) 0px -8px 24px -20px;">
+      <div data-dc-tpl="313" style="max-width: 1080px; margin: 0px auto; display: flex; flex-wrap: wrap; align-items: center; gap: 14px;">
+        <div data-dc-tpl="314" style="flex: 1 1 0%; min-width: 240px; display: flex; gap: 11px; align-items: flex-start;">
+          <svg data-dc-tpl="315" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex: 0 0 auto; margin-top: 2px;"><path data-dc-tpl="316" d="M12 3a9 9 0 1 0 9 9 4 4 0 0 1-5-5 4 4 0 0 1-4-4M9 10h.01M13 15h.01M8 15h.01"></path></svg>
+          <span data-dc-tpl="317" style="font-size: 13px; line-height: 1.6; color: var(--text-2); text-wrap: pretty;"><span class="sc-interp">Abrium uses one preference cookie for language and theme. No analytics, ever.</span></span>
+        </div>
+        <div data-dc-tpl="318" style="display: flex; gap: 8px;">
+          <span data-dc-tpl="319" style="height: 40px; display: flex; align-items: center; padding: 0px 16px; border-radius: 7px; border: 1px solid var(--border); background: var(--bg-alt); color: var(--text); cursor: pointer;"><span class="sc-interp">Reject all</span></span>
+          <span data-dc-tpl="320" style="height: 40px; display: flex; align-items: center; padding: 0px 16px; border-radius: 7px; background: var(--accent-solid); color: var(--on-accent); cursor: pointer;"><span class="sc-interp">Accept all</span></span>
+        </div>
+      </div>
+    </div>
+
+  </div></div></div></div>
+<script type="text/x-dc" data-dc-script="" data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:900},&quot;startPage&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;home&quot;,&quot;options&quot;:[&quot;home&quot;,&quot;features&quot;,&quot;faq&quot;,&quot;download&quot;,&quot;changelog&quot;,&quot;privacy&quot;,&quot;terms&quot;,&quot;contact&quot;,&quot;cookies&quot;,&quot;404&quot;,&quot;system&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;View&quot;},&quot;startLang&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;en&quot;,&quot;options&quot;:[&quot;en&quot;,&quot;ar&quot;,&quot;fr&quot;,&quot;es&quot;,&quot;pt&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;View&quot;},&quot;darkMode&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;View&quot;},&quot;mobileView&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;View&quot;}}">
+const I = {
+  capture: "M12 3a9 9 0 1 0 0 18a9 9 0 0 0 0-18M12 8v8M8 12h8",
+  search: "M11 4a7 7 0 1 0 0 14a7 7 0 0 0 0-14M20 20l-4-4",
+  zip: "M3 7h18v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zM3 7l2-4h14l2 4M10 12h4",
+  globe: "M12 3a9 9 0 1 0 0 18a9 9 0 0 0 0-18M3 12h18M12 3c2.4 2.6 3.6 5.6 3.6 9S14.4 18.4 12 21M12 3C9.6 5.6 8.4 8.6 8.4 12s1.2 6.4 3.6 9",
+  lock: "M6 10h12v10H6zM9 10V7a3 3 0 0 1 6 0v3",
+  code: "m18 16 4-4-4-4M6 8l-4 4 4 4M14.5 4l-5 16",
+  doc: "M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8zM14 3v5h5M9 13h6M9 17h4",
+  svg: "M3 4h7v7H3zM17.5 21a3.5 3.5 0 1 0 0-7a3.5 3.5 0 0 0 0 7M14 4h7l-3.5 6z",
+  react: "M12 10.6a1.4 1.4 0 1 0 0 2.8a1.4 1.4 0 0 0 0-2.8M12 3c5 0 9 4 9 9s-4 9-9 9-9-4-9-9 4-9 9-9M3.5 8.5c3-1.8 14-1.8 17 0M3.5 15.5c3 1.8 14 1.8 17 0",
+  pin: "M12 17v5M9 3h6l-1 6 3 3v2H7v-2l3-3z",
+  download: "M12 3v12M7 11l5 5 5-5M4 20h16",
+  layers: "m12 3 9 5-9 5-9-5zM3 13l9 5 9-5M3 17l9 5 9-5",
+  shield: "M12 3l8 3v6c0 5-3.4 8-8 9-4.6-1-8-4-8-9V6z",
+  github: "M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.3 4.3 0 0 0-.1-3.2s-1.1-.3-3.5 1.3a12 12 0 0 0-6.2 0C6.5 2.8 5.4 3.1 5.4 3.1a4.3 4.3 0 0 0-.1 3.2A4.6 4.6 0 0 0 4 9.5c0 4.6 2.7 5.7 5.5 6-.4.4-.5.9-.5 1.6V21",
+  patreon: "M4 3v18M14.5 3a5.8 5.8 0 1 1 0 11.6a5.8 5.8 0 0 1 0-11.6",
+  sun: "M12 8a4 4 0 1 0 0 8a4 4 0 0 0 0-8M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4",
+  moon: "M21 13A9 9 0 1 1 11 3a7 7 0 0 0 10 10",
+  clock: "M12 7v5l3 2M12 3a9 9 0 1 0 0 18a9 9 0 0 0 0-18",
+  list: "M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01",
+  filter: "M3 5h18l-7 8v6l-4 2v-8z",
+  bolt: "m13 2-9 12h7l-1 8 9-12h-7z",
+  chrome: "M12 3a9 9 0 1 0 0 18a9 9 0 0 0 0-18M12 8.4a3.6 3.6 0 1 0 0 7.2a3.6 3.6 0 0 0 0-7.2M20.4 7.6H12M4.3 6 8.4 13.2M10.7 20.9 14.8 13.7"
+};
+
+const EN = {
+  addToChrome: "Add to Chrome", viewGithub: "View on GitHub", getIt: "Get Abrium",
+  eyebrow: "Chrome extension · v0.1.0",
+  heroTitle: "Never lose a Claude Artifact again.",
+  heroSub: "Abrium quietly catalogs every artifact you generate on claude.ai — code, documents, HTML, SVG — and keeps them searchable on your own machine. No account, no cloud, no tracking.",
+  sidePanel: "Side panel", searchPh: "Search the Vault", screenshot: "Screenshot",
+  howLabel: "How it works", howTitle: "Three steps, then it disappears into the background.",
+  trustStrip: "Free · Open source · Local-only · No tracking",
+  featuresLabel: "Features", featuresTitle: "Everything the Vault does.",
+  featuresSub: "Five areas of work, all running inside your browser. Nothing leaves the machine you are reading this on.",
+  faqLabel: "FAQ", faqTitle: "Questions people ask first.",
+  faqMore: "Something not covered here?", contactUs: "Contact",
+  dlTitle: "Install Abrium", dlSub: "One click from the Chrome Web Store. Listing is under review — the button below is a placeholder until it goes live.",
+  comingSoon: "Coming soon",
+  changelogLabel: "Changelog", changelogTitle: "What changed, and when.",
+  contactTitle: "Get in touch", contactSub: "Two ways to reach the project. Bug reports are the most useful thing you can send.",
+  cookieTitle: "Cookie preferences",
+  cookieBody: "This website uses a single cookie to remember your language and theme. It sets nothing else — no analytics, no advertising, no third-party scripts. The extension itself uses no cookies at all and never contacts a server.",
+  currentStatus: "Current status", cookieNote: "Your choice is stored locally and can be changed on this page at any time.",
+  acceptAll: "Accept all", rejectAll: "Reject all",
+  bannerText: "Abrium uses one preference cookie for language and theme. No analytics, ever.",
+  nfTitle: "This page isn't in the Vault.", nfBody: "The link may be outdated, or the page moved. Everything else is still where you left it.",
+  backHome: "Back to home",
+  footerTag: "A local-first catalog for Claude Artifacts. Free and open source.",
+  nav: { home: "Home", features: "Features", faq: "FAQ", download: "Download", changelog: "Changelog" },
+  footProduct: "Product", footLegal: "Legal",
+  linkPrivacy: "Privacy", linkTerms: "Terms", linkContact: "Contact", linkCookies: "Cookie preferences", linkSystem: "Design system",
+  trust: ["Free forever", "Open source", "Local-only", "No tracking"],
+  homeFeatures: [
+    { i: "capture", title: "Auto-capture", body: "Every artifact you open in a conversation is saved the moment it renders — including each revision, so earlier versions stay recoverable." },
+    { i: "search", title: "Gallery & search", body: "A side panel that lists everything by type, conversation and date. Full-text search reaches into the artifact body, not just the title." },
+    { i: "zip", title: "Batch export", body: "Select any number of artifacts and download them as a folder-structured ZIP, with correct file extensions per type." },
+    { i: "globe", title: "Five languages, real RTL", body: "English, Arabic, French, Spanish and Portuguese. Arabic mirrors the entire layout — navigation, icons and reading order." }
+  ],
+  steps: [
+    { n: "1", title: "Install and pin", body: "Add Abrium from the Chrome Web Store and pin it to the toolbar. No sign-up screen — there is no account." },
+    { n: "2", title: "Work as usual", body: "Keep using claude.ai. When an artifact appears in Code view, Abrium files it away with its title, type and source conversation." },
+    { n: "3", title: "Find it later", body: "Open the side panel, search or filter, then preview, copy, pin or export what you need." }
+  ],
+  featureSections: [
+    { i: "capture", title: "Capture", frame: "capture · side panel", body: "Abrium watches the artifact surface of the page and stores each one locally as it appears. Revisions are versioned rather than overwritten, so a rewrite never costs you the earlier draft.", bullets: ["Code, Markdown, HTML, SVG and React artifacts", "Every revision kept as a numbered version", "Works retroactively on conversations you reopen"] },
+    { i: "search", title: "Organize", frame: "gallery · filters", body: "The side panel is the home for everything captured. Filter by type, pin the things you return to, and search across titles, conversation names and artifact contents.", bullets: ["Type filters and a pinned collection", "Full-text search across artifact bodies", "Sorted by capture time, newest first"] },
+    { i: "zip", title: "Export", frame: "batch selection", body: "Single artifacts download with the correct extension. Multi-select turns the panel into a batch tool with a bottom action bar for ZIP export or bulk pinning.", bullets: ["One-click download or copy to clipboard", "ZIP export with per-type file extensions", "Batch pin and batch delete"] },
+    { i: "lock", title: "Privacy", frame: "storage · IndexedDB", body: "Everything lives in your browser's local storage. There is no server to send data to, no analytics SDK, and no network request the extension makes on your behalf.", bullets: ["Local IndexedDB storage only", "No accounts, no telemetry, no ads", "Source code public and auditable"] },
+    { i: "globe", title: "Languages", frame: "interface · العربية", body: "The interface ships in five languages. Arabic is a full right-to-left build: the panel, the toolbars, the icons with directional meaning and the reading order all mirror.", bullets: ["EN · AR · FR · ES · PT", "Complete RTL mirroring, not flipped text", "Follows the browser language by default"] }
+  ],
+  faqs: [
+    { q: "Is Abrium free?", a: "Yes — free, with no paid tier and no upsell. The source is public, and the project is supported by voluntary donations only." },
+    { q: "Does it read my conversations?", a: "No. Abrium only looks at the artifact panel of the page — the rendered artifact and its title. Message content is never parsed, stored or transmitted." },
+    { q: "Why does it need Code view rather than Preview?", a: "Preview mode renders an artifact inside a sandboxed frame that extensions cannot read. Code view exposes the raw source in the page itself, which is what Abrium files away — so an artifact left in Preview may not be captured until you switch." },
+    { q: "Is my data ever sent anywhere?", a: "Never. The extension makes no network requests. Everything is written to your browser's local IndexedDB and stays on your device, including when you export a ZIP." },
+    { q: "What languages are supported?", a: "English, Arabic, French, Spanish and Portuguese. Arabic runs as a fully mirrored right-to-left interface rather than translated text in a left-to-right layout." },
+    { q: "What happens if I uninstall it?", a: "Chrome deletes the local database with the extension. Export anything you want to keep before removing it — a full ZIP export takes a few seconds." }
+  ],
+  installSteps: [
+    { n: "1", title: "Add the extension", body: "Open the Chrome Web Store listing and choose Add to Chrome. No permissions beyond claude.ai are requested." },
+    { n: "2", title: "Pin it to the toolbar", body: "Click the puzzle-piece icon and pin Abrium so the popup is one click away." },
+    { n: "3", title: "Open a conversation", body: "Visit claude.ai, open any artifact in Code view, and it appears in the Vault immediately." }
+  ],
+  releases: [
+    { version: "v0.1.0", date: "August 2, 2026", tag: "Initial release", items: ["Auto-capture for Code, Markdown, HTML, SVG and React artifacts", "Side panel gallery with type filters, search and pinning", "Artifact detail view with preview, copy and download", "Batch selection with ZIP export", "Five interface languages with full RTL support for Arabic", "Local IndexedDB storage — no network access of any kind"] }
+  ],
+  contactCards: [
+    { i: "github", title: "Report an issue", body: "Bugs, missing captures or feature requests belong on the issue tracker. Include your Chrome version and the artifact type if something failed to capture.", cta: "Open GitHub issues", placeholder: false },
+    { i: "patreon", title: "Support the project", body: "Abrium stays free. If it saves you time, a small recurring contribution funds maintenance and the Chrome Web Store listing fee.", cta: "Patreon page", placeholder: true }
+  ],
+  privacy: {
+    title: "Privacy policy", updated: "Last updated · August 2, 2026",
+    sections: [
+      { h: "The short version", p: ["Abrium does not collect, transmit or sell any data. The extension has no server component. Everything it stores is written to your own browser and never leaves it.", "This website sets one cookie to remember your language and theme choices. Nothing else is tracked."] },
+      { h: "What the extension stores", p: ["When you open an artifact on claude.ai in Code view, Abrium saves the artifact's contents, its title, its type, the name of the source conversation and the time of capture. This record is written to IndexedDB inside your browser profile.", "Message text outside the artifact panel is not read. Your account details, email address and conversation history are not accessible to the extension and are never requested."] },
+      { h: "What the extension sends", p: ["Nothing. Abrium makes no outbound network requests. There is no analytics SDK, no crash reporter, no advertising identifier and no remote configuration. You can verify this by reading the source or by watching the network panel while the extension runs."] },
+      { h: "Website analytics", p: ["abrium.onl serves static pages. There is no analytics script, no tag manager, and no third-party embed. Server access logs are kept by the host for a short retention period for security purposes and contain no identifiers we control or read."] },
+      { h: "Cookies", p: ["A single first-party preference cookie stores your selected language and colour theme so the site looks the same on your next visit. You can reject it on the cookie preferences page; the site continues to work, and will simply default to your browser's language."] },
+      { h: "Your data, your control", p: ["Because storage is local, deletion is local too. Remove individual artifacts from the side panel, clear the whole vault from the extension settings, or uninstall the extension to delete the database entirely.", "We cannot delete data on your behalf, because we never receive any."] },
+      { h: "Changes to this policy", p: ["If this policy changes, the revision date above will change with it and the update will be listed in the public changelog. Material changes will be announced on the repository."] },
+      { h: "Contact", p: ["Questions about privacy can be raised as an issue on the public repository, where the answer will be visible to everyone who has the same question."] }
+    ]
+  },
+  terms: {
+    title: "Terms of use", updated: "Last updated · August 2, 2026",
+    sections: [
+      { h: "Acceptance", p: ["By installing the Abrium extension or using abrium.onl, you agree to these terms. If you do not agree, do not install the extension."] },
+      { h: "Licence", p: ["Abrium is released as open source software. You may use, study, modify and redistribute it under the terms of the licence file published in the repository. That licence governs the code; these terms govern the hosted website and the distributed build."] },
+      { h: "No warranty", p: ["The extension is provided as is, without warranty of any kind, express or implied. It stores data locally in your browser, and local storage can be cleared by the browser, by other software or by you. Keep exports of anything you cannot afford to lose.", "The maintainers are not liable for lost artifacts, lost work or any indirect damages arising from use of the software."] },
+      { h: "Acceptable use", p: ["Use Abrium only with content you have the right to store. You are responsible for what you capture and export, and for complying with the terms of any service you capture from, including Anthropic's terms for claude.ai."] },
+      { h: "Relationship to Anthropic", p: ["Abrium is an independent project. It is not affiliated with, endorsed by or sponsored by Anthropic. Claude and claude.ai are trademarks of their respective owner and are used here only to describe compatibility."] },
+      { h: "Availability", p: ["The website and the Chrome Web Store listing may change or become unavailable at any time. Because the extension runs entirely locally, an outage of either does not affect an installed copy."] },
+      { h: "Changes to these terms", p: ["Updated terms take effect when published, with the revision date above changed accordingly. Continued use after publication constitutes acceptance."] }
+    ]
+  }
+};
+
+const AR = {
+  addToChrome: "أضِف إلى كروم", viewGithub: "على GitHub", getIt: "احصل على أبريوم",
+  eyebrow: "إضافة كروم · الإصدار 0.1.0",
+  heroTitle: "لا تفقد أي Artifact من كلود بعد اليوم.",
+  heroSub: "يفهرس أبريوم بهدوء كل عنصر تُنشئه على claude.ai — شيفرة، مستندات، HTML، SVG — ويبقيه قابلاً للبحث على جهازك وحده. بلا حساب، بلا سحابة، بلا تتبّع.",
+  sidePanel: "اللوحة الجانبية", searchPh: "ابحث في الخزنة", screenshot: "لقطة شاشة",
+  howLabel: "كيف يعمل", howTitle: "ثلاث خطوات، ثم يختفي في الخلفية.",
+  trustStrip: "مجاني · مفتوح المصدر · محلي بالكامل · بلا تتبّع",
+  featuresLabel: "المزايا", featuresTitle: "كل ما تفعله الخزنة.",
+  featuresSub: "خمسة مجالات عمل، كلها داخل متصفحك. لا شيء يغادر الجهاز الذي تقرأ عليه الآن.",
+  faqLabel: "الأسئلة الشائعة", faqTitle: "أول ما يسأل عنه الناس.",
+  faqMore: "سؤال لم نُجب عنه؟", contactUs: "تواصل معنا",
+  dlTitle: "ثبّت أبريوم", dlSub: "نقرة واحدة من متجر كروم. القائمة قيد المراجعة — الزر أدناه مؤقت حتى يصبح متاحاً.",
+  comingSoon: "قريباً",
+  changelogLabel: "سجل التغييرات", changelogTitle: "ما الذي تغيّر، ومتى.",
+  contactTitle: "تواصل معنا", contactSub: "طريقتان للوصول إلى المشروع. تقارير الأخطاء هي أنفع ما يمكنك إرساله.",
+  cookieTitle: "تفضيلات الكوكيز",
+  cookieBody: "يستخدم هذا الموقع ملف تعريف ارتباط واحداً لتذكّر لغتك ومظهرك. لا شيء غير ذلك — لا تحليلات، لا إعلانات، ولا نصوص من طرف ثالث. أما الإضافة نفسها فلا تستخدم أي كوكيز ولا تتصل بأي خادم.",
+  currentStatus: "الحالة الحالية", cookieNote: "يُحفظ اختيارك محلياً ويمكنك تغييره من هذه الصفحة في أي وقت.",
+  acceptAll: "قبول الكل", rejectAll: "رفض الكل",
+  bannerText: "يستخدم أبريوم ملف تفضيلات واحداً للغة والمظهر. بلا تحليلات، أبداً.",
+  nfTitle: "هذه الصفحة ليست في الخزنة.", nfBody: "قد يكون الرابط قديماً أو انتقلت الصفحة. كل ما عداها ما زال في مكانه.",
+  backHome: "العودة للرئيسية",
+  footerTag: "فهرس محلي لعناصر كلود. مجاني ومفتوح المصدر.",
+  nav: { home: "الرئيسية", features: "المزايا", faq: "الأسئلة", download: "التحميل", changelog: "السجل" },
+  footProduct: "المنتج", footLegal: "قانوني",
+  linkPrivacy: "الخصوصية", linkTerms: "الشروط", linkContact: "اتصل بنا", linkCookies: "تفضيلات الكوكيز", linkSystem: "نظام التصميم",
+  trust: ["مجاني للأبد", "مفتوح المصدر", "محلي بالكامل", "بلا تتبّع"],
+  homeFeatures: [
+    { i: "capture", title: "التقاط تلقائي", body: "يُحفظ كل عنصر تفتحه في المحادثة لحظة ظهوره — مع كل مراجعة، لتبقى النسخ السابقة قابلة للاسترجاع." },
+    { i: "search", title: "معرض وبحث", body: "لوحة جانبية تعرض كل شيء حسب النوع والمحادثة والتاريخ. البحث يصل إلى متن العنصر لا إلى عنوانه فقط." },
+    { i: "zip", title: "تصدير جماعي", body: "حدّد أي عدد من العناصر ونزّلها كملف ZIP منظّم بمجلدات وامتدادات صحيحة لكل نوع." },
+    { i: "globe", title: "خمس لغات ودعم RTL", body: "الإنجليزية والعربية والفرنسية والإسبانية والبرتغالية. العربية تعكس التخطيط بالكامل — التنقّل والأيقونات وترتيب القراءة." }
+  ],
+  steps: [
+    { n: "١", title: "ثبّت وثبّت الأيقونة", body: "أضف أبريوم من متجر كروم وثبّته في الشريط. لا شاشة تسجيل — لا يوجد حساب أصلاً." },
+    { n: "٢", title: "اعمل كالمعتاد", body: "تابع استخدام claude.ai. حين يظهر عنصر في عرض الشيفرة، يحفظه أبريوم بعنوانه ونوعه ومحادثته." },
+    { n: "٣", title: "جده لاحقاً", body: "افتح اللوحة الجانبية، ابحث أو رشّح، ثم عاين أو انسخ أو ثبّت أو صدّر ما تحتاج." }
+  ],
+  featureSections: [
+    { i: "capture", title: "الالتقاط", frame: "الالتقاط · اللوحة", body: "يراقب أبريوم مساحة العناصر في الصفحة ويخزّن كلاً منها محلياً فور ظهوره. المراجعات تُحفظ كنسخ مرقّمة بدل استبدالها، فلا تكلّفك إعادة الكتابة المسوّدة الأولى.", bullets: ["عناصر شيفرة وMarkdown وHTML وSVG وReact", "كل مراجعة تُحفظ كنسخة مرقّمة", "يعمل أثرياً على المحادثات التي تعيد فتحها"] },
+    { i: "search", title: "التنظيم", frame: "المعرض · المرشّحات", body: "اللوحة الجانبية هي بيت كل ما التُقط. رشّح حسب النوع، ثبّت ما تعود إليه، وابحث في العناوين وأسماء المحادثات ومتون العناصر.", bullets: ["مرشّحات حسب النوع ومجموعة مثبّتة", "بحث نصي كامل داخل متون العناصر", "مرتّبة حسب وقت الالتقاط، الأحدث أولاً"] },
+    { i: "zip", title: "التصدير", frame: "التحديد الجماعي", body: "العنصر المفرد يُنزَّل بامتداده الصحيح. التحديد المتعدد يحوّل اللوحة إلى أداة جماعية بشريط إجراءات سفلي لتصدير ZIP أو التثبيت الجماعي.", bullets: ["تنزيل بنقرة أو نسخ إلى الحافظة", "تصدير ZIP بامتدادات حسب النوع", "تثبيت وحذف جماعيان"] },
+    { i: "lock", title: "الخصوصية", frame: "التخزين · IndexedDB", body: "كل شيء يعيش في تخزين متصفحك المحلي. لا خادم تُرسل إليه البيانات، ولا أدوات تحليل، ولا أي طلب شبكة تجريه الإضافة نيابةً عنك.", bullets: ["تخزين محلي في IndexedDB فقط", "بلا حسابات أو قياسات أو إعلانات", "شيفرة مصدرية علنية قابلة للتدقيق"] },
+    { i: "globe", title: "اللغات", frame: "الواجهة · العربية", body: "تتوفر الواجهة بخمس لغات. العربية نسخة كاملة من اليمين إلى اليسار: اللوحة والأشرطة والأيقونات ذات الاتجاه وترتيب القراءة كلها معكوسة.", bullets: ["EN · AR · FR · ES · PT", "عكس كامل للتخطيط لا مجرد قلب للنص", "يتبع لغة المتصفح افتراضياً"] }
+  ],
+  faqs: [
+    { q: "هل أبريوم مجاني؟", a: "نعم — مجاني، بلا خطة مدفوعة ولا ترقيات. الشيفرة علنية والمشروع مدعوم بالتبرعات الطوعية فقط." },
+    { q: "هل يقرأ محادثاتي؟", a: "لا. ينظر أبريوم إلى لوحة العناصر وحدها — العنصر المعروض وعنوانه. محتوى الرسائل لا يُحلَّل ولا يُخزَّن ولا يُرسَل." },
+    { q: "لماذا يحتاج عرض الشيفرة بدل المعاينة؟", a: "تعرض المعاينة العنصر داخل إطار معزول لا تستطيع الإضافات قراءته. أما عرض الشيفرة فيُظهر المصدر داخل الصفحة نفسها، وهو ما يحفظه أبريوم — لذا قد لا يُلتقط عنصر تُرك في وضع المعاينة حتى تبدّل العرض." },
+    { q: "هل تُرسل بياناتي إلى أي مكان؟", a: "أبداً. لا تجري الإضافة أي طلب شبكة. كل شيء يُكتب في IndexedDB المحلي ويبقى على جهازك، حتى عند تصدير ملف ZIP." },
+    { q: "ما اللغات المدعومة؟", a: "الإنجليزية والعربية والفرنسية والإسبانية والبرتغالية. العربية واجهة معكوسة بالكامل من اليمين إلى اليسار، لا نص مترجم داخل تخطيط لاتيني." },
+    { q: "ماذا يحدث إن أزلت الإضافة؟", a: "يحذف كروم قاعدة البيانات المحلية مع الإضافة. صدّر ما تريد الاحتفاظ به قبل الإزالة — تصدير ZIP كامل يستغرق ثوانٍ." }
+  ],
+  installSteps: [
+    { n: "١", title: "أضف الإضافة", body: "افتح صفحة المتجر واختر «أضف إلى كروم». لا أذونات مطلوبة خارج claude.ai." },
+    { n: "٢", title: "ثبّتها في الشريط", body: "اضغط أيقونة القطعة وثبّت أبريوم لتكون النافذة على بُعد نقرة." },
+    { n: "٣", title: "افتح محادثة", body: "ادخل claude.ai، افتح أي عنصر في عرض الشيفرة، وسيظهر في الخزنة فوراً." }
+  ],
+  releases: [
+    { version: "v0.1.0", date: "٢ أغسطس ٢٠٢٦", tag: "الإصدار الأول", items: ["التقاط تلقائي لعناصر الشيفرة وMarkdown وHTML وSVG وReact", "معرض في اللوحة الجانبية مع مرشّحات وبحث وتثبيت", "عرض تفصيلي للعنصر مع معاينة ونسخ وتنزيل", "تحديد جماعي مع تصدير ZIP", "خمس لغات للواجهة مع دعم كامل للعربية", "تخزين محلي في IndexedDB — بلا أي اتصال بالشبكة"] }
+  ],
+  contactCards: [
+    { i: "github", title: "أبلغ عن مشكلة", body: "الأخطاء والالتقاطات الناقصة وطلبات المزايا مكانها متتبّع المشكلات. أرفق إصدار كروم ونوع العنصر إن فشل الالتقاط.", cta: "افتح صفحة المشكلات", placeholder: false },
+    { i: "patreon", title: "ادعم المشروع", body: "سيبقى أبريوم مجانياً. إن وفّر عليك وقتاً، فمساهمة صغيرة متكرّرة تموّل الصيانة ورسوم المتجر.", cta: "صفحة Patreon", placeholder: true }
+  ],
+  privacy: {
+    title: "سياسة الخصوصية", updated: "آخر تحديث · ٢ أغسطس ٢٠٢٦",
+    sections: [
+      { h: "باختصار", p: ["لا يجمع أبريوم أي بيانات ولا يرسلها ولا يبيعها. لا يوجد للإضافة أي مكوّن خادم. كل ما تخزّنه يُكتب في متصفحك ولا يغادره.", "يضع هذا الموقع ملف تعريف ارتباط واحداً لتذكّر اللغة والمظهر. لا شيء آخر يُتتبَّع."] },
+      { h: "ما الذي تخزّنه الإضافة", p: ["حين تفتح عنصراً على claude.ai في عرض الشيفرة، يحفظ أبريوم محتواه وعنوانه ونوعه واسم المحادثة المصدر ووقت الالتقاط. يُكتب هذا السجل في IndexedDB داخل ملف متصفحك.", "لا يُقرأ نص الرسائل خارج لوحة العناصر. تفاصيل حسابك وبريدك وسجل محادثاتك غير متاحة للإضافة ولا تُطلب أبداً."] },
+      { h: "ما الذي ترسله الإضافة", p: ["لا شيء. لا يجري أبريوم أي طلب شبكة صادر. لا أدوات تحليل، ولا مبلّغ أعطال، ولا معرّف إعلاني، ولا إعدادات عن بُعد. يمكنك التحقق بقراءة المصدر أو بمراقبة لوحة الشبكة أثناء التشغيل."] },
+      { h: "تحليلات الموقع", p: ["يقدّم abrium.onl صفحات ثابتة. لا نص تحليلات ولا مدير وسوم ولا تضمين من طرف ثالث. يحتفظ المستضيف بسجلات وصول لفترة قصيرة لأغراض أمنية، ولا تتضمّن معرّفات نتحكّم بها أو نقرأها."] },
+      { h: "الكوكيز", p: ["ملف تفضيلات واحد من الطرف الأول يخزّن لغتك ومظهرك ليبدو الموقع كما تركته في زيارتك القادمة. يمكنك رفضه من صفحة التفضيلات؛ سيظل الموقع يعمل معتمداً على لغة المتصفح."] },
+      { h: "بياناتك بين يديك", p: ["لأن التخزين محلي، فالحذف محلي أيضاً. احذف عناصر مفردة من اللوحة، أو امسح الخزنة كلها من الإعدادات، أو أزل الإضافة لحذف قاعدة البيانات بالكامل.", "لا يمكننا حذف بياناتك نيابةً عنك، لأننا لا نستلم منها شيئاً."] },
+      { h: "تغييرات السياسة", p: ["إن تغيّرت هذه السياسة، سيتغيّر تاريخ المراجعة أعلاه وسيُدرج التحديث في سجل التغييرات العلني. وتُعلن التغييرات الجوهرية في المستودع."] },
+      { h: "التواصل", p: ["أسئلة الخصوصية يمكن طرحها كمشكلة في المستودع العلني، حيث تكون الإجابة ظاهرة لكل من لديه السؤال نفسه."] }
+    ]
+  },
+  terms: {
+    title: "شروط الاستخدام", updated: "آخر تحديث · ٢ أغسطس ٢٠٢٦",
+    sections: [
+      { h: "القبول", p: ["بتثبيت إضافة أبريوم أو استخدام abrium.onl فإنك توافق على هذه الشروط. إن لم توافق فلا تثبّت الإضافة."] },
+      { h: "الترخيص", p: ["أبريوم برمجية مفتوحة المصدر. يمكنك استخدامها ودراستها وتعديلها وإعادة توزيعها وفق ملف الترخيص المنشور في المستودع. ذلك الترخيص يحكم الشيفرة، وهذه الشروط تحكم الموقع والنسخة الموزّعة."] },
+      { h: "بلا ضمان", p: ["تُقدَّم الإضافة كما هي، بلا ضمان من أي نوع. تخزّن البيانات محلياً في متصفحك، والتخزين المحلي قابل للمسح من المتصفح أو من برمجيات أخرى أو منك. احتفظ بنسخ مصدّرة لما لا تحتمل فقدانه.", "لا يتحمّل القائمون على المشروع مسؤولية فقدان العناصر أو العمل أو أي أضرار غير مباشرة."] },
+      { h: "الاستخدام المقبول", p: ["استخدم أبريوم مع محتوى تملك حق تخزينه. أنت مسؤول عمّا تلتقطه وتصدّره وعن الالتزام بشروط أي خدمة تلتقط منها، بما فيها شروط Anthropic لـ claude.ai."] },
+      { h: "العلاقة بـ Anthropic", p: ["أبريوم مشروع مستقل، غير تابع لـ Anthropic ولا معتمد منها ولا برعايتها. Claude وclaude.ai علامتان تجاريتان لمالكهما، وتُذكران هنا لوصف التوافق فقط."] },
+      { h: "التوفّر", p: ["قد يتغيّر الموقع أو صفحة المتجر أو يتوقفان في أي وقت. ولأن الإضافة تعمل محلياً بالكامل، فتعطّل أيٍّ منهما لا يؤثر على نسخة مثبّتة."] },
+      { h: "تغيير الشروط", p: ["تسري الشروط المحدّثة عند نشرها مع تغيير تاريخ المراجعة أعلاه. ويُعد الاستمرار في الاستخدام بعد النشر قبولاً بها."] }
+    ]
+  }
+};
+
+const FR = {
+  addToChrome: "Ajouter à Chrome", viewGithub: "Voir sur GitHub", getIt: "Obtenir Abrium",
+  eyebrow: "Extension Chrome · v0.1.0",
+  heroTitle: "Ne perdez plus jamais un Artifact de Claude.",
+  heroSub: "Abrium catalogue discrètement chaque artifact généré sur claude.ai — code, documents, HTML, SVG — et les garde consultables sur votre machine. Sans compte, sans cloud, sans suivi.",
+  trustStrip: "Gratuit · Open source · 100 % local · Sans suivi",
+  nav: { home: "Accueil", features: "Fonctions", faq: "FAQ", download: "Télécharger", changelog: "Journal" },
+  trust: ["Gratuit", "Open source", "100 % local", "Sans suivi"],
+  acceptAll: "Tout accepter", rejectAll: "Tout refuser",
+  footerTag: "Un catalogue local pour les Artifacts de Claude. Gratuit et open source."
+};
+
+const ES = {
+  addToChrome: "Añadir a Chrome", viewGithub: "Ver en GitHub", getIt: "Obtener Abrium",
+  eyebrow: "Extensión de Chrome · v0.1.0",
+  heroTitle: "Nunca vuelvas a perder un Artifact de Claude.",
+  heroSub: "Abrium cataloga en silencio cada artifact que generas en claude.ai — código, documentos, HTML, SVG — y los mantiene buscables en tu propio equipo. Sin cuenta, sin nube, sin rastreo.",
+  trustStrip: "Gratis · Código abierto · Solo local · Sin rastreo",
+  nav: { home: "Inicio", features: "Funciones", faq: "FAQ", download: "Descargar", changelog: "Cambios" },
+  trust: ["Gratis", "Código abierto", "Solo local", "Sin rastreo"],
+  acceptAll: "Aceptar todo", rejectAll: "Rechazar todo",
+  footerTag: "Un catálogo local para los Artifacts de Claude. Gratis y de código abierto."
+};
+
+const PT = {
+  addToChrome: "Adicionar ao Chrome", viewGithub: "Ver no GitHub", getIt: "Obter o Abrium",
+  eyebrow: "Extensão do Chrome · v0.1.0",
+  heroTitle: "Nunca mais perca um Artifact do Claude.",
+  heroSub: "O Abrium cataloga discretamente cada artifact gerado no claude.ai — código, documentos, HTML, SVG — e mantém tudo pesquisável na sua própria máquina. Sem conta, sem nuvem, sem rastreamento.",
+  trustStrip: "Grátis · Código aberto · Apenas local · Sem rastreamento",
+  nav: { home: "Início", features: "Recursos", faq: "FAQ", download: "Baixar", changelog: "Mudanças" },
+  trust: ["Grátis", "Código aberto", "Apenas local", "Sem rastreamento"],
+  acceptAll: "Aceitar tudo", rejectAll: "Recusar tudo",
+  footerTag: "Um catálogo local para Artifacts do Claude. Grátis e de código aberto."
+};
+
+const LANGS = { en: EN, ar: AR, fr: FR, es: ES, pt: PT };
+
+class Component extends DCLogic {
+  state = { page: "home", lang: "en", dark: false, mobile: false, menu: false, open: 0, consent: null, banner: true, vw: 1280, langOpen: false };
+
+  componentDidMount() {
+    if (this.props.startPage) this.setState({ page: this.props.startPage });
+    if (this.props.startLang) this.setState({ lang: this.props.startLang });
+    if (this.props.darkMode) this.setState({ dark: true });
+    if (this.props.mobileView) this.setState({ mobile: true });
+    this._onResize = () => this.setState({ vw: window.innerWidth });
+    this._onResize();
+    window.addEventListener("resize", this._onResize);
+  }
+
+  componentDidUpdate(prev) {
+    if (prev.darkMode !== this.props.darkMode) this.setState({ dark: !!this.props.darkMode });
+    if (prev.startLang !== this.props.startLang && this.props.startLang) this.setState({ lang: this.props.startLang });
+    if (prev.startPage !== this.props.startPage && this.props.startPage) this.setState({ page: this.props.startPage });
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("resize", this._onResize);
+  }
+
+  set(k, v) { this.setState({ [k]: v, menu: false, langOpen: false }); window.scrollTo(0, 0); }
+
+  renderVals() {
+    const s = this.state;
+    const mobile = this.props.mobileView || s.mobile || s.vw < 760;
+    const compact = mobile || s.vw < 1080;
+    const dark = s.dark;
+    const lang = s.lang;
+    const base = EN;
+    const L = LANGS[lang] || EN;
+    const t = { ...base, ...L, nav: { ...base.nav, ...(L.nav || {}) } };
+    const rtl = lang === "ar";
+    const page = s.page;
+
+    const navKeys = ["home", "features", "faq", "download", "changelog"];
+    const navItems = navKeys.map(k => ({
+      label: t.nav[k],
+      go: () => this.set("page", k),
+      weight: page === k ? 600 : 500,
+      color: page === k ? "var(--text)" : "var(--text-3)",
+      bg: page === k ? "var(--tint)" : "transparent"
+    }));
+
+    const LNAME = { en: "English", ar: "العربية", fr: "Français", es: "Español", pt: "Português" };
+    const langs = ["en", "ar", "fr", "es", "pt"].map(c => ({
+      code: c.toUpperCase(),
+      name: LNAME[c],
+      go: () => this.setState({ lang: c, menu: false, langOpen: false }),
+      color: lang === c ? "var(--accent-text)" : "var(--text-3)",
+      bg: lang === c ? "var(--tint)" : "transparent",
+      tick: lang === c ? 1 : 0
+    }));
+
+    const link = (label, key) => ({ label, go: () => this.set("page", key) });
+
+    const consentLabel = s.consent === null
+      ? (rtl ? "لم يُتخذ اختيار بعد — الافتراضي هو الرفض." : "No choice made yet — defaults to rejected.")
+      : s.consent === "all"
+        ? (rtl ? "مقبولة — يُحفظ ملف التفضيلات." : "Accepted — the preference cookie is stored.")
+        : (rtl ? "مرفوضة — لا تُحفظ أي كوكيز." : "Rejected — no cookies are stored.");
+
+    const faqs = (t.faqs || EN.faqs).map((f, i) => ({
+      q: f.q, a: f.a,
+      toggle: () => this.setState({ open: s.open === i ? -1 : i }),
+      disp: s.open === i ? "block" : "none",
+      rot: s.open === i ? "180deg" : "0deg"
+    }));
+
+    const chipData = rtl
+      ? ["الكل", "شيفرة", "HTML", "SVG"]
+      : ["All", "Code", "HTML", "SVG"];
+
+    return {
+      t, dir: rtl ? "rtl" : "ltr", theme: dark ? "dark" : "light",
+      themeIcon: dark ? I.sun : I.moon,
+      chromeIcon: I.chrome,
+      toggleTheme: () => this.setState({ dark: !dark }),
+      toggleMenu: () => this.setState({ menu: !s.menu }),
+      toggleLang: () => this.setState({ langOpen: !s.langOpen }),
+      currentLang: lang.toUpperCase(),
+      langRot: s.langOpen ? "180deg" : "0deg",
+      langMenuDisplay: s.langOpen ? "flex" : "none",
+      goHome: () => this.set("page", "home"),
+      goDownload: () => this.set("page", "download"),
+      goContact: () => this.set("page", "contact"),
+
+      frameMax: mobile ? "420px" : "100%",
+      gut: mobile ? "18px" : "40px",
+      navDisplay: compact ? "none" : "flex",
+      burgerDisplay: compact ? "flex" : "none",
+      menuDisplay: compact && s.menu ? "flex" : "none",
+      heroDir: mobile ? "column" : "row",
+      heroAlign: mobile ? "stretch" : "center",
+      heroGap: mobile ? "28px" : "56px",
+      cols2: mobile ? "1fr" : "1fr 1fr",
+      cols3: mobile ? "1fr" : "repeat(3,1fr)",
+      padHero: mobile ? "40px" : "72px",
+      padSec: mobile ? "44px" : "72px",
+      h1: mobile ? "34px" : "50px",
+      h1s: mobile ? "30px" : "40px",
+      h2: mobile ? "22px" : "27px",
+      lead: mobile ? "15px" : "16.5px",
+
+      isHome: page === "home", isFeatures: page === "features", isFaq: page === "faq",
+      isDownload: page === "download", isChangelog: page === "changelog",
+      isProse: page === "privacy" || page === "terms",
+      isContact: page === "contact", isCookies: page === "cookies",
+      is404: page === "404", isSystem: page === "system",
+
+      navItems, langs, faqs,
+      trust: t.trust || EN.trust,
+      homeFeatures: (t.homeFeatures || EN.homeFeatures).map(f => ({ ...f, d: I[f.i] })),
+      steps: t.steps || EN.steps,
+      featureSections: (t.featureSections || EN.featureSections).map((f, i) => ({
+        ...f, d: I[f.i], dir: mobile ? "column" : (i % 2 === 1 ? "row-reverse" : "row")
+      })),
+      installSteps: t.installSteps || EN.installSteps,
+      releases: t.releases || EN.releases,
+      contactCards: (t.contactCards || EN.contactCards).map(c => ({ ...c, d: I[c.i] })),
+      prose: page === "terms" ? (t.terms || EN.terms) : (t.privacy || EN.privacy),
+
+      chips: chipData.map((label, i) => ({
+        label,
+        bg: i === 0 ? "var(--accent-solid)" : "var(--surface)",
+        fg: i === 0 ? "var(--on-accent)" : "var(--text-3)",
+        bd: i === 0 ? "var(--accent-solid)" : "var(--border-2)"
+      })),
+      mockItems: rtl ? [
+        { title: "rate_limiter.py", type: "شيفرة", date: "قبل ساعتين", d: I.code },
+        { title: "جدول الأسعار — ٣ فئات", type: "React", date: "أمس", d: I.react },
+        { title: "مخطط البنية", type: "SVG", date: "أمس", d: I.svg },
+        { title: "ملخص أبحاث الاحتفاظ", type: "Markdown", date: "٢٦ يوليو", d: I.doc }
+      ] : [
+        { title: "rate_limiter.py", type: "Code", date: "2h ago", d: I.code },
+        { title: "Pricing table — 3 tiers", type: "React", date: "Yesterday", d: I.react },
+        { title: "topology-diagram.svg", type: "SVG", date: "Yesterday", d: I.svg },
+        { title: "Research synthesis — churn", type: "Markdown", date: "Jul 26", d: I.doc }
+      ],
+
+      footerCols: [
+        { title: t.footProduct, links: [link(t.nav.features, "features"), link(t.nav.download, "download"), link(t.nav.changelog, "changelog"), link(t.linkSystem, "system")] },
+        { title: t.footLegal, links: [link(t.linkPrivacy, "privacy"), link(t.linkTerms, "terms"), link(t.linkContact, "contact"), link(t.linkCookies, "cookies")] }
+      ],
+
+      consentLabel,
+      consentDot: s.consent === "all" ? "var(--accent-solid)" : s.consent === "none" ? "var(--muted)" : "var(--border)",
+      acceptAll: () => this.setState({ consent: "all", banner: false }),
+      rejectAll: () => this.setState({ consent: "none", banner: false }),
+      bannerDisplay: s.banner ? "block" : "none",
+
+      tokensLight: [
+        { name: "--bg", hex: "#EFECE4" }, { name: "--bg-alt", hex: "#F7EAE4" },
+        { name: "--surface", hex: "#FAF9F6" }, { name: "--border", hex: "#DDD8CD" },
+        { name: "--border-2", hex: "#E7E3DA" }, { name: "--accent", hex: "#BE5C3E" },
+        { name: "--accent-solid", hex: "#B0523A" }, { name: "--accent-text", hex: "#9C4829" },
+        { name: "--text", hex: "#262420" }, { name: "--text-2", hex: "#4A463F" },
+        { name: "--text-3", hex: "#6F6A60" }, { name: "--muted", hex: "#8A857A" }
+      ],
+      tokensDark: [
+        { name: "--bg", hex: "#1B1A18" }, { name: "--bg-alt", hex: "#201F1C" },
+        { name: "--surface", hex: "#232220" }, { name: "--border", hex: "#3A3630" },
+        { name: "--border-2", hex: "#302D28" }, { name: "--accent", hex: "#E9CDC1" },
+        { name: "--accent-solid", hex: "#E9CDC1" }, { name: "--on-accent", hex: "#1B1A18" },
+        { name: "--text", hex: "#F3F1EC" }, { name: "--text-2", hex: "#B6B0A3" },
+        { name: "--text-3", hex: "#9C978C" }, { name: "--muted", hex: "#7C776D" }
+      ],
+      typeScale: [
+        { spec: "50 / 600 / -.025", px: "50px", w: 600, ls: "-0.025em", label: "Hero" },
+        { spec: "40 / 600 / -.025", px: "40px", w: 600, ls: "-0.025em", label: "Page title" },
+        { spec: "27 / 600 / -.02", px: "27px", w: 600, ls: "-0.02em", label: "Section heading" },
+        { spec: "16.5 / 400 / 1.65", px: "16.5px", w: 400, ls: "0", label: "Lead paragraph" },
+        { spec: "15 / 400 / 1.8", px: "15px", w: 400, ls: "0", label: "Long-form body" },
+        { spec: "13.5 / 400 / 1.65", px: "13.5px", w: 400, ls: "0", label: "Card body & UI" },
+        { spec: "11.5 / 500 mono", px: "11.5px", w: 500, ls: "0.12em", label: "EYEBROW LABEL" }
+      ],
+      spacing: [
+        { name: "space-1", px: "4px" }, { name: "space-2", px: "8px" },
+        { name: "space-3", px: "14px" }, { name: "space-4", px: "22px" },
+        { name: "space-5", px: "40px" }, { name: "space-6", px: "72px" }
+      ],
+      iconRef: [
+        { name: "capture", d: I.capture }, { name: "search", d: I.search },
+        { name: "zip", d: I.zip }, { name: "globe", d: I.globe },
+        { name: "lock", d: I.lock }, { name: "shield", d: I.shield },
+        { name: "code", d: I.code }, { name: "doc", d: I.doc },
+        { name: "svg", d: I.svg }, { name: "react", d: I.react },
+        { name: "pin", d: I.pin }, { name: "download", d: I.download },
+        { name: "layers", d: I.layers }, { name: "filter", d: I.filter },
+        { name: "list", d: I.list }, { name: "github", d: I.github }
+      ],
+      rtlRules: [
+        "Direction is set once on the document root; every rule below inherits from it.",
+        "Layout uses logical properties — padding-inline, margin-inline-start, inset-inline-start — so nav, cards and timelines mirror without duplicate CSS.",
+        "Directional icons (chevrons, external-link, back arrows) flip with transform: scaleX(var(--flip)); non-directional glyphs never flip.",
+        "Numerals, version strings and code samples stay LTR inside mirrored containers; Arabic ordinals are used for step counters."
+      ]
+    };
+  }
+}
+
+</script>
+
+
+</body></html>

@@ -1,0 +1,60 @@
+/* ==========================================================================
+   Popup — screen layout only.
+   No colours, sizes, radii or durations are declared here; every value is a
+   token from tokens.css. If something needs a new value it belongs upstream.
+
+   Everything is scoped to .pop-page / .pop-shell rather than html/body: the
+   state-matrix preview loads this stylesheet alongside the side panel's, and a
+   bare `body { inline-size: 360px }` would clamp that whole page.
+   ========================================================================== */
+
+.pop-page {
+  margin: 0;
+  background: var(--color-bg);
+}
+
+.pop-shell {
+  display: flex;
+  flex-direction: column;
+
+  /* Chrome sizes the popup to its content, so the width has to be explicit.
+     --w-popup-max is 360px, the top of the 320–360 range the IA calls for. */
+  inline-size: var(--w-popup-max);
+  /* Chrome caps a popup at 600px tall; claiming it up front stops the footer
+     from jumping as the list loads. */
+  max-block-size: 600px;
+
+  background: var(--color-bg);
+}
+
+/* --- header --------------------------------------------------------------- */
+
+/* .abr-toolbar supplies the sticky behaviour, background and bottom rule.
+   The popup header is a single row, so no --stack modifier. */
+.pop-header {
+  z-index: 2;
+}
+
+/* --- body ----------------------------------------------------------------- */
+
+.pop-body {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding-block: var(--space-5) var(--space-6);
+  padding-inline: var(--space-5);
+}
+
+.pop-heading {
+  margin-block-end: var(--space-4);
+}
+
+/* --- footer --------------------------------------------------------------- */
+
+/* .abr-actionbar is the canonical sticky bottom bar. In the popup it holds a
+   single full-width route into the side panel. */
+.pop-shell .abr-actionbar .abr-btn {
+  /* The chevron trails the label and mirrors under RTL via the shared
+     .abr-icon--directional rule. */
+  justify-content: center;
+  gap: var(--space-4);
+}

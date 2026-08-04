@@ -1,0 +1,191 @@
+/* ==========================================================================
+   Abrium — base reset + type scale
+   Depends on tokens.css. Import order: tokens.css → base.css → components.css
+   ========================================================================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: var(--text-body-size);
+  line-height: var(--text-body-lh);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* The panel column. Both popup and side panel share one constraint so a
+   component never has to know which surface it is rendered into. */
+.abr-panel {
+  inline-size: 100%;
+  min-inline-size: var(--w-popup-min);
+  max-inline-size: var(--w-sidepanel-max);
+  margin-inline: auto;
+}
+
+/* --------------------------------------------------------------------------
+   TYPE SCALE — four roles. Every user-facing string uses one of these.
+   -------------------------------------------------------------------------- */
+
+.abr-heading {
+  font-size: var(--text-heading-size);
+  line-height: var(--text-heading-lh);
+  font-weight: var(--text-heading-weight);
+  letter-spacing: var(--text-heading-ls);
+  color: var(--color-text);
+  margin: 0;
+}
+
+.abr-subhead {
+  font-size: var(--text-subhead-size);
+  line-height: var(--text-subhead-lh);
+  font-weight: var(--text-subhead-weight);
+  color: var(--color-text);
+  margin: 0;
+}
+
+.abr-body {
+  font-size: var(--text-body-size);
+  line-height: var(--text-body-lh);
+  font-weight: var(--text-body-weight);
+  color: var(--color-text-2);
+  margin: 0;
+}
+
+.abr-caption {
+  font-size: var(--text-caption-size);
+  line-height: var(--text-caption-lh);
+  font-weight: var(--text-caption-weight);
+  color: var(--color-text-2);
+  margin: 0;
+}
+
+/* Quiet caption. Still AA — see the contrast notes in tokens.css for why this
+   is --color-text-3 and not --color-text-muted. */
+.abr-caption--quiet {
+  color: var(--color-text-3);
+}
+
+.abr-overline {
+  font-size: var(--text-overline-size);
+  line-height: 1.3;
+  font-weight: 600;
+  letter-spacing: var(--text-overline-ls);
+  text-transform: uppercase;
+  color: var(--color-text-3);
+  margin: 0;
+}
+
+/* Code snippet preview — the two-to-four line teaser on an artifact card.
+   Clamped, never scrolls horizontally inside a 360px column. */
+.abr-code {
+  font-family: var(--font-mono);
+  font-size: var(--text-code-size);
+  line-height: var(--text-code-lh);
+  color: var(--color-text-2);
+  background: var(--color-bg-alt);
+  border: var(--border-w) solid var(--color-border-subtle);
+  border-radius: var(--radius-sm);
+  padding-block: var(--space-4);
+  padding-inline: var(--space-5);
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  tab-size: 2;
+
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Code is always LTR even inside an RTL panel — source is not mirrored. */
+.abr-code {
+  direction: ltr;
+  text-align: start;
+}
+[dir='rtl'] .abr-code {
+  text-align: left;
+}
+
+/* Full source, not a teaser: drops the card clamp and scrolls instead.
+   Used by the Artifact Detail view. */
+.abr-code--full {
+  display: block;
+  -webkit-line-clamp: none;
+  overflow: auto;
+  max-block-size: 60vh;
+}
+
+.abr-code--inline {
+  display: inline;
+  padding-block: 1px;
+  padding-inline: var(--space-3);
+  border: none;
+  -webkit-line-clamp: none;
+}
+
+/* Truncation helpers — artifact titles overflow constantly in a narrow panel */
+.abr-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-inline-size: 0;
+}
+
+.abr-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* --------------------------------------------------------------------------
+   FOCUS — one visible ring everywhere. Keyboard only; pointer clicks do not
+   trigger it. Never remove an outline without replacing it here.
+   -------------------------------------------------------------------------- */
+
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: var(--focus-ring-w) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+  border-radius: var(--radius-sm);
+}
+
+/* --------------------------------------------------------------------------
+   RTL — direction-implying icons flip, everything else is handled by the
+   logical properties used throughout components.css. Mark chevrons, back
+   arrows and "next" carets with this class; do NOT mark download, close,
+   pin, search, trash or external-link icons.
+   -------------------------------------------------------------------------- */
+
+[dir='rtl'] .abr-icon--directional {
+  transform: scaleX(-1);
+}
+
+/* Numeric/latin runs inside RTL text (file sizes, "3 KB", timestamps) */
+.abr-bidi-isolate {
+  unicode-bidi: isolate;
+}
+
+.abr-visually-hidden {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}

@@ -1,0 +1,275 @@
+---
+import '../styles/global.css';
+import CookieConsent from '../components/CookieConsent.astro';
+
+interface Props {
+	title: string;
+	description: string;
+}
+
+const { title, description } = Astro.props;
+
+const currentLocale = Astro.currentLocale || 'en';
+const locales = ['en', 'ar', 'fr', 'es', 'pt'];
+const siteUrl = 'https://abrium.onl';
+
+const getLocalePath = (locale: string) => {
+  const path = Astro.url.pathname;
+  let basepath = path;
+  for (const l of ['/ar', '/fr', '/es', '/pt']) {
+    if (path.startsWith(l + '/') || path === l) {
+      basepath = path.slice(l.length) || '/';
+      break;
+    }
+  }
+  
+  if (locale === 'en') {
+    return `${siteUrl}${basepath}`;
+  }
+  return `${siteUrl}/${locale}${basepath === '/' ? '' : basepath}`;
+};
+
+const canonicalURL = getLocalePath(currentLocale);
+
+const organizationSchema = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Abrium",
+  "url": "https://abrium.onl",
+  "logo": "https://abrium.onl/logo.png"
+};
+
+const pathSegments = Astro.url.pathname.split('/').filter(Boolean);
+const breadcrumbItems = pathSegments.map((segment, index) => {
+  const url = '/' + pathSegments.slice(0, index + 1).join('/');
+  return {
+    "@type": "ListItem",
+    "position": index + 2,
+    "name": segment.charAt(0).toUpperCase() + segment.slice(1),
+    "item": `https://abrium.onl${url}`
+  };
+});
+
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://abrium.onl"
+    },
+    ...breadcrumbItems
+  ]
+};
+
+const layoutTranslations = {
+  en: { home: "Home", features: "Features", faq: "FAQ", download: "Download", changelog: "Changelog", terms: "Terms", privacy: "Privacy", contact: "Contact", cookiePrefs: "Cookie Preferences" },
+  ar: { home: "الرئيسية", features: "الميزات", faq: "الأسئلة الشائعة", download: "تنزيل", changelog: "سجل التغييرات", terms: "الشروط", privacy: "الخصوصية", contact: "اتصل بنا", cookiePrefs: "تفضيلات ملفات تعريف الارتباط" },
+  fr: { home: "Accueil", features: "Fonctionnalités", faq: "FAQ", download: "Télécharger", changelog: "Journal", terms: "Conditions", privacy: "Confidentialité", contact: "Contact", cookiePrefs: "Préférences de cookies" },
+  es: { home: "Inicio", features: "Características", faq: "FAQ", download: "Descargar", changelog: "Registro de cambios", terms: "Términos", privacy: "Privacidad", contact: "Contacto", cookiePrefs: "Preferencias de cookies" },
+  pt: { home: "Início", features: "Recursos", faq: "FAQ", download: "Baixar", changelog: "Registro de alterações", terms: "Termos", privacy: "Privacidade", contact: "Contato", cookiePrefs: "Preferências de cookies" }
+};
+
+const tl = layoutTranslations[currentLocale as keyof typeof layoutTranslations] || layoutTranslations.en;
+
+const getNavLink = (pagePath: string) => {
+  if (pagePath === '/') return currentLocale === 'en' ? '/' : `/${currentLocale}/`;
+  return currentLocale === 'en' ? pagePath : `/${currentLocale}${pagePath}`;
+};
+
+const isRTL = currentLocale === 'ar';
+---
+
+<!doctype html>
+<html lang={currentLocale} dir={isRTL ? "rtl" : "ltr"} data-theme="light">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="description" content={description} />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<title>{title}</title>
+
+    <link rel="canonical" href={canonicalURL} />
+    
+    {/* hreflang tags */}
+    {locales.map(locale => (
+      <link rel="alternate" hreflang={locale} href={getLocalePath(locale)} />
+    ))}
+    <link rel="alternate" hreflang="x-default" href={getLocalePath('en')} />
+
+    {/* JSON-LD */}
+    <script type="application/ld+json" set:html={JSON.stringify(organizationSchema)} />
+    <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+    <slot name="head" />
+
+    {/* GA4 Script Conditionally */}
+    <script is:inline>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('consent', 'default', {
+        'analytics_storage': 'denied'
+      });
+
+      if (localStorage.getItem('cookie_consent') === 'accepted') {
+        gtag('consent', 'update', {
+          'analytics_storage': 'granted'
+        });
+        const script = document.createElement('script');
+        script.src = 'https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX';
+        script.async = true;
+        document.head.appendChild(script);
+        script.onload = () => {
+          gtag('config', 'G-XXXXXXXXXX');
+        };
+      }
+    </script>
+	</head>
+	<body style="margin:0; background:var(--bg); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif; -webkit-font-smoothing:antialiased">
+    <div style="width:100%; max-width:1440px; margin:0 auto; background:var(--bg); color:var(--text); border-inline:1px solid var(--border-2); min-height:100vh; display:flex; flex-direction:column; position:relative; overflow:hidden">
+      
+      <header style="position:sticky; top:0; z-index:40; background:var(--bg); border-bottom:1px solid var(--border); padding-inline:16px">
+        <div style="max-width:1080px; margin:0 auto; height:64px; display:flex; align-items:center; gap:14px">
+          <a href={getNavLink('/')} style="display:flex; align-items:center; gap:9px; margin-inline-end:auto; color:var(--text); text-decoration:none">
+            <img src="/assets/abrium-mark.png" alt="Abrium" style="width:30px; height:auto; display:block">
+            <span style="font:600 16px/1 inherit; letter-spacing:-0.01em">Abrium</span>
+          </a>
+
+          <nav style="display:flex; align-items:center; gap:2px; min-width:0; overflow-x:auto">
+            <a href={getNavLink('/features')} style="height:40px; flex:none; white-space:nowrap; display:flex; align-items:center; padding:0 12px; border-radius:6px; font-size:13.5px; font-weight:500; color:var(--text-2); text-decoration:none; transition:background 160ms, color 160ms">{tl.features}</a>
+            <a href={getNavLink('/faq')} style="height:40px; flex:none; white-space:nowrap; display:flex; align-items:center; padding:0 12px; border-radius:6px; font-size:13.5px; font-weight:500; color:var(--text-2); text-decoration:none; transition:background 160ms, color 160ms">{tl.faq}</a>
+            <a href={getNavLink('/changelog')} style="height:40px; flex:none; white-space:nowrap; display:flex; align-items:center; padding:0 12px; border-radius:6px; font-size:13.5px; font-weight:500; color:var(--text-2); text-decoration:none; transition:background 160ms, color 160ms">{tl.changelog}</a>
+          </nav>
+          
+          <div style="display:flex; align-items:center; gap:6px; flex:none">
+            <div style="position:relative; flex:none">
+              <button id="lang-btn" style="height:40px; display:flex; align-items:center; gap:7px; padding:0 11px; border:1px solid var(--border); border-radius:7px; background:var(--surface); cursor:pointer; white-space:nowrap; color:var(--text)">
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="var(--text-2)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 0 18a9 9 0 0 0 0-18M3 12h18M12 3c2.4 2.6 3.6 5.6 3.6 9S14.4 18.4 12 21M12 3C9.6 5.6 8.4 8.6 8.4 12s1.2 6.4 3.6 9"></path></svg>
+                <span style="font:600 11.5px/1 ui-monospace,Menlo,monospace; letter-spacing:0.06em; color:var(--text); text-transform:uppercase;">{currentLocale}</span>
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="var(--muted)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg>
+              </button>
+              <div id="lang-menu" style="display:none; position:absolute; top:46px; inset-inline-end:0; z-index:60; min-width:148px; flex-direction:column; gap:1px; padding:5px; border:1px solid var(--border); border-radius:8px; background:var(--surface); box-shadow:var(--shadow)">
+                <a href={Astro.url.pathname.replace(/^\/(ar|fr|es|pt)/, '')} style="min-height:40px; display:flex; align-items:center; gap:9px; padding:0 10px; border-radius:6px; cursor:pointer; text-decoration:none">
+                  <span style="font:600 11px/1 ui-monospace,Menlo,monospace; letter-spacing:0.06em; width:24px; color:var(--text-3)">EN</span>
+                  <span style="flex:1; font-size:13px; color:var(--text-3)">English</span>
+                </a>
+                <a href={`/ar${Astro.url.pathname.replace(/^\/(ar|fr|es|pt)/, '')}`} style="min-height:40px; display:flex; align-items:center; gap:9px; padding:0 10px; border-radius:6px; cursor:pointer; text-decoration:none">
+                  <span style="font:600 11px/1 ui-monospace,Menlo,monospace; letter-spacing:0.06em; width:24px; color:var(--text-3)">AR</span>
+                  <span style="flex:1; font-size:13px; color:var(--text-3)">العربية</span>
+                </a>
+                <a href={`/fr${Astro.url.pathname.replace(/^\/(ar|fr|es|pt)/, '')}`} style="min-height:40px; display:flex; align-items:center; gap:9px; padding:0 10px; border-radius:6px; cursor:pointer; text-decoration:none">
+                  <span style="font:600 11px/1 ui-monospace,Menlo,monospace; letter-spacing:0.06em; width:24px; color:var(--text-3)">FR</span>
+                  <span style="flex:1; font-size:13px; color:var(--text-3)">Français</span>
+                </a>
+                <a href={`/es${Astro.url.pathname.replace(/^\/(ar|fr|es|pt)/, '')}`} style="min-height:40px; display:flex; align-items:center; gap:9px; padding:0 10px; border-radius:6px; cursor:pointer; text-decoration:none">
+                  <span style="font:600 11px/1 ui-monospace,Menlo,monospace; letter-spacing:0.06em; width:24px; color:var(--text-3)">ES</span>
+                  <span style="flex:1; font-size:13px; color:var(--text-3)">Español</span>
+                </a>
+                <a href={`/pt${Astro.url.pathname.replace(/^\/(ar|fr|es|pt)/, '')}`} style="min-height:40px; display:flex; align-items:center; gap:9px; padding:0 10px; border-radius:6px; cursor:pointer; text-decoration:none">
+                  <span style="font:600 11px/1 ui-monospace,Menlo,monospace; letter-spacing:0.06em; width:24px; color:var(--text-3)">PT</span>
+                  <span style="flex:1; font-size:13px; color:var(--text-3)">Português</span>
+                </a>
+              </div>
+            </div>
+            
+            <button id="theme-btn" title="Theme" style="width:40px; height:40px; display:flex; align-items:center; justify-content:center; border:1px solid var(--border); border-radius:7px; background:var(--surface); cursor:pointer; color:var(--text-2)">
+              <svg id="theme-icon-light" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><path d="M12 3v1M12 20v1M3 12h1M20 12h1M4.2 4.2l.7.7M19.1 19.1l.7.7M4.2 19.8l.7-.7M19.1 4.9l.7-.7M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"></path></svg>
+              <svg id="theme-icon-dark" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z"></path></svg>
+            </button>
+            
+            <a href={getNavLink('/download')} style="height:40px; flex:none; white-space:nowrap; display:flex; align-items:center; padding:0 15px; border-radius:7px; background:var(--accent-solid); color:var(--on-accent); font:600 13px/1 inherit; text-decoration:none">{tl.download}</a>
+          </div>
+        </div>
+      </header>
+      
+      <main style="flex:1; padding-inline:16px">
+        <slot />
+      </main>
+      
+      <footer style="border-top:1px solid var(--border); background:var(--bg-alt); padding-inline:16px">
+        <div style="max-width:1080px; margin:0 auto; padding-block:40px 28px; display:flex; flex-wrap:wrap; gap:36px">
+          <div style="flex:1; min-width:220px; display:flex; flex-direction:column; gap:10px">
+            <div style="display:flex; align-items:center; gap:9px">
+              <img src="/assets/abrium-mark.png" alt="" style="width:26px; height:auto; display:block">
+              <span style="font:600 14.5px/1 inherit">Abrium</span>
+            </div>
+            <p style="margin:0; max-width:34ch; font-size:13px; line-height:1.65; color:var(--text-3)">The open-source companion for Claude.</p>
+            <span style="font:400 11.5px/1 ui-monospace,Menlo,monospace; color:var(--muted)">abrium.onl</span>
+          </div>
+          <div style="min-width:150px; display:flex; flex-direction:column; gap:10px">
+            <span style="font:500 11px/1 ui-monospace,Menlo,monospace; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted)">Product</span>
+            <a href={getNavLink('/features')} style="min-height:26px; display:flex; align-items:center; font-size:13px; color:var(--text-3); text-decoration:none">{tl.features}</a>
+            <a href={getNavLink('/faq')} style="min-height:26px; display:flex; align-items:center; font-size:13px; color:var(--text-3); text-decoration:none">{tl.faq}</a>
+            <a href={getNavLink('/changelog')} style="min-height:26px; display:flex; align-items:center; font-size:13px; color:var(--text-3); text-decoration:none">{tl.changelog}</a>
+          </div>
+          <div style="min-width:150px; display:flex; flex-direction:column; gap:10px">
+            <span style="font:500 11px/1 ui-monospace,Menlo,monospace; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted)">Legal</span>
+            <a href={getNavLink('/terms')} style="min-height:26px; display:flex; align-items:center; font-size:13px; color:var(--text-3); text-decoration:none">{tl.terms}</a>
+            <a href={getNavLink('/privacy')} style="min-height:26px; display:flex; align-items:center; font-size:13px; color:var(--text-3); text-decoration:none">{tl.privacy}</a>
+            <a href={getNavLink('/cookie-preferences')} style="min-height:26px; display:flex; align-items:center; font-size:13px; color:var(--text-3); text-decoration:none">{tl.cookiePrefs}</a>
+          </div>
+        </div>
+        <div style="max-width:1080px; margin:0 auto; padding-block:16px 26px; border-top:1px solid var(--border); display:flex; flex-wrap:wrap; align-items:center; gap:14px">
+          <span style="font-size:12.5px; color:var(--text-3); flex:1">© 2026 Abrium · Open source & private</span>
+          <div style="display:flex; gap:8px">
+            <a href="https://github.com/yourusername/abrium" target="_blank" style="width:36px; height:36px; display:flex; align-items:center; justify-content:center; border:1px solid var(--border); border-radius:7px; background:var(--surface); color:var(--text-2)">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.3 4.3 0 0 0-.1-3.2s-1.1-.3-3.5 1.3a12 12 0 0 0-6.2 0C6.5 2.8 5.4 3.1 5.4 3.1a4.3 4.3 0 0 0-.1 3.2A4.6 4.6 0 0 0 4 9.5c0 4.6 2.7 5.7 5.5 6-.4.4-.5.9-.5 1.6V21"></path></svg>
+            </a>
+            <a href="https://patreon.com/placeholder-abrium" target="_blank" style="width:36px; height:36px; display:flex; align-items:center; justify-content:center; border:1px solid var(--border); border-radius:7px; background:var(--surface); color:var(--text-2)">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V5a2 2 0 0 1 2-2h11M16 11l-4 4-4-4M12 15V3"></path></svg>
+            </a>
+          </div>
+        </div>
+      </footer>
+      
+      <CookieConsent />
+    </div>
+
+    <script is:inline>
+      document.addEventListener('DOMContentLoaded', () => {
+        // Language Menu Toggle
+        const langBtn = document.getElementById('lang-btn');
+        const langMenu = document.getElementById('lang-menu');
+        if (langBtn && langMenu) {
+          langBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            langMenu.style.display = langMenu.style.display === 'none' ? 'flex' : 'none';
+          });
+          document.addEventListener('click', () => {
+            langMenu.style.display = 'none';
+          });
+        }
+        
+        // Theme Toggle
+        const themeBtn = document.getElementById('theme-btn');
+        const iconLight = document.getElementById('theme-icon-light');
+        const iconDark = document.getElementById('theme-icon-dark');
+        
+        function updateThemeIcons(theme) {
+          if (theme === 'dark') {
+            iconLight.style.display = 'block';
+            iconDark.style.display = 'none';
+          } else {
+            iconLight.style.display = 'none';
+            iconDark.style.display = 'block';
+          }
+        }
+        
+        const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+        updateThemeIcons(currentTheme);
+
+        if (themeBtn) {
+          themeBtn.addEventListener('click', () => {
+            const docTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = docTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcons(newTheme);
+          });
+        }
+      });
+    </script>
+	</body>
+</html>

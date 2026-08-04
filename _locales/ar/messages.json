@@ -1,0 +1,309 @@
+{
+  "ext_name": {
+    "message": "أبريوم — خزانة الأعمال"
+  },
+  "ext_description": {
+    "message": "احفظ أعمال Claude.ai على جهازك. بلا حسابات، بلا تتبّع، ولا يغادر أي شيء متصفحك."
+  },
+  "action_title": {
+    "message": "فتح أبريوم"
+  },
+  "command_open_panel": {
+    "message": "فتح لوحة أبريوم الجانبية"
+  },
+  "sidepanel_title": {
+    "message": "أبريوم — خزانة الأعمال"
+  },
+  "gallery_label": {
+    "message": "الأعمال المحفوظة"
+  },
+  "loading_label": {
+    "message": "جارٍ تحميل الأعمال…"
+  },
+  "search_placeholder": {
+    "message": "ابحث في الأعمال…"
+  },
+  "search_label": {
+    "message": "البحث في الأعمال"
+  },
+  "search_clear": {
+    "message": "مسح البحث"
+  },
+  "filter_group_label": {
+    "message": "التصفية حسب النوع"
+  },
+  "filter_all": {
+    "message": "الكل"
+  },
+  "filter_code": {
+    "message": "كود"
+  },
+  "filter_html": {
+    "message": "HTML"
+  },
+  "filter_markdown": {
+    "message": "ماركداون"
+  },
+  "filter_svg": {
+    "message": "SVG"
+  },
+  "filter_react": {
+    "message": "React"
+  },
+  "stats_summary": {
+    "message": "$1 · $2"
+  },
+  "size_unavailable": {
+    "message": "—",
+    "description": "Shown instead of a storage figure when getBytesInUse() could not measure it."
+  },
+  "artifact_count_zero": {
+    "message": "لا توجد أعمال"
+  },
+  "artifact_count_one": {
+    "message": "عمل واحد"
+  },
+  "artifact_count_two": {
+    "message": "عملان"
+  },
+  "artifact_count_few": {
+    "message": "$1 أعمال"
+  },
+  "artifact_count_many": {
+    "message": "$1 عملًا"
+  },
+  "artifact_count_other": {
+    "message": "$1 عمل"
+  },
+  "action_select": {
+    "message": "تحديد"
+  },
+  "action_done": {
+    "message": "تم"
+  },
+  "action_settings": {
+    "message": "الإعدادات وحول التطبيق"
+  },
+  "action_view_vault": {
+    "message": "عرض الخزانة كاملة"
+  },
+  "popup_recent_heading": {
+    "message": "الأحدث"
+  },
+  "action_download_named": {
+    "message": "تنزيل $1"
+  },
+  "action_retry": {
+    "message": "إعادة المحاولة"
+  },
+  "action_reset_filters": {
+    "message": "مسح البحث والتصفية"
+  },
+  "action_cancel": {
+    "message": "إلغاء"
+  },
+  "action_export": {
+    "message": "تصدير"
+  },
+  "action_download_zip": {
+    "message": "تنزيل ZIP"
+  },
+  "action_select_all": {
+    "message": "تحديد الكل"
+  },
+  "action_clear_selection": {
+    "message": "إلغاء التحديد"
+  },
+  "empty_title": {
+    "message": "لا توجد أعمال بعد"
+  },
+  "empty_body": {
+    "message": "أنشئ شيئًا في Claude وسيظهر هنا تلقائيًا."
+  },
+  "no_results_title": {
+    "message": "لا توجد نتائج"
+  },
+  "no_results_body": {
+    "message": "جرّب كلمة أخرى أو أزل عوامل التصفية."
+  },
+  "error_title": {
+    "message": "تعذّرت قراءة أعمال هذه الصفحة"
+  },
+  "error_body": {
+    "message": "حدّث صفحة claude.ai ثم أعد تحميل الخزانة."
+  },
+  "batch_bar_label": {
+    "message": "إجراءات التحديد"
+  },
+  "batch_mode_entered": {
+    "message": "تم تفعيل وضع التحديد"
+  },
+  "batch_mode_exited": {
+    "message": "تم إنهاء وضع التحديد"
+  },
+  "selected_count_zero": {
+    "message": "لم يتم تحديد أي عنصر"
+  },
+  "selected_count_one": {
+    "message": "عنصر واحد محدد"
+  },
+  "selected_count_two": {
+    "message": "عنصران محددان"
+  },
+  "selected_count_few": {
+    "message": "$1 عناصر محددة"
+  },
+  "selected_count_many": {
+    "message": "$1 عنصرًا محددًا"
+  },
+  "selected_count_other": {
+    "message": "$1 عنصر محدد"
+  },
+  "status_download_started": {
+    "message": "بدأ التنزيل"
+  },
+  "status_export_started": {
+    "message": "بدأ التصدير"
+  },
+  "status_zip_started": {
+    "message": "جارٍ إنشاء ملف ZIP"
+  },
+  "status_action_failed": {
+    "message": "تعذّر إتمام العملية — لم يتغيّر شيء"
+  },
+  "detail_label": {
+    "message": "تفاصيل العمل"
+  },
+  "action_back": {
+    "message": "العودة إلى الخزانة"
+  },
+  "action_pin": {
+    "message": "تثبيت العمل"
+  },
+  "action_unpin": {
+    "message": "إلغاء تثبيت العمل"
+  },
+  "action_download": {
+    "message": "تنزيل"
+  },
+  "action_delete": {
+    "message": "حذف"
+  },
+  "delete_confirm_title": {
+    "message": "هل تريد حذف هذا العمل؟"
+  },
+  "delete_confirm_body": {
+    "message": "لا يمكن التراجع عن ذلك."
+  },
+  "action_confirm_delete": {
+    "message": "حذف"
+  },
+  "detail_open_conversation": {
+    "message": "فتح في Claude"
+  },
+  "detail_source_label": {
+    "message": "المصدر"
+  },
+  "detail_preview_label": {
+    "message": "معاينة"
+  },
+  "detail_preview_unavailable_title": {
+    "message": "المعاينة غير متاحة"
+  },
+  "detail_preview_unavailable_body": {
+    "message": "نزّل الملف لعرضه."
+  },
+  "detail_missing_title": {
+    "message": "لم يعد هذا العمل موجودًا"
+  },
+  "detail_missing_body": {
+    "message": "تم حذفه أو إزالته لتوفير مساحة التخزين."
+  },
+  "detail_error_title": {
+    "message": "تعذّر تحميل هذا العمل"
+  },
+  "status_pinned": {
+    "message": "تم التثبيت"
+  },
+  "status_unpinned": {
+    "message": "تم إلغاء التثبيت"
+  },
+  "status_deleted": {
+    "message": "تم حذف العمل"
+  },
+  "settings_label": {
+    "message": "الإعدادات وحول التطبيق"
+  },
+  "settings_title": {
+    "message": "الإعدادات"
+  },
+  "settings_language": {
+    "message": "اللغة"
+  },
+  "settings_theme": {
+    "message": "المظهر"
+  },
+  "settings_storage": {
+    "message": "التخزين"
+  },
+  "settings_privacy": {
+    "message": "الخصوصية"
+  },
+  "settings_about": {
+    "message": "حول التطبيق"
+  },
+  "settings_error_title": {
+    "message": "تعذّر تحميل الإعدادات"
+  },
+  "theme_system": {
+    "message": "النظام"
+  },
+  "theme_light": {
+    "message": "فاتح"
+  },
+  "theme_dark": {
+    "message": "داكن"
+  },
+  "language_system": {
+    "message": "استخدام لغة المتصفح"
+  },
+  "action_export_backup": {
+    "message": "تصدير نسخة احتياطية"
+  },
+  "action_view_all": {
+    "message": "عرض جميع الأعمال"
+  },
+  "privacy_note": {
+    "message": "يقرأ أبريوم محتوى أعمال Claude في صفحات claude.ai التي تزورها ويخزّنه في متصفحك فقط. لا يُرسل أي شيء إلى أي خادم. بلا حسابات، بلا تتبّع، بلا مدفوعات."
+  },
+  "about_version": {
+    "message": "الإصدار $1"
+  },
+  "about_changelog": {
+    "message": "سجل التغييرات"
+  },
+  "about_support": {
+    "message": "ادعم أبريوم"
+  },
+  "about_open_source": {
+    "message": "أبريوم مفتوح المصدر (رخصة MIT)."
+  },
+  "about_repository": {
+    "message": "عرض على GitHub"
+  },
+  "status_settings_saved": {
+    "message": "تم حفظ الإعدادات"
+  },
+  "link_opens_new_tab": {
+    "message": "يفتح في علامة تبويب جديدة"
+  },
+  "preview_hint_title": {
+    "message": "تعذر قراءة هذا العنصر"
+  },
+  "preview_hint_body": {
+    "message": "قم بالتبديل إلى عرض التعليمات البرمجية (Code view) لحفظ هذا العنصر."
+  },
+  "action_dismiss": {
+    "message": "تجاهل"
+  }
+}

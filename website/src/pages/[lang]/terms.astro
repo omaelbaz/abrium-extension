@@ -1,0 +1,12 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+export function getStaticPaths() { return [ { params: { lang: 'ar' } }, { params: { lang: 'fr' } }, { params: { lang: 'es' } }, { params: { lang: 'pt' } } ]; }
+const { lang } = Astro.params;
+const translations = {"ar":{"title":"شروط الخدمة","html":"<h1>شروط الخدمة</h1><p>مرحباً بك في أبريوم. الأداة مقدمة مجاناً لمساعدتك في إدارة بياناتك محلياً. نطلب منك استخدامها بمسؤولية.</p>"},"fr":{"title":"Conditions d'utilisation","html":"<h1>Conditions d'utilisation</h1><p>Bienvenue sur Abrium. L'outil est gratuit pour gérer vos artefacts localement. Utilisez-le de manière responsable.</p>"},"es":{"title":"Términos de Servicio","html":"<h1>Términos de Servicio</h1><p>Bienvenido a Abrium. La herramienta es gratuita para gestionar tus artefactos localmente. Úsala con responsabilidad.</p>"},"pt":{"title":"Termos de Serviço","html":"<h1>Termos de Serviço</h1><p>Bem-vindo ao Abrium. A ferramenta é gratuita para gerenciar seus artefatos localmente. Use-a com responsabilidade.</p>"}};
+const t = translations[lang as keyof typeof translations];
+---
+<Layout title={t.title} description={t.title}>
+  
+  <div set:html={t.html} />
+</Layout>

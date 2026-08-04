@@ -1,0 +1,12 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+export function getStaticPaths() { return [ { params: { lang: 'ar' } }, { params: { lang: 'fr' } }, { params: { lang: 'es' } }, { params: { lang: 'pt' } } ]; }
+const { lang } = Astro.params;
+const translations = {"ar":{"title":"تنزيل","html":"<h1>تنزيل أبريوم</h1><br/><p><a href='https://chrome.google.com/webstore/placeholder-abrium-url' class='button' target='_blank'>تنزيل (رابط مؤقت)</a></p>"},"fr":{"title":"Télécharger","html":"<h1>Télécharger Abrium</h1><br/><p><a href='https://chrome.google.com/webstore/placeholder-abrium-url' class='button' target='_blank'>Télécharger (Lien fictif)</a></p>"},"es":{"title":"Descargar","html":"<h1>Descargar Abrium</h1><br/><p><a href='https://chrome.google.com/webstore/placeholder-abrium-url' class='button' target='_blank'>Descargar (Enlace de marcador de posición)</a></p>"},"pt":{"title":"Baixar","html":"<h1>Baixar Abrium</h1><br/><p><a href='https://chrome.google.com/webstore/placeholder-abrium-url' class='button' target='_blank'>Baixar (Link de espaço reservado)</a></p>"}};
+const t = translations[lang as keyof typeof translations];
+---
+<Layout title={t.title} description={t.title}>
+  
+  <div set:html={t.html} />
+</Layout>

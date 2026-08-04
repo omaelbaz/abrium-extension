@@ -1,0 +1,34 @@
+@import './tokens.css';
+
+:root, [data-theme="light"], [data-theme="dark"] {
+  --bg: var(--color-bg);
+  --bg-alt: var(--color-bg-alt);
+  --surface: var(--color-surface);
+  --border: var(--color-border);
+  --border-2: var(--color-border-subtle);
+  --accent: var(--color-accent);
+  --accent-solid: var(--color-accent-solid);
+  --accent-text: var(--color-accent-text);
+  --on-accent: var(--color-on-accent);
+  --text: var(--color-text);
+  --text-2: var(--color-text-2);
+  --text-3: var(--color-text-3);
+  --muted: var(--color-text-muted);
+  --shadow: var(--shadow-pop);
+}
+[data-theme="light"] { --tint: #F7EAE4; }
+[data-theme="dark"] { --tint: #2C2924; }
+
+[dir="ltr"] { --flip:1; }
+[dir="rtl"] { --flip:-1; }
+
+body { 
+  margin:0; 
+  background: var(--bg); 
+  font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif; 
+  -webkit-font-smoothing: antialiased;
+}
+a { color:var(--accent-text); text-decoration:none; }
+a:hover { text-decoration:underline; }
+::-webkit-scrollbar { width:8px; height:8px; }
+::-webkit-scrollbar-thumb { background:#8A857A55; border-radius:4px; }

@@ -1,0 +1,12 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+export function getStaticPaths() { return [ { params: { lang: 'ar' } }, { params: { lang: 'fr' } }, { params: { lang: 'es' } }, { params: { lang: 'pt' } } ]; }
+const { lang } = Astro.params;
+const translations = {"ar":{"title":"اتصل بنا","html":"<h1>اتصل بنا</h1><p><a href='https://github.com/yourusername/abrium' target='_blank'>أبلغ عن مشكلة في جيت هاب</a></p><br/><p><a href='https://patreon.com/placeholder-abrium' target='_blank'>ادعمنا على باتريون (رابط مؤقت)</a></p>"},"fr":{"title":"Nous Contacter","html":"<h1>Nous Contacter</h1><p><a href='https://github.com/yourusername/abrium' target='_blank'>Signaler un problème sur GitHub</a></p><br/><p><a href='https://patreon.com/placeholder-abrium' target='_blank'>Soutenez-nous sur Patreon (Fictif)</a></p>"},"es":{"title":"Contáctanos","html":"<h1>Contáctanos</h1><p><a href='https://github.com/yourusername/abrium' target='_blank'>Reportar un problema en GitHub</a></p><br/><p><a href='https://patreon.com/placeholder-abrium' target='_blank'>Apóyanos en Patreon (Marcador)</a></p>"},"pt":{"title":"Contate-nos","html":"<h1>Contate-nos</h1><p><a href='https://github.com/yourusername/abrium' target='_blank'>Relatar um problema no GitHub</a></p><br/><p><a href='https://patreon.com/placeholder-abrium' target='_blank'>Apoie-nos no Patreon (Marcador)</a></p>"}};
+const t = translations[lang as keyof typeof translations];
+---
+<Layout title={t.title} description={t.title}>
+  
+  <div set:html={t.html} />
+</Layout>

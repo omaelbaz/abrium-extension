@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Abrium — side panel dev harness</title>
+  <style>
+    body { margin: 0; background: #12110F; }
+    #harness-frame {
+      inline-size: 380px; block-size: 100vh; overflow: auto;
+      margin-inline: auto; border-inline: 1px solid #3A3630;
+    }
+  </style>
+</head>
+<body>
+  <!--
+    DEV ONLY. Not referenced by manifest.json, so it is never built into /dist.
+
+    Runs the real side panel outside Chrome by shimming the handful of chrome.*
+    APIs it touches. The shell markup and stylesheet links are read out of the
+    real index.html via Vite's ?raw import, so this file duplicates nothing —
+    if index.html changes, the harness follows.
+  -->
+  <div id="harness-frame"></div>
+
+  <script type="module">
+    import sidepanelShell from '../src/ui/sidepanel/index.html?raw';
+    import popupShell from '../src/ui/popup/index.html?raw';
+    import messages from '../_locales/en/messages.json';
+    import { ARTIFACT_FIXTURES } from '../tests/fixtures/artifacts.ts';
+
+    /* --- chrome shim ----------------------------------------------------- */
+
+    // One key per artifact, matching the real v2 layout in lib/storage.ts.
+    const vault = Object.fromEntries(
+      ARTIFACT_FIXTURES.map((a) => [`abrium.artifact.${a.id}`, structuredClone(a)]),
+    );
+
+    // Chrome bills the key string plus the serialised value; mirroring that
+    // here keeps harness figures comparable with the real extension.
+    const bytesOf = (key) => key.length + JSON.stringify(vault[key] ?? null).length;
+
+    globalThis.chrome = {
+      i18n: {
+        getUILanguage: () => 'en',
+        getMessage: (key, subs = []) => {
+          const entry = messages[key];
+          if (!entry) return '';
+          const list = Array.isArray(subs) ? subs : [subs];
+          return entry.message.replace(/\$(\d+)/g, (whole, i) => list[Number(i) - 1] ?? whole);
+        },
+      },
+      storage: {
+        local: {
+          get: async (query) => {
+            if (query === null || query === undefined) return { ...vault };
+            const keys = Array.isArray(query) ? query : [query];
+            return Object.fromEntries(
+              keys.filter((k) => k in vault).map((k) => [k, vault[k]]),
+            );
+          },
+          set: async (items) => { Object.assign(vault, items); },
+          remove: async (query) => {
+            for (const k of Array.isArray(query) ? query : [query]) delete vault[k];
+          },
+          getBytesInUse: async (query) => {
+            const keys =
+              query === null || query === undefined
+                ? Object.keys(vault)
+                : Array.isArray(query)
+                  ? query
+                  : [query];
+            return keys.reduce((total, k) => total + (k in vault ? bytesOf(k) : 0), 0);
+          },
+        },
+        onChanged: { addListener() {}, removeListener() {} },
+      },
+      runtime: { onMessage: { addListener() {} }, getManifest: () => ({ version: '0.1.0' }) },
+      windows: { getCurrent: async () => ({ id: 42 }) },
+      sidePanel: {
+        open: async (options) => {
+          globalThis.__abriumSidePanelOpens.push(options);
+        },
+      },
+    };
+    globalThis.__abriumSidePanelOpens = [];
+
+    // The popup closes itself once the side panel opens. Record it instead, or
+    // the harness tab disappears mid-test.
+    globalThis.__abriumWindowCloses = 0;
+    window.close = () => { globalThis.__abriumWindowCloses += 1; };
+
+    /* --- capture downloads instead of writing to disk --------------------- */
+
+    globalThis.__abriumDownloads = [];
+    const realCreate = URL.createObjectURL.bind(URL);
+    URL.createObjectURL = (blob) => {
+      globalThis.__abriumDownloads.push(blob);
+      return realCreate(blob);
+    };
+    HTMLAnchorElement.prototype.click = function noopClick() {
+      globalThis.__abriumDownloads.at(-1).__filename = this.download;
+    };
+
+    /* --- mount the real shell -------------------------------------------- */
+
+    // ?surface=popup runs the popup instead; both read their shell from the
+    // real index.html so neither is duplicated here.
+    const surface = new URLSearchParams(location.search).get('surface') === 'popup'
+      ? 'popup'
+      : 'sidepanel';
+    const shellHtml = surface === 'popup' ? popupShell : sidepanelShell;
+    // Absolute and explicit: deriving this from import.meta.url broke once Vite
+    // moved the inline module to a proxy URL, and the failure was silent.
+    const baseDir = `/src/ui/${surface}/`;
+
+    const parsed = new DOMParser().parseFromString(shellHtml, 'text/html');
+
+    // Stylesheets are IMPORTED, not <link>ed: Vite's dev server serves
+    // /src/**/*.css as a JavaScript module so it can hot-reload it, and a
+    // <link> pointing at that receives JS with a JS MIME type — the browser
+    // then refuses to parse it and the harness renders with zero styles.
+    // Importing lets Vite inject the real CSS. Sequential awaits keep cascade
+    // order (tokens → base → components → screen).
+    for (const link of parsed.querySelectorAll('link[rel="stylesheet"]')) {
+      const href = new URL(link.getAttribute('href'), `http://x${baseDir}`).pathname;
+      try {
+        await import(/* @vite-ignore */ href);
+      } catch (error) {
+        document.title = 'HARNESS CSS FAILED';
+        console.error('[harness] could not load stylesheet', href, error);
+      }
+    }
+
+    const frame = document.querySelector('#harness-frame');
+    if (parsed.body.className) frame.className = parsed.body.className;
+    if (surface === 'popup') frame.style.inlineSize = 'auto';
+    for (const node of [...parsed.body.children]) {
+      if (node.tagName === 'SCRIPT') continue;
+      frame.append(document.importNode(node, true));
+    }
+
+    /* --- boot the real controller ---------------------------------------- */
+
+    if (surface === 'popup') await import('../src/ui/popup/popup.ts');
+    else await import('../src/ui/sidepanel/sidepanel.ts');
+
+    // Expose the shipping export path so it can be exercised for real, plus a
+    // clean JSZip instance for reading generated archives back.
+    globalThis.__abriumExport = await import('../src/lib/download.ts');
+    globalThis.__abriumStorage = await import('../src/lib/storage.ts');
+    globalThis.__abriumIcons = await import('../src/ui/icons.ts');
+    globalThis.__abriumFixtures = ARTIFACT_FIXTURES;
+    globalThis.__JSZip = (await import('jszip')).default;
+  </script>
+</body>
+</html>

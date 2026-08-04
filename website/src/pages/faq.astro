@@ -1,0 +1,10 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const faqSchema = { "@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{ "@type": "Question", "name": "Is it free?", "acceptedAnswer": { "@type": "Answer", "text": "Yes, Abrium is 100% free with no paid tiers." } }, { "@type": "Question", "name": "Does it read my conversations?", "acceptedAnswer": { "@type": "Answer", "text": "No. It only reads Artifact content, not your prompts or unrelated conversations." } }] };
+
+---
+<Layout title="FAQ" description="FAQ">
+  <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} slot="head" />
+  <h1>Frequently Asked Questions</h1><h3>Is it free?</h3><p>Yes, Abrium is 100% free with no paid tiers.</p><h3>Does it read my conversations?</h3><p>No. It only reads Artifact content, not your prompts or unrelated conversations.</p><h3>Why Code view and not Preview?</h3><p>For security and simplicity, we show the raw code rather than rendering potentially unsafe previews.</p><h3>Where is data stored?</h3><p>All data is stored purely in your local browser storage (chrome.storage.local).</p><h3>What about the diagnostic tools in the repo?</h3><p>The repository's diagnostic tools are safe to run and collect no personal data, providing only system readiness reports.</p>
+</Layout>

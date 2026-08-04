@@ -1,0 +1,573 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Abrium — Design System Reference</title>
+
+<!-- The real stylesheets. This page must never redeclare a token; if
+     something looks wrong here, it is wrong in the extension too. -->
+<link rel="stylesheet" href="src/ui/styles/tokens.css">
+<link rel="stylesheet" href="src/ui/styles/base.css">
+<link rel="stylesheet" href="src/ui/styles/components.css">
+
+<style>
+  /* Page chrome for this reference sheet only — not part of the system. */
+  body { background: #12110F; padding: 24px; }
+  .sheet {
+    display: flex; flex-wrap: wrap; gap: 20px;
+    align-items: flex-start; justify-content: center;
+    max-width: 1320px; margin: 0 auto;
+  }
+  .col { flex: 0 0 auto; }
+  .col-label {
+    font: 600 11px/1 var(--font-sans); letter-spacing: .08em;
+    text-transform: uppercase; color: #7C776D;
+    margin: 0 0 10px 2px;
+  }
+  .frame {
+    width: 380px;                 /* side-panel width, the tighter constraint */
+    background: var(--color-bg);
+    color: var(--color-text);
+    border: 1px solid #3A3630;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .frame--popup { width: 330px; } /* popup width */
+  .sec {
+    padding: 14px var(--space-5) 18px;
+    border-block-end: 1px solid var(--color-border-subtle);
+  }
+  .sec:last-child { border-block-end: none; }
+  .sec > .abr-overline { margin-block-end: 10px; }
+  .row { display: flex; flex-wrap: wrap; gap: var(--space-4); align-items: center; }
+  .row + .row { margin-block-start: var(--space-4); }
+  .state {
+    font: 500 10px/1 var(--font-mono); color: var(--color-text-3);
+    margin-block: 10px var(--space-3); letter-spacing: .04em;
+  }
+  .swatches { display: grid; grid-template-columns: repeat(5, 1fr); gap: var(--space-3); }
+  .sw { border-radius: var(--radius-sm); height: 34px; border: 1px solid var(--color-border-subtle); }
+  .sw-label { font: 500 9px/1.3 var(--font-mono); color: var(--color-text-muted); margin-block-start: 4px; }
+  .page-title { font: 600 15px/1.4 var(--font-sans); color: #F3F1EC; text-align: center; margin: 0 0 4px; }
+  .page-sub { font: 400 12px/1.5 var(--font-sans); color: #7C776D; text-align: center; margin: 0 0 24px; }
+</style>
+</head>
+<body>
+
+<p class="page-title">Abrium — component token sheet</p>
+<p class="page-sub">Light · Dark · RTL (ar) &nbsp;|&nbsp; frames at true panel widths: 380px side panel, 330px popup</p>
+
+<div class="sheet">
+
+  <!-- ================= LIGHT ================= -->
+  <div class="col">
+    <p class="col-label">Light — side panel 380px</p>
+    <div class="frame" data-theme="light" dir="ltr">
+
+      <!-- TYPE SCALE -->
+      <div class="sec">
+        <p class="abr-overline">Type scale</p>
+        <p class="abr-heading">Your Artifact Vault</p>
+        <p class="abr-subhead" style="margin-block-start:8px">Recent captures</p>
+        <p class="abr-body" style="margin-block-start:6px">Everything Claude builds for you, kept on this device.</p>
+        <p class="abr-caption" style="margin-block-start:6px">14 artifacts · 2.1 MB</p>
+        <p class="abr-caption abr-caption--quiet" style="margin-block-start:2px">Quiet caption (text-3)</p>
+        <pre class="abr-code" style="margin-block-start:10px">export function useArtifacts() {
+  const [items, setItems] = useState&lt;Artifact[]&gt;([]);
+  useEffect(() =&gt; { void load().then(setItems); }, []);
+  return items;
+}</pre>
+      </div>
+
+      <!-- BUTTONS -->
+      <div class="sec">
+        <p class="abr-overline">Button — primary</p>
+        <p class="state">default / hover / active / disabled</p>
+        <div class="row">
+          <button class="abr-btn abr-btn--primary">Download</button>
+          <button class="abr-btn abr-btn--primary" style="background:var(--color-accent-hover);border-color:var(--color-accent-hover)">Download</button>
+          <button class="abr-btn abr-btn--primary" style="background:var(--color-accent-active);border-color:var(--color-accent-active);box-shadow:none">Download</button>
+          <button class="abr-btn abr-btn--primary" disabled>Download</button>
+        </div>
+
+        <p class="abr-overline" style="margin-block-start:16px">Button — secondary</p>
+        <p class="state">default / hover / active / disabled</p>
+        <div class="row">
+          <button class="abr-btn abr-btn--secondary">Export</button>
+          <button class="abr-btn abr-btn--secondary" style="background:var(--color-surface-hover);border-color:var(--color-accent);color:var(--color-accent-text)">Export</button>
+          <button class="abr-btn abr-btn--secondary" style="background:var(--color-accent-wash);border-color:var(--color-accent)">Export</button>
+          <button class="abr-btn abr-btn--secondary" disabled>Export</button>
+        </div>
+
+        <p class="abr-overline" style="margin-block-start:16px">Button — ghost</p>
+        <p class="state">default / hover / active / disabled</p>
+        <div class="row">
+          <button class="abr-btn abr-btn--ghost">Cancel</button>
+          <button class="abr-btn abr-btn--ghost" style="background:var(--color-surface-hover);color:var(--color-text)">Cancel</button>
+          <button class="abr-btn abr-btn--ghost" style="background:var(--color-accent-wash);color:var(--color-accent-text)">Cancel</button>
+          <button class="abr-btn abr-btn--ghost" disabled>Cancel</button>
+        </div>
+
+        <p class="state">focus-visible ring / loading / danger / block</p>
+        <div class="row">
+          <button class="abr-btn abr-btn--secondary" style="outline:var(--focus-ring-w) solid var(--focus-ring-color);outline-offset:var(--focus-ring-offset)">Focused</button>
+          <button class="abr-btn abr-btn--primary" data-loading="true">Zipping…</button>
+          <button class="abr-btn abr-btn--danger abr-btn--sm">Delete</button>
+        </div>
+        <div class="row">
+          <button class="abr-btn abr-btn--primary abr-btn--block">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v8m0 0 3-3M8 10 5 7M2.5 11.5v1a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1v-1"/></svg>
+            Download all as ZIP
+          </button>
+        </div>
+      </div>
+
+      <!-- ICON BUTTONS -->
+      <div class="sec">
+        <p class="abr-overline">Icon button</p>
+        <p class="state">default / hover / active / focus-visible / pressed / disabled</p>
+        <div class="row">
+          <button class="abr-icon-btn" aria-label="Pin artifact"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 2 14 6.5l-2 .5-3 3-.5 3.5L5 10.5 1.5 14 5 10.5 2 7.5 5.5 7l3-3z"/></svg></button>
+          <button class="abr-icon-btn" aria-label="Pin artifact" style="background:var(--color-surface-hover);color:var(--color-text)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 2 14 6.5l-2 .5-3 3-.5 3.5L5 10.5 1.5 14 5 10.5 2 7.5 5.5 7l3-3z"/></svg></button>
+          <button class="abr-icon-btn" aria-label="Pin artifact" style="background:var(--color-accent-wash);color:var(--color-accent-text)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 2 14 6.5l-2 .5-3 3-.5 3.5L5 10.5 1.5 14 5 10.5 2 7.5 5.5 7l3-3z"/></svg></button>
+          <button class="abr-icon-btn" aria-label="Pin artifact" style="outline:var(--focus-ring-w) solid var(--focus-ring-color);outline-offset:var(--focus-ring-offset)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 2 14 6.5l-2 .5-3 3-.5 3.5L5 10.5 1.5 14 5 10.5 2 7.5 5.5 7l3-3z"/></svg></button>
+          <button class="abr-icon-btn" aria-label="Unpin artifact" aria-pressed="true"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M9.5 2 14 6.5l-2 .5-3 3-.5 3.5L5 10.5 1.5 14 5 10.5 2 7.5 5.5 7l3-3z"/></svg></button>
+          <button class="abr-icon-btn" aria-label="Delete artifact" disabled><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 4h10M6.5 4V2.5h3V4M4.5 4l.5 9h6l.5-9"/></svg></button>
+          <span style="inline-size:1px;block-size:20px;background:var(--color-border)"></span>
+          <button class="abr-icon-btn" aria-label="Back">
+            <svg class="abr-icon--directional" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3 5 8l5 5"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- INPUT / SEARCH -->
+      <div class="sec">
+        <p class="abr-overline">Search field</p>
+        <p class="state">default</p>
+        <div class="abr-field abr-field--search">
+          <svg class="abr-field__icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="7" cy="7" r="4.5"/><path d="m10.5 10.5 3 3"/></svg>
+          <input class="abr-input" type="search" placeholder="Search artifacts…" aria-label="Search artifacts">
+        </div>
+
+        <p class="state">focus + filled, with clear button</p>
+        <div class="abr-field abr-field--search">
+          <svg class="abr-field__icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="7" cy="7" r="4.5"/><path d="m10.5 10.5 3 3"/></svg>
+          <input class="abr-input" type="search" value="pricing table"
+                 style="border-color:var(--color-accent);box-shadow:0 0 0 3px var(--color-accent-wash)" aria-label="Search artifacts">
+          <button class="abr-icon-btn abr-icon-btn--sm abr-field__clear" aria-label="Clear search"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 4l8 8M12 4l-8 8"/></svg></button>
+        </div>
+
+        <p class="state">error / disabled</p>
+        <div class="abr-field"><input class="abr-input" value="＊＊＊" aria-invalid="true" aria-label="Filename"></div>
+        <p class="abr-field__hint abr-field__hint--error">Filename can’t contain * or /</p>
+        <div class="abr-field" style="margin-block-start:8px"><input class="abr-input" value="Sync disabled" disabled aria-label="Disabled example"></div>
+      </div>
+
+      <!-- CHIPS -->
+      <div class="sec">
+        <p class="abr-overline">Filter chip</p>
+        <p class="state">active / inactive / hover / disabled — row scrolls, never wraps</p>
+        <div class="abr-chip-row">
+          <button class="abr-chip" aria-pressed="true">All <span class="abr-chip__count">14</span></button>
+          <button class="abr-chip" aria-pressed="false">Code <span class="abr-chip__count">6</span></button>
+          <button class="abr-chip" aria-pressed="false" style="border-color:var(--color-accent);color:var(--color-text)">HTML <span class="abr-chip__count">3</span></button>
+          <button class="abr-chip" aria-pressed="false">MD <span class="abr-chip__count">2</span></button>
+          <button class="abr-chip" aria-pressed="false">SVG <span class="abr-chip__count">3</span></button>
+          <button class="abr-chip" aria-pressed="false" disabled>React <span class="abr-chip__count">0</span></button>
+        </div>
+      </div>
+
+      <!-- BADGES -->
+      <div class="sec">
+        <p class="abr-overline">Badge / count</p>
+        <div class="row">
+          <span class="abr-badge">3</span>
+          <span class="abr-badge">12</span>
+          <span class="abr-badge">99+</span>
+          <span class="abr-badge abr-badge--neutral">14</span>
+          <span class="abr-badge abr-badge--type">code</span>
+          <span class="abr-badge abr-badge--type">svg</span>
+          <span class="abr-badge abr-badge--type">react</span>
+          <span class="abr-badge abr-badge--dot" aria-hidden="true"></span>
+        </div>
+      </div>
+
+      <!-- CARDS -->
+      <div class="sec">
+        <p class="abr-overline">Card</p>
+        <p class="state">default</p>
+        <div class="abr-stack">
+          <article class="abr-card">
+            <div class="abr-card__head">
+              <div class="abr-card__title">
+                <p class="abr-subhead abr-truncate">Pricing table with annual toggle</p>
+                <div class="abr-card__meta abr-caption">
+                  <span class="abr-badge abr-badge--type">react</span>
+                  <span class="abr-bidi-isolate">4.2 KB</span>
+                  <span>Jul 29, 2026</span>
+                </div>
+              </div>
+              <div class="abr-card__actions">
+                <button class="abr-icon-btn abr-icon-btn--sm" aria-label="Pin artifact"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M9.5 2 14 6.5l-2 .5-3 3-.5 3.5L2 7.5 5.5 7l3-3z"/></svg></button>
+                <button class="abr-icon-btn abr-icon-btn--sm" aria-label="Download artifact"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v8m0 0 3-3M8 10 5 7M2.5 12.5h11"/></svg></button>
+              </div>
+            </div>
+            <pre class="abr-code">function PricingTable({ plans }: Props) {
+  const [annual, setAnnual] = useState(false);
+  return &lt;div className="grid"&gt;…&lt;/div&gt;;
+}</pre>
+          </article>
+
+          <p class="state" style="margin-block:6px 0">selected (batch mode)</p>
+          <article class="abr-card" aria-selected="true">
+            <div class="abr-card__head">
+              <div class="abr-card__title">
+                <p class="abr-subhead abr-truncate">Onboarding flow diagram</p>
+                <div class="abr-card__meta abr-caption">
+                  <span class="abr-badge abr-badge--type">svg</span>
+                  <span class="abr-bidi-isolate">11 KB</span>
+                  <span>Jul 30, 2026</span>
+                </div>
+              </div>
+              <div class="abr-card__actions" style="opacity:1">
+                <button class="abr-icon-btn abr-icon-btn--sm" aria-label="Deselect" aria-pressed="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 8.5 3.5 3.5L13 5"/></svg></button>
+              </div>
+            </div>
+          </article>
+
+          <p class="state" style="margin-block:6px 0">loading skeleton</p>
+          <article class="abr-card abr-card--static">
+            <div class="abr-skeleton" style="inline-size:65%;block-size:13px"></div>
+            <div class="abr-skeleton" style="inline-size:40%"></div>
+            <div class="abr-skeleton" style="block-size:44px"></div>
+          </article>
+        </div>
+      </div>
+
+      <!-- PALETTE -->
+      <div class="sec">
+        <p class="abr-overline">Surfaces</p>
+        <div class="swatches">
+          <div><div class="sw" style="background:var(--color-bg)"></div><p class="sw-label">bg</p></div>
+          <div><div class="sw" style="background:var(--color-bg-alt)"></div><p class="sw-label">bg-alt</p></div>
+          <div><div class="sw" style="background:var(--color-surface)"></div><p class="sw-label">surface</p></div>
+          <div><div class="sw" style="background:var(--color-border)"></div><p class="sw-label">border</p></div>
+          <div><div class="sw" style="background:var(--color-accent)"></div><p class="sw-label">accent</p></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================= DARK ================= -->
+  <div class="col">
+    <p class="col-label">Dark — side panel 380px</p>
+    <div class="frame" data-theme="dark" dir="ltr">
+
+      <div class="sec">
+        <p class="abr-overline">Type scale</p>
+        <p class="abr-heading">Your Artifact Vault</p>
+        <p class="abr-subhead" style="margin-block-start:8px">Recent captures</p>
+        <p class="abr-body" style="margin-block-start:6px">Everything Claude builds for you, kept on this device.</p>
+        <p class="abr-caption" style="margin-block-start:6px">14 artifacts · 2.1 MB</p>
+        <p class="abr-caption abr-caption--quiet" style="margin-block-start:2px">Quiet caption (text-3)</p>
+        <pre class="abr-code" style="margin-block-start:10px">export function useArtifacts() {
+  const [items, setItems] = useState&lt;Artifact[]&gt;([]);
+  useEffect(() =&gt; { void load().then(setItems); }, []);
+  return items;
+}</pre>
+      </div>
+
+      <div class="sec">
+        <p class="abr-overline">Button — primary</p>
+        <p class="state">default / hover / active / disabled</p>
+        <div class="row">
+          <button class="abr-btn abr-btn--primary">Download</button>
+          <button class="abr-btn abr-btn--primary" style="background:var(--color-accent-hover);border-color:var(--color-accent-hover)">Download</button>
+          <button class="abr-btn abr-btn--primary" style="background:var(--color-accent-active);border-color:var(--color-accent-active);box-shadow:none">Download</button>
+          <button class="abr-btn abr-btn--primary" disabled>Download</button>
+        </div>
+
+        <p class="abr-overline" style="margin-block-start:16px">Button — secondary</p>
+        <p class="state">default / hover / active / disabled</p>
+        <div class="row">
+          <button class="abr-btn abr-btn--secondary">Export</button>
+          <button class="abr-btn abr-btn--secondary" style="background:var(--color-surface-hover);border-color:var(--color-accent);color:var(--color-accent-text)">Export</button>
+          <button class="abr-btn abr-btn--secondary" style="background:var(--color-accent-wash);border-color:var(--color-accent)">Export</button>
+          <button class="abr-btn abr-btn--secondary" disabled>Export</button>
+        </div>
+
+        <p class="abr-overline" style="margin-block-start:16px">Button — ghost</p>
+        <p class="state">default / hover / active / disabled</p>
+        <div class="row">
+          <button class="abr-btn abr-btn--ghost">Cancel</button>
+          <button class="abr-btn abr-btn--ghost" style="background:var(--color-surface-hover);color:var(--color-text)">Cancel</button>
+          <button class="abr-btn abr-btn--ghost" style="background:var(--color-accent-wash);color:var(--color-accent-text)">Cancel</button>
+          <button class="abr-btn abr-btn--ghost" disabled>Cancel</button>
+        </div>
+
+        <p class="state">focus-visible ring / loading / danger / block</p>
+        <div class="row">
+          <button class="abr-btn abr-btn--secondary" style="outline:var(--focus-ring-w) solid var(--focus-ring-color);outline-offset:var(--focus-ring-offset)">Focused</button>
+          <button class="abr-btn abr-btn--primary" data-loading="true">Zipping…</button>
+          <button class="abr-btn abr-btn--danger abr-btn--sm">Delete</button>
+        </div>
+        <div class="row">
+          <button class="abr-btn abr-btn--primary abr-btn--block">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v8m0 0 3-3M8 10 5 7M2.5 11.5v1a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1v-1"/></svg>
+            Download all as ZIP
+          </button>
+        </div>
+      </div>
+
+      <div class="sec">
+        <p class="abr-overline">Icon button</p>
+        <p class="state">default / hover / active / focus-visible / pressed / disabled</p>
+        <div class="row">
+          <button class="abr-icon-btn" aria-label="Pin artifact"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 2 14 6.5l-2 .5-3 3-.5 3.5L5 10.5 1.5 14 5 10.5 2 7.5 5.5 7l3-3z"/></svg></button>
+          <button class="abr-icon-btn" aria-label="Pin artifact" style="background:var(--color-surface-hover);color:var(--color-text)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 2 14 6.5l-2 .5-3 3-.5 3.5L5 10.5 1.5 14 5 10.5 2 7.5 5.5 7l3-3z"/></svg></button>
+          <button class="abr-icon-btn" aria-label="Pin artifact" style="background:var(--color-accent-wash);color:var(--color-accent-text)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 2 14 6.5l-2 .5-3 3-.5 3.5L5 10.5 1.5 14 5 10.5 2 7.5 5.5 7l3-3z"/></svg></button>
+          <button class="abr-icon-btn" aria-label="Pin artifact" style="outline:var(--focus-ring-w) solid var(--focus-ring-color);outline-offset:var(--focus-ring-offset)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 2 14 6.5l-2 .5-3 3-.5 3.5L5 10.5 1.5 14 5 10.5 2 7.5 5.5 7l3-3z"/></svg></button>
+          <button class="abr-icon-btn" aria-label="Unpin artifact" aria-pressed="true"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M9.5 2 14 6.5l-2 .5-3 3-.5 3.5L5 10.5 1.5 14 5 10.5 2 7.5 5.5 7l3-3z"/></svg></button>
+          <button class="abr-icon-btn" aria-label="Delete artifact" disabled><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 4h10M6.5 4V2.5h3V4M4.5 4l.5 9h6l.5-9"/></svg></button>
+          <span style="inline-size:1px;block-size:20px;background:var(--color-border)"></span>
+          <button class="abr-icon-btn" aria-label="Back">
+            <svg class="abr-icon--directional" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3 5 8l5 5"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="sec">
+        <p class="abr-overline">Search field</p>
+        <p class="state">default</p>
+        <div class="abr-field abr-field--search">
+          <svg class="abr-field__icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="7" cy="7" r="4.5"/><path d="m10.5 10.5 3 3"/></svg>
+          <input class="abr-input" type="search" placeholder="Search artifacts…" aria-label="Search artifacts">
+        </div>
+
+        <p class="state">focus + filled, with clear button</p>
+        <div class="abr-field abr-field--search">
+          <svg class="abr-field__icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="7" cy="7" r="4.5"/><path d="m10.5 10.5 3 3"/></svg>
+          <input class="abr-input" type="search" value="pricing table"
+                 style="border-color:var(--color-accent);box-shadow:0 0 0 3px var(--color-accent-wash)" aria-label="Search artifacts">
+          <button class="abr-icon-btn abr-icon-btn--sm abr-field__clear" aria-label="Clear search"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 4l8 8M12 4l-8 8"/></svg></button>
+        </div>
+
+        <p class="state">error / disabled</p>
+        <div class="abr-field"><input class="abr-input" value="＊＊＊" aria-invalid="true" aria-label="Filename"></div>
+        <p class="abr-field__hint abr-field__hint--error">Filename can’t contain * or /</p>
+        <div class="abr-field" style="margin-block-start:8px"><input class="abr-input" value="Sync disabled" disabled aria-label="Disabled example"></div>
+      </div>
+
+      <div class="sec">
+        <p class="abr-overline">Filter chip</p>
+        <p class="state">active / inactive / hover / disabled — row scrolls, never wraps</p>
+        <div class="abr-chip-row">
+          <button class="abr-chip" aria-pressed="true">All <span class="abr-chip__count">14</span></button>
+          <button class="abr-chip" aria-pressed="false">Code <span class="abr-chip__count">6</span></button>
+          <button class="abr-chip" aria-pressed="false" style="border-color:var(--color-accent);color:var(--color-text)">HTML <span class="abr-chip__count">3</span></button>
+          <button class="abr-chip" aria-pressed="false">MD <span class="abr-chip__count">2</span></button>
+          <button class="abr-chip" aria-pressed="false">SVG <span class="abr-chip__count">3</span></button>
+          <button class="abr-chip" aria-pressed="false" disabled>React <span class="abr-chip__count">0</span></button>
+        </div>
+      </div>
+
+      <div class="sec">
+        <p class="abr-overline">Badge / count</p>
+        <div class="row">
+          <span class="abr-badge">3</span>
+          <span class="abr-badge">12</span>
+          <span class="abr-badge">99+</span>
+          <span class="abr-badge abr-badge--neutral">14</span>
+          <span class="abr-badge abr-badge--type">code</span>
+          <span class="abr-badge abr-badge--type">svg</span>
+          <span class="abr-badge abr-badge--type">react</span>
+          <span class="abr-badge abr-badge--dot" aria-hidden="true"></span>
+        </div>
+      </div>
+
+      <div class="sec">
+        <p class="abr-overline">Card</p>
+        <p class="state">default</p>
+        <div class="abr-stack">
+          <article class="abr-card">
+            <div class="abr-card__head">
+              <div class="abr-card__title">
+                <p class="abr-subhead abr-truncate">Pricing table with annual toggle</p>
+                <div class="abr-card__meta abr-caption">
+                  <span class="abr-badge abr-badge--type">react</span>
+                  <span class="abr-bidi-isolate">4.2 KB</span>
+                  <span>Jul 29, 2026</span>
+                </div>
+              </div>
+              <div class="abr-card__actions">
+                <button class="abr-icon-btn abr-icon-btn--sm" aria-label="Pin artifact"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M9.5 2 14 6.5l-2 .5-3 3-.5 3.5L2 7.5 5.5 7l3-3z"/></svg></button>
+                <button class="abr-icon-btn abr-icon-btn--sm" aria-label="Download artifact"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v8m0 0 3-3M8 10 5 7M2.5 12.5h11"/></svg></button>
+              </div>
+            </div>
+            <pre class="abr-code">function PricingTable({ plans }: Props) {
+  const [annual, setAnnual] = useState(false);
+  return &lt;div className="grid"&gt;…&lt;/div&gt;;
+}</pre>
+          </article>
+
+          <p class="state" style="margin-block:6px 0">selected (batch mode)</p>
+          <article class="abr-card" aria-selected="true">
+            <div class="abr-card__head">
+              <div class="abr-card__title">
+                <p class="abr-subhead abr-truncate">Onboarding flow diagram</p>
+                <div class="abr-card__meta abr-caption">
+                  <span class="abr-badge abr-badge--type">svg</span>
+                  <span class="abr-bidi-isolate">11 KB</span>
+                  <span>Jul 30, 2026</span>
+                </div>
+              </div>
+              <div class="abr-card__actions" style="opacity:1">
+                <button class="abr-icon-btn abr-icon-btn--sm" aria-label="Deselect" aria-pressed="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 8.5 3.5 3.5L13 5"/></svg></button>
+              </div>
+            </div>
+          </article>
+
+          <p class="state" style="margin-block:6px 0">loading skeleton</p>
+          <article class="abr-card abr-card--static">
+            <div class="abr-skeleton" style="inline-size:65%;block-size:13px"></div>
+            <div class="abr-skeleton" style="inline-size:40%"></div>
+            <div class="abr-skeleton" style="block-size:44px"></div>
+          </article>
+        </div>
+      </div>
+
+      <div class="sec">
+        <p class="abr-overline">Surfaces</p>
+        <div class="swatches">
+          <div><div class="sw" style="background:var(--color-bg)"></div><p class="sw-label">bg</p></div>
+          <div><div class="sw" style="background:var(--color-bg-alt)"></div><p class="sw-label">bg-alt</p></div>
+          <div><div class="sw" style="background:var(--color-surface)"></div><p class="sw-label">surface</p></div>
+          <div><div class="sw" style="background:var(--color-border)"></div><p class="sw-label">border</p></div>
+          <div><div class="sw" style="background:var(--color-accent)"></div><p class="sw-label">accent</p></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================= RTL ================= -->
+  <div class="col">
+    <p class="col-label">RTL (ar) — popup 330px · same CSS, mirrored</p>
+
+    <div class="frame frame--popup" data-theme="light" dir="rtl" lang="ar">
+      <div class="sec">
+        <p class="abr-overline">النوع</p>
+        <p class="abr-heading">خزانة الأعمال</p>
+        <p class="abr-body" style="margin-block-start:6px">كل ما ينشئه Claude محفوظ على جهازك.</p>
+        <p class="abr-caption" style="margin-block-start:6px"><span class="abr-bidi-isolate">١٤</span> عنصرًا · <span class="abr-bidi-isolate">2.1 MB</span></p>
+      </div>
+
+      <div class="sec">
+        <p class="abr-overline">الأزرار</p>
+        <div class="row">
+          <button class="abr-btn abr-btn--primary">تنزيل</button>
+          <button class="abr-btn abr-btn--secondary">تصدير</button>
+          <button class="abr-btn abr-btn--ghost">إلغاء</button>
+        </div>
+        <div class="row">
+          <button class="abr-btn abr-btn--primary abr-btn--block">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v8m0 0 3-3M8 10 5 7M2.5 11.5v1a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1v-1"/></svg>
+            تنزيل الكل كملف ZIP
+          </button>
+        </div>
+        <p class="state">↓ زر الرجوع يُعكس تلقائيًا (abr-icon--directional)</p>
+        <div class="row">
+          <button class="abr-icon-btn" aria-label="رجوع"><svg class="abr-icon--directional" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3 5 8l5 5"/></svg></button>
+          <button class="abr-icon-btn" aria-label="تثبيت"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M9.5 2 14 6.5l-2 .5-3 3-.5 3.5L2 7.5 5.5 7l3-3z"/></svg></button>
+          <button class="abr-icon-btn" aria-label="حذف"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 4h10M6.5 4V2.5h3V4M4.5 4l.5 9h6l.5-9"/></svg></button>
+          <span class="abr-badge">٣</span>
+        </div>
+      </div>
+
+      <div class="sec">
+        <p class="abr-overline">البحث</p>
+        <div class="abr-field abr-field--search">
+          <svg class="abr-field__icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="7" cy="7" r="4.5"/><path d="m10.5 10.5 3 3"/></svg>
+          <input class="abr-input" type="search" value="جدول الأسعار"
+                 style="border-color:var(--color-accent);box-shadow:0 0 0 3px var(--color-accent-wash)" aria-label="بحث">
+          <button class="abr-icon-btn abr-icon-btn--sm abr-field__clear" aria-label="مسح البحث"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 4l8 8M12 4l-8 8"/></svg></button>
+        </div>
+      </div>
+
+      <div class="sec">
+        <p class="abr-overline">عوامل التصفية</p>
+        <div class="abr-chip-row">
+          <button class="abr-chip" aria-pressed="true">الكل <span class="abr-chip__count">14</span></button>
+          <button class="abr-chip" aria-pressed="false">كود <span class="abr-chip__count">6</span></button>
+          <button class="abr-chip" aria-pressed="false">HTML <span class="abr-chip__count">3</span></button>
+          <button class="abr-chip" aria-pressed="false">SVG <span class="abr-chip__count">3</span></button>
+        </div>
+      </div>
+
+      <div class="sec">
+        <p class="abr-overline">البطاقة</p>
+        <div class="abr-stack">
+          <article class="abr-card">
+            <div class="abr-card__head">
+              <div class="abr-card__title">
+                <p class="abr-subhead abr-truncate">جدول أسعار مع تبديل سنوي</p>
+                <div class="abr-card__meta abr-caption">
+                  <span class="abr-badge abr-badge--type">react</span>
+                  <span class="abr-bidi-isolate">4.2 KB</span>
+                  <span>٢٩ يوليو ٢٠٢٦</span>
+                </div>
+              </div>
+              <div class="abr-card__actions" style="opacity:1">
+                <button class="abr-icon-btn abr-icon-btn--sm" aria-label="تنزيل"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v8m0 0 3-3M8 10 5 7M2.5 12.5h11"/></svg></button>
+              </div>
+            </div>
+            <pre class="abr-code">function PricingTable({ plans }: Props) {
+  const [annual, setAnnual] = useState(false);
+}</pre>
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <p class="col-label" style="margin-block-start:20px">RTL — dark</p>
+    <div class="frame frame--popup" data-theme="dark" dir="rtl" lang="ar">
+      <div class="sec">
+        <div class="row">
+          <button class="abr-btn abr-btn--primary">تنزيل</button>
+          <button class="abr-btn abr-btn--secondary">تصدير</button>
+          <button class="abr-btn abr-btn--ghost">إلغاء</button>
+          <button class="abr-icon-btn" aria-label="رجوع"><svg class="abr-icon--directional" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3 5 8l5 5"/></svg></button>
+        </div>
+        <div class="abr-chip-row" style="margin-block-start:12px">
+          <button class="abr-chip" aria-pressed="true">الكل <span class="abr-chip__count">14</span></button>
+          <button class="abr-chip" aria-pressed="false">كود <span class="abr-chip__count">6</span></button>
+          <button class="abr-chip" aria-pressed="false">SVG <span class="abr-chip__count">3</span></button>
+        </div>
+        <div class="abr-field abr-field--search" style="margin-block-start:12px">
+          <svg class="abr-field__icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="7" cy="7" r="4.5"/><path d="m10.5 10.5 3 3"/></svg>
+          <input class="abr-input" type="search" placeholder="ابحث في الأعمال…" aria-label="بحث">
+        </div>
+        <article class="abr-card" style="margin-block-start:12px">
+          <div class="abr-card__head">
+            <div class="abr-card__title">
+              <p class="abr-subhead abr-truncate">مخطط تدفق الإعداد</p>
+              <div class="abr-card__meta abr-caption">
+                <span class="abr-badge abr-badge--type">svg</span>
+                <span class="abr-bidi-isolate">11 KB</span>
+                <span>٣٠ يوليو ٢٠٢٦</span>
+              </div>
+            </div>
+            <div class="abr-card__actions" style="opacity:1">
+              <button class="abr-icon-btn abr-icon-btn--sm" aria-label="تنزيل"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v8m0 0 3-3M8 10 5 7M2.5 12.5h11"/></svg></button>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
