@@ -9,14 +9,13 @@ const { lang } = Astro.props;
 const t = useTranslations(lang);
 const featureSections = t('featureSections') as { i: string; title: string; frame: string; body: string; bullets: string[] }[];
 
-// Keyed by the section's icon key. "globe" (Languages) is deliberately absent:
-// that card exists to show the Arabic/RTL interface, so an English capture
-// would misrepresent it — it keeps the placeholder until a real RTL shot exists.
+// Keyed by the section's icon key.
 const SCREENSHOTS: Record<string, string> = {
   capture: 'side-panel-default.png',
   search: 'side-panel-filters.png',
   zip: 'batch-select.png',
   lock: 'side-panel-default.png', // no distinct storage UI — the panel is the storage
+  globe: 'side-panel-rtl.png', // real Arabic/RTL capture, not an English stand-in
 };
 ---
 <div class="feat-wrap" style="max-width:1080px; margin:0 auto">

@@ -26,8 +26,16 @@
   <script type="module">
     import sidepanelShell from '../src/ui/sidepanel/index.html?raw';
     import popupShell from '../src/ui/popup/index.html?raw';
-    import messages from '../_locales/en/messages.json';
     import { ARTIFACT_FIXTURES } from '../tests/fixtures/artifacts.ts';
+
+    /* --- locale: ?lang=<code>, default 'en' ------------------------------- */
+    // Mirrors SUPPORTED_LOCALES in src/lib/i18n.ts. Not imported directly: that
+    // module also touches the real `chrome` global, which doesn't exist yet
+    // at this point in the harness's own boot sequence.
+    const SUPPORTED_LOCALES = ['en', 'ar', 'fr', 'es', 'pt'];
+    const requestedLang = new URLSearchParams(location.search).get('lang');
+    const lang = SUPPORTED_LOCALES.includes(requestedLang) ? requestedLang : 'en';
+    const messages = (await import(/* @vite-ignore */ `../_locales/${lang}/messages.json`)).default;
 
     /* --- chrome shim ----------------------------------------------------- */
 
@@ -42,7 +50,7 @@
 
     globalThis.chrome = {
       i18n: {
-        getUILanguage: () => 'en',
+        getUILanguage: () => lang,
         getMessage: (key, subs = []) => {
           const entry = messages[key];
           if (!entry) return '';
