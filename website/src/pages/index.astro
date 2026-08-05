@@ -1,10 +1,12 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Home from '../components/pages/Home.astro';
+import SoftwareApplicationSchema from '../components/SoftwareApplicationSchema.astro';
 import { useTranslations } from '../i18n/utils';
 
 const t = useTranslations('en');
 ---
 <Layout title="Abrium - Open Source Claude Companion" description={t('heroSub') as string}>
+  <SoftwareApplicationSchema slot="head" lang="en" />
   <Home lang="en" />
 </Layout>

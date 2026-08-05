@@ -1,0 +1,39 @@
+---
+import { useTranslations } from '../i18n/utils';
+
+interface Props {
+  lang: string;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+
+// Homepage-only. The site-wide Organization/BreadcrumbList blocks live in
+// Layout.astro — this is an addition, not a replacement.
+// Description reuses the hero copy from ui.ts rather than inventing a
+// second, drifting product summary.
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Abrium",
+  "url": "https://abrium.onl",
+  "applicationCategory": "BrowserApplication",
+  "operatingSystem": "Chrome",
+  "inLanguage": ["en", "ar", "fr", "es", "pt"],
+  "description": t('heroSub'),
+  "image": "https://abrium.onl/assets/og-image.png",
+  "softwareVersion": "0.1.0",
+  "license": "https://opensource.org/licenses/MIT",
+  "isAccessibleForFree": true,
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "author": {
+    "@type": "Organization",
+    "name": "Abrium",
+    "url": "https://abrium.onl"
+  }
+};
+---
+<script type="application/ld+json" set:html={JSON.stringify(schema)} />

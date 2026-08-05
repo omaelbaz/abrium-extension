@@ -1,6 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import Home from '../../components/pages/Home.astro';
+import SoftwareApplicationSchema from '../../components/SoftwareApplicationSchema.astro';
 import { useTranslations } from '../../i18n/utils';
 
 export function getStaticPaths() {
@@ -10,5 +11,6 @@ const { lang } = Astro.params;
 const t = useTranslations(lang as string);
 ---
 <Layout title={t('heroTitle') as string} description={t('heroSub') as string}>
+  <SoftwareApplicationSchema slot="head" lang={lang as string} />
   <Home lang={lang as string} />
 </Layout>

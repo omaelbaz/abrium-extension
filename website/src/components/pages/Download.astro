@@ -38,12 +38,12 @@ const installSteps = t('installSteps') as { n: string; title: string; body: stri
 
   <div class="dl-frame" style="box-sizing:border-box; border:1px solid var(--border); border-radius:10px; background:var(--surface); box-shadow:var(--shadow); overflow:hidden">
     <div style="height:32px; display:flex; align-items:center; gap:8px; padding:0 12px; border-bottom:1px solid var(--border-2); background:var(--bg-alt)">
-      <span style="font:500 10.5px/1 ui-monospace,Menlo,monospace; color:var(--muted); letter-spacing:0.06em">{t('sidePanel')} · 380px</span>
+      <span style="font:500 10.5px/1 ui-monospace,Menlo,monospace; color:var(--muted); letter-spacing:0.06em">{t('popup')} · 380px</span>
     </div>
     <div class="dl-shot" style="display:flex; align-items:center; justify-content:center; gap:9px; color:var(--muted); overflow:hidden">
       {/* Rendered at its native 380px, centred by the flex parent. Stretching
           it to the 758px frame would upscale 2x and crop ~40% of the capture. */}
-      <img src="/assets/screenshots/popup.png" alt={t('sidePanel')} style="width:380px; max-width:100%; height:auto; display:block" />
+      <img src="/assets/screenshots/popup.png" alt={`Abrium — ${t('popup')}`} style="width:380px; max-width:100%; height:auto; display:block" />
     </div>
   </div>
 </div>
