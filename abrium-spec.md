@@ -2281,3 +2281,192 @@ oddly in a static screenshot but not a bug; logged as a possible future
 UX polish item, not urgent.
 STILL OPEN: awaiting Claude Code's AR translation fix + dev server
 cleanup, then commit.
+## Prompt 21 — Arabic fix done (extension), consistency gap found (website)
+Extension's _locales/ar/messages.json: 20 strings fixed to keep
+"Artifact" untranslated (was عمل/أعمال). 3 judgment calls approved:
+plural forms collapse to "$1 Artifacts" style (non-inflecting Latin
+term), definite singular uses "الـ Artifact" (standard Arabic
+convention for Latin-script terms), selected_count_* left as عنصر/عناصر
+(generic "N selected" context, not a mistranslation).
+NEW FINDING: website's ui.ts AR block is NOT actually consistent with
+the documented "Artifact stays untranslated" rule — only heroTitle uses
+it correctly, everywhere else uses عنصر/عناصر. The extension is now MORE
+consistent with the documented decision than the website's Arabic.
+DECISION: fix ui.ts's AR block to match the extension's now-correct
+convention (not the reverse) — prompt issued.
+Blocked on shell (classifier outage) for the extension: build
+verification and killing the stray :5173 Vite process — Omar instructed
+to run these manually (taskkill + pnpm build) before uploading to CWS.
+STILL OPEN: awaiting Claude Code's ui.ts AR fix; Omar to run the manual
+build/cleanup commands for the extension.
+
+## Prompt 21 — Extension AR fix build verified (51/51), NOT yet committed
+Manual build confirmed clean: tsc --noEmit + vite build + verify-dist,
+51 checks passed, dist/ loadable unpacked. Stray node.exe processes
+killed successfully first.
+STILL OPEN: Omar to commit + push (chrome-store-listing.md, 5 new
+1280x800 screenshots, _locales/ar/messages.json fix); ui.ts AR
+consistency fix (website side) still pending from Claude Code.
+Website's ui.ts AR block fixed: 17 strings across heroSub, footerTag,
+homeFeatures, steps, featureSections, faqs, installSteps, releases,
+contactCards, privacy, terms — checked per-string against EN source, all
+occurrences turned out to genuinely refer to "Artifact" (0 false
+positives), 2 nearby generic words correctly left untouched (عمل="work"
+in featuresSub, "lost work" in terms). Verified: 46 pages built, 0
+عنصر/عناصر remaining anywhere, Artifact appears naturally including
+inside the auto-generated FAQPage JSON-LD, visual RTL bidi check passed.
+Extension build also completed and verified (51/51) — closes the item
+that was blocked by the earlier shell outage.
+ISSUE FOUND: a local commit (99845ff, made outside this session's
+prompts) swept in dist.zip (220KB build artifact) — .gitignore covers
+dist/ but not dist.zip specifically, so it wasn't caught. Fix instructed:
+git rm --cached dist.zip + add to .gitignore, then commit the one
+remaining uncommitted file (ui.ts) together with the .gitignore fix.
+STILL OPEN: awaiting Omar to run the dist.zip cleanup + commit + push.
+
+
+## Prompt 21 — COMMITTED AND PUSHED (commit 892e3b1)
+dist.zip untracked + gitignored, website ui.ts AR fix committed together.
+Pushed to main. All Chrome Web Store prep work now complete: 5 store
+screenshots at 1280x800, chrome-store-listing.md ready to paste,
+Arabic "Artifact" consistency fixed across both extension and website,
+permission audit clean, description rewritten to avoid CWS keyword-
+stuffing policy risk.
+## ✅ PROMPT 21 (Chrome Web Store listing optimization + AR consistency fix) — CLOSED
+STILL OPEN: Omar to finish the CWS dashboard form (screenshots upload,
+Homepage URL, Privacy tab with the temporary Vercel privacy URL,
+Distribution tab) and submit for review.
+Omar purchased abrium.onl on Namecheap. Connected to Vercel: A record
+@ -> 216.198.79.1, CNAME www -> cname.vercel-dns.com (removed conflicting
+Namecheap default records — parking page CNAME and URL redirect record
+that were interfering). DNS propagated successfully; both abrium.onl and
+www.abrium.onl now show "Generating SSL Certificate" in Vercel (normal
+final step, typically 5-30 min).
+STILL OPEN: Omar to confirm "Valid Configuration" + working HTTPS once
+SSL cert issues, then update the Chrome Web Store listing's privacy
+policy URL from the temporary Vercel URL to the real
+https://abrium.onl/privacy.
+
+## Prompt 22 — abrium.onl fully live, privacy URL update task issued
+Confirmed by Omar: abrium.onl serving live over HTTPS, "Valid
+Configuration" in Vercel. www.abrium.onl shows a minor "DNS Change
+Recommended" notice (not blocking, site still works) — deferred, not
+urgent.
+Prompt issued to Claude Code: update the Chrome Web Store listing's
+privacy policy URL from the temporary Vercel URL to the real
+https://abrium.onl/privacy in chrome-store-listing.md (the paste-ready
+doc), so Omar pastes the correct final URL into the CWS dashboard's
+Privacy tab.
+STILL OPEN: awaiting Claude Code's confirmation; Omar to then finish the
+CWS Privacy/Distribution tabs and submit for review; www.abrium.onl DNS
+recommendation can be addressed later, non-blocking.
+chrome-store-listing.md's Privacy policy URL updated from the temporary
+Vercel placeholder to https://abrium.onl/privacy, verified live via
+direct fetch (200, correct <title>Privacy policy</title>, matching
+canonical tag; apex correctly 308-redirects to www per Vercel's standard
+canonicalization). Also spot-checked /ar/privacy — 200. Historical log
+entries in CLAUDE.md/abrium-spec.md correctly left untouched (per
+established rule: verification never rewrites history).
+## ✅ PROMPT 22 (Domain purchase, DNS connection, privacy URL finalization) — CLOSED
+STILL OPEN: Omar to finish the CWS dashboard (upload the 5 store
+screenshots, paste description + privacy URL from chrome-store-listing.md,
+complete Distribution tab) and submit for review.
+## Prompt 23 — Extension title decision (PM call, as requested)
+Omar explicitly asked for the title decision to be made, not asked back.
+DECISION: "Abrium — Claude Artifact Manager" — chosen because the
+current title ("Abrium — Artifact Vault") is missing "Claude", the
+single highest-value search keyword (title carries more CWS internal-
+search weight than description), while still keeping the "Abrium" brand
+consistent with GitHub/website/Patreon. ~32 chars, well under the 45-char
+limit, no keyword stuffing. Alternates considered: "Abrium: Save &
+Organize Claude Artifacts", "Abrium — Claude.ai Artifact Manager".
+Implementation: edit ext_name in _locales/en/messages.json (and other
+locales if translated titles are wanted), rebuild, re-upload the .zip
+package via the CWS dashboard's Package tab.
+STILL OPEN: Omar to make the edit + rebuild + re-upload; confirm the new
+title shows correctly in the Store listing tab afterward.
+## Prompt 23 — Title translation extended to all 5 locales (was EN-only)
+Omar correctly questioned the earlier EN-only scoping — decided to
+extend the "Abrium — Claude Artifact Manager" title translation across
+ar/fr/es/pt too, for full per-locale CWS SEO benefit (each language gets
+its own listing shown by browser locale). Prompt issued: translate
+naturally per each locale's existing conventions (check sidepanel_title
+for the established "Abrium — [descriptor]" pattern per language first),
+keeping "Claude"/"Artifact(s)" untranslated in Latin script per the
+already-established rule, only translating connecting words like
+"Manager" naturally. Rebuild + re-zip (new distinct filename, not
+overwriting the existing upload zip or the flagged dist.zip) + verify
+against built output per locale.
+STILL OPEN: awaiting Claude Code's 4 translated titles + build + new zip.
+grammatical pattern from ui.ts (AR idafa "أبريوم — [descriptor]", FR/ES/PT
+postpositioned "de/do Claude"), all keeping Claude/Artifact(s) in Latin
+script per convention. Build clean (51/51), verified in built dist/
+output per locale, not just source. New zip:
+abrium-extension-v0.1.0-i18n-titles-2026-08-05.zip (distinct name,
+existing zips untouched).
+Claude Code flagged sidepanel_title still says the old "Vault" wording
+in every locale, creating a listing-title vs in-app-title mismatch.
+DECISION: leave sidepanel_title as "Vault" — it's the established
+brand metaphor used site-wide (website's ui.ts: "Everything the Vault
+does", "Search the Vault", etc.). The CWS listing title uses "Manager"
+for search/SEO purposes; "Vault" remains the friendly in-app name. This
+marketing-name vs in-app-name split is intentional and common practice,
+not an inconsistency to fix.
+## ✅ PROMPT 23 (Extension title SEO — all 5 locales) — CLOSED
+STILL OPEN: Omar to upload the new zip via CWS Package tab, then confirm
+Privacy tab + finish submission.
+## Prompt 24 — CWS submission complete
+Extension title, descriptions, permission justifications, privacy URL,
+distribution settings all completed and confirmed in the live CWS
+preview. Arabic RTL screenshot recaptured after the translation fix
+(was showing stale "الأعمال" wording from before the fix) and re-
+uploaded — verified visually correct in the live preview (search field
+and stats line both show "Artifacts" in Latin script).
+Contact email verified (was blocking submission), item submitted for
+review with auto-publish enabled.
+## ✅ PROMPT 24 (Chrome Web Store submission — title, listing, privacy, distribution, screenshots) — CLOSED, item In Review
+
+## Prompt 25 — Technical SEO task re-issued (never executed the first time)
+Confirmed via fresh clone: the earlier robots.txt/OG-tags/
+SoftwareApplication-schema/alt-text task was NEVER executed — it got
+interrupted by the domain purchase + Vercel hosting detour before
+Claude Code got to it. Now that abrium.onl is live and deployed, this
+is the right time. Re-issued the full prompt: robots.txt (still
+missing), OG/Twitter meta tags (still missing), SoftwareApplication
+JSON-LD (still missing, alongside the existing Organization/Breadcrumb
+schema which IS present), alt text audit. Instructed to commit+push
+(auto-deploys via Vercel).
+Also reminded: Google Search Console setup (domain property, DNS TXT
+verification, sitemap submission, manual indexing requests) is a
+manual/account-level task for Omar, now unblocked since the domain is
+live — still pending, not yet done.
+STILL OPEN: awaiting Claude Code's technical SEO implementation; Omar to
+do Search Console setup manually.
+   rendered text — relies on the lockup's own wordmark/tagline).
+3. SoftwareApplication JSON-LD built as a shared component
+   (SoftwareApplicationSchema.astro) used by both index.astro and
+   [lang]/index.astro so all 5 locales can't drift; description reads
+   t('heroSub'). Existing Organization/Breadcrumb/FAQPage schema
+   untouched.
+4. Alt text audit found 3 real issues, all fixed: /download's popup.png
+   had mismatched "Side panel" alt+caption (added a popup key across
+   all 5 locales — visible copy change, now "Toolbar popup · 380px");
+   Features screenshots used generic alt={f.title}, now describe the
+   surface via existing f.frame data; header logo alt marked decorative
+   (redundant next to the visible wordmark).
+Also fixed in passing: Organization schema's logo pointed at a
+nonexistent https://abrium.onl/logo.png — corrected to /assets/abrium-mark.png.
+Verified: 46 pages built 0 errors, all JSON-LD blocks parse on 6 sampled
+pages, live fetches confirm robots.txt/OG tags/ar_AR locale/
+SoftwareApplication/og-image/sitemap all correct on the live site.
+DECISION MADE: apex domain (abrium.onl) currently 308-redirects to www,
+but ALL canonical/hreflang/og:url/sitemap URLs point to the apex —
+meaning every SEO signal resolves through an extra redirect hop (risky
+for social-scraper og:image reliability). Chose to flip Vercel's domain
+config so abrium.onl becomes primary and www redirects to it, matching
+what the code already declares everywhere, rather than rewriting all
+canonical/hreflang/sitemap code to use www instead. Likely the same root
+cause as the earlier deferred "DNS Change Recommended" notice on
+www.abrium.onl.
+STILL OPEN: Omar to flip the Vercel domain primary/redirect direction,
+then commit + push (covers this task's changes plus any pending doc edits).

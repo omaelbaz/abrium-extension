@@ -147,12 +147,11 @@ technical facts above are what it rests on.
 
 ### Privacy policy URL
 
-⚠️ **`https://abrium.onl/privacy` is not usable yet** — the domain has not been
-purchased, and Chrome will reject or flag a URL it cannot reach. The site is
-already deployed on Vercel and the page exists at `/privacy` (plus
-`/ar/privacy`, `/fr/privacy`, `/es/privacy`, `/pt/privacy`), so paste the live
-`https://<project>.vercel.app/privacy` URL now and swap it for the custom domain
-once DNS is live.
+**`https://abrium.onl/privacy`** — use this. The domain is purchased, DNS is
+connected, and Vercel shows a valid HTTPS configuration; the page is live
+(confirmed by direct fetch this session) at `/privacy`, plus the localized
+`/ar/privacy`, `/fr/privacy`, `/es/privacy`, `/pt/privacy` routes. The earlier
+temporary `*.vercel.app/privacy` placeholder is no longer needed.
 
 ---
 
