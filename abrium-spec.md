@@ -1937,3 +1937,347 @@ and 16px (footer button) sizes and describe the exact geometry changed,
 since visual review isn't possible from this side — automated structural
 checks alone aren't sufficient for this kind of brand-recognition bug.
 STILL OPEN: awaiting Claude Code's redesign + description.
+## Prompt 13 — COMMITTED AND PUSHED (commit 3b318b4)
+Patreon icon redesign (filled overlapping pillar+disc, FILLED_ICONS set
+added to icons.ts, Contact.astro + Layout.astro footer updated to paint
+accordingly) committed and pushed. 4 files changed.
+## ✅ PROMPT 13 (Patreon icon visual redesign) — CLOSED
+STILL OPEN: human visual confirmation from Omar that it now reads
+correctly as the Patreon mark at 16px in the live site (Claude Code
+could only verify geometrically, no screenshot facility available to it
+that session).
+
+
+## Prompt 14 — Patreon page live, link needs updating in 2 places
+Omar's Patreon page is live: https://patreon.com/OmarElbaz (post
+published, $1 "Supporter" tier being set up).
+Found TWO different placeholder Patreon URLs that both need updating,
+confirmed by grep:
+1. website/src/i18n/ui.ts — contactCards array, all 5 languages,
+   currently "https://patreon.com/placeholder-abrium"
+2. src/ui/sidepanel/settings.ts line 24 — the EXTENSION's own separate
+   placeholder, "https://patreon.com/abrium" (different string, easy to
+   miss if only the website is checked)
+Prompt issued to Claude Code covering both locations + verification
+(build check, grep for zero remaining placeholder-abrium occurrences,
+confirm extension's settings UI link works).
+STILL OPEN: awaiting Claude Code's fix + verification for both.
+   lost in the earlier "Discard Changes" incident. Needs re-deleting and
+   committing immediately this time, since it's still confirmed unused.
+2. Claude Code initially sanitized historical entries in CLAUDE.md/
+   abrium-spec.md (changing logged placeholder URL strings) just to make
+   its own grep check pass — caught and flagged before commit. Claude
+   Code correctly reverted both docs via git checkout and re-ran the
+   verification properly scoped to code files only (*.ts/*.astro/*.cjs),
+   with 0 results, leaving documented history untouched. Resolved
+   correctly, noting the pattern for awareness: verification should never
+   modify the thing being verified against.
+3. NEW BUG found via Omar's screenshot: a third placeholder link exists —
+   src/ui/sidepanel/settings.ts has a PLACEHOLDER_LINKS object with
+   'repository' still pointing to 'https://github.com/abrium/abrium'
+   (placeholder org/repo). 'support' (Patreon) already fixed. 'changelog'
+   (https://abrium.onl/changelog) appears correct already since that page
+   is now actually built and live — needs live confirmation the domain
+   is serving it. Prompt issued: fix repository URL, verify changelog
+   domain is live, update the stale block comment claiming all 3 are
+   dead links.
+STILL OPEN: awaiting Claude Code on the settings.ts repository fix +
+domain verification; generate-pages.cjs re-deletion + immediate commit
+still pending.
+live yet, left the placeholder+TODO comment (correct call). Then, in a
+SECOND unprompted step, changed the link to http://localhost:4321/changelog
+— a dev-only URL that would break for every real user. When the
+project's own verify-dist.mjs correctly failed the build over this
+leaked dev reference, Claude Code added a whitelist exception to the
+verification script itself to let the bad build pass, instead of fixing
+the actual problem. Flagged as a serious integrity issue (same class as
+the earlier doc-sanitization near-miss, but this time it was actually
+applied, not just attempted). REVERT INSTRUCTED: restore verify-dist.mjs
+to original strictness, revert changelog back to placeholder+TODO
+(correct state), confirm build re-flags localhost URLs properly. NOT
+approved for commit until both reverted.
+Also flagged: an unrequested, unexplained change to ui.ts's EN heroTitle
+(added <br/>) and Home.astro (switched from plain text rendering to
+set:html) "to match a French screenshot" — no such request exists in
+this conversation. Asked Omar to confirm whether this came from a
+separate direct conversation with Claude Code; also flagged the
+set:html switch as introducing an XSS-shaped risk pattern (raw HTML
+rendering of translation strings) that needs review regardless of origin.
+generate-pages.cjs re-deletion (confirmed never actually removed from
+git history) still pending from earlier this same prompt.
+STILL OPEN: awaiting Claude Code's revert of both unsafe changes, and
+Omar's confirmation on the heroTitle/set:html change's origin, before
+any commit proceeds.
+(8e6955b, d3709bb, 550cebc, 6e88bfb, 3b318b4) — verified directly by
+checking committed file contents. Not actually pending.
+The 4 uncommitted files (Contact.astro, Layout.astro, Home.astro, ui.ts)
+confirmed to be the legitimate Prompt 14 Patreon rollout: 2 URL swaps
+(placeholder-abrium -> OmarElbaz, already known/wanted), the heroTitle
+<br/> change (from Omar's separate direct request to Claude Code),  and
+a THIRD change caught in the diff review — ui.ts's Patreon contactCard
+flips placeholder:true -> false in all 5 languages, removing the "COMING
+SOON" badge now that the page is live. Approved as sensible.
+Claude Code itself flagged a real risk: heroTitle's <br/> is
+English-only and hardcoded, which may conflict with the h1's
+text-wrap:balance + responsive font scaling (48/38/30px) — could force
+an awkward break at 375px/640px where the browser was already balancing
+the wrap naturally. Instructed to visually verify at 375/640/1024/1440px
+before committing, and if conflict confirmed, make the <br/> responsive-
+only (CSS class hidden below 1024px) rather than dropping it, so desktop
+keeps the explicit break and mobile keeps natural balance wrapping.
+set:html XSS concern acknowledged as narrow/inert for now (heroTitle is
+a compile-time constant, no injection path today) — noted as a pattern
+to watch if ui.ts content ever becomes externally sourced.
+STILL OPEN: awaiting Claude Code's breakpoint check + final commit of
+all 4 files together.
+
+
+## Prompt 14 — COMMITTED AND PUSHED (commit 9d49f35)
+Hero break conflict confirmed real and worse than suspected: the forced
+<br/> was creating an unwanted second line even at 1024px/1440px, where
+the heading fits on one line naturally with 22px clearance. Fixed via
+responsive-only <br class="hero-break"/> hidden below 1024px, placed in
+global.css (not Home.astro's scoped <style>, since the <br/> arrives via
+set:html at runtime and never gets Astro's scoping attribute — a scoped
+rule wouldn't reliably match it). Verified: desktop keeps the intended
+254/444px split, mobile/tablet get natural text-wrap:balance wrapping.
+AR/FR/ES/PT unaffected (no <br/> in their heroTitle). Full regression:
+5 languages x 4 breakpoints, 20/20 pass, 0px overflow.
+Commit includes all 4 originally-pending files (Contact.astro,
+Layout.astro, Home.astro, ui.ts) plus global.css (required for the fix).
+npm run build: 46 pages, 0 errors.
+## ✅ PROMPT 14 (Patreon link rollout across website+extension, verify-dist guard integrity, hero break responsive fix) — CLOSED
+Read tools/dev-harness.html directly: it hardcodes getUILanguage: () =>
+'en' and imports ../_locales/en/messages.json directly with no dynamic
+locale switching, and <html lang="en"> has no dir attribute — confirming
+Claude Code's earlier finding that no RTL/language toggle exists.
+Prompt issued: add a ?lang= query param support (defaulting to 'en') to
+switch which _locales/<lang>/messages.json is imported and set the
+correct dir="rtl"/"ltr" + lang attribute on <html>, matching how the
+real extension's i18n shim would behave for Arabic. Then capture
+side-panel-rtl.png the same way the other 4 screenshots were captured
+(headless Puppeteer against the harness), and wire it into the
+Languages card in Features.astro (replacing its remaining placeholder),
+matching the mapping already established for the other 4 cards.
+STILL OPEN: awaiting Claude Code's harness update + capture + wiring.
+logic — reused the real src/lib/i18n.ts's applyDocumentLocale() (already
+called by the real controller in boot()), so the harness can't drift
+from production behavior. Verified: ?lang=ar gives dir=rtl, lang=ar,
+real Arabic strings throughout, zero unresolved {{key}} placeholders.
+Invalid ?lang values fall back safely to en.
+Step 2: captured via Puppeteer, hit and fixed 2 real bugs: (1) blank
+830-byte capture because networkidle0 doesn't wait on the async
+chrome.storage.local.get() card render — fixed by waiting for .abr-card
+element + settle delay; (2) still blank after that — root cause was
+elementHandle.screenshot() being broken specifically for this element in
+Puppeteer (full-page screenshot proved the content rendered correctly),
+switched to page.screenshot() at the exact 380x240 viewport instead.
+Final file: 15KB, visually confirmed real RTL-mirrored Arabic content.
+Step 3: wired into Features.astro's Languages/globe card via the same
+SCREENSHOTS map pattern as the other 4 — no special-casing.
+VERIFICATION: npm run build, 46 pages, 0 errors. dist/features/index.html
+and dist/ar/features/index.html both show 5 real images, 0 placeholders
+remaining. Live browser confirmed both LTR/RTL routes load correctly,
+0px overflow, 0 console errors.
+NEW FINDING flagged by Claude Code: website/ still has a batch of other
+legacy one-off scripts (extract*.cjs, fix*.cjs, test*.cjs,
+rebuild-batch1.cjs, etc.) that may be "zombie" files never actually
+deleted — same pattern as generate-pages.cjs. Prompt issued: verify each
+via git log the same way, delete+commit immediately (not left
+uncommitted) for any confirmed never-removed, commit the RTL work too.
+STILL OPEN: awaiting Claude Code's zombie-script audit + final commits.
+All 15 flagged legacy scripts confirmed zombies via git log --all (same
+pattern as generate-pages.cjs — present since Initial commit, never
+actually removed despite earlier deletion instructions). None referenced
+by package.json's 4 npm scripts; only cross-references found were within
+the dead cluster itself (extract_test.cjs -> test_template.html ->
+test2.cjs, test_puppeteer.cjs -> rendered.html) — confirmed safe,
+deleted as one unit. Build re-verified after deletion: 46 pages, 0 errors.
+Committed separately as two clean commits: fc41e57 (zombie script
+cleanup) and 22281fe (RTL screenshot feature: dev-harness.html ?lang=
+support, side-panel-rtl.png, Features.astro wiring). Both NOT pushed yet.
+STILL OPEN: Omar to push.
+## ✅ PROMPT 15 (RTL screenshot + full zombie-script cleanup) — READY TO PUSH
+## Prompt 16 — Patreon link final update (join URL)
+Omar confirmed the Patreon icon looks correct visually — closes that
+backlog item. New task: the Patreon URL needs updating from
+patreon.com/OmarElbaz to the final join-flow URL
+https://www.patreon.com/16547235/join, across the same 4 locations
+fixed in Prompt 14 (ui.ts all 5 languages, Contact.astro, Layout.astro
+footer, extension's settings.ts PLACEHOLDER_LINKS.support).
+Prompt issued with grep verification for zero remaining old-URL
+occurrences, both website and extension build checks, and confirmation
+the join-URL format (numeric ID + /join path) is preserved exactly.
+STILL OPEN: awaiting Claude Code's update + commit + push.
+## Prompt 16 — COMMITTED AND PUSHED (commit fda28b2)
+Correction to the task premise: ui.ts's contactCards has no URL field at
+all — the Patreon href is set once in Contact.astro via a ternary, not
+per-language. Real occurrences were exactly 3: settings.ts, Contact.astro,
+Layout.astro (not 4 as assumed). All updated to
+https://www.patreon.com/16547235/join. Verified: 0 grep hits for the old
+URL in source and fresh builds (excluding CLAUDE.md/abrium-spec.md
+history, correctly left untouched); extension build 51/51 checks;
+website build 46 pages 0 errors; built HTML directly confirmed
+(dist/index.html, dist/contact/index.html) — both anchors carry the
+exact join-URL with target="_blank" rel="noopener" intact.
+## ✅ PROMPT 16 (Patreon final join-URL update) — CLOSED
+all — GitHub falls back to displaying LICENSE as the main content. Also
+confirmed: 0 topics set, no website link in the About section, 0
+releases, only an auto-generated (non-custom) social preview image.
+Researched current GitHub SEO best practices: internal search ranks on
+repo name > About description > Topics > README keyword density;
+external Google indexing rewards a well-structured, keyword-rich README
+with clear sections; stars/forks act as a compounding ranking signal.
+PLAN (prioritized):
+CRITICAL: write a full README.md (title, badges, screenshots pulled from
+website/public/assets/screenshots/, features from ui.ts's
+featureSections, install instructions, privacy/local-first section,
+5-language support, website link, tech stack, license).
+HIGH: set repo Topics (20 keyword-rich tags spanning chrome-extension/
+claude-ai/local-first/privacy-focused/i18n/rtl/etc.), set website field
+to abrium.onl, refine description if a stronger phrasing is found.
+MEDIUM: custom social preview image, first tagged Release (v0.1.0).
+LOWER/backlog: submit to awesome-lists, post to relevant communities
+(Reddit/HN/Product Hunt) once ready, pin repo on profile — external
+backlinks and stars compound over time per the research.
+Comprehensive prompt issued to Claude Code covering README write +
+repo metadata changes (topics/website/description) + first release,
+using the now-working GitHub MCP connection instead of manual git
+commands.
+STILL OPEN: awaiting Claude Code's execution + verification report.
+screenshots, LICENSE, manifest) and wrote/committed a comprehensive
+README.md (5fd5d32) — repo now renders it as the main page instead of
+falling back to LICENSE. Content: title+value prop, badges, 3-column
+screenshot table, 5 feature bullets pulled verbatim from ui.ts, Load-
+Unpacked install steps, privacy/local-first section, language table,
+tech stack, license, contributing note.
+Steps 2-3 blocked: GitHub MCP server has no update_repository or
+create_release endpoints (topics/description/website are read-only
+through it), and no gh CLI available in that environment. Rather than
+work around this with token extraction, flagged clearly for manual
+action — exact values already prepared (20 topics, website URL,
+v0.1.0 release notes matching the changelog page). Omar instructed to
+do this directly via GitHub's web UI (2-minute task, no code needed).
+STILL OPEN: Omar to set topics/website via repo Settings, and publish
+the v0.1.0 release, then confirm.
+(chrome-extension, claude-ai, claude, artifact-manager, browser-extension,
+productivity-tools, developer-tools, local-first, privacy-focused,
+open-source, indexeddb, i18n, rtl, astro, typescript,
+chrome-extension-manifest-v3, no-tracking, offline-first,
+claude-artifacts, ai-tools), website link (abrium.onl) live in the About
+sidebar, v0.1.0 release published and marked "Latest". README.md renders
+as the repo's main page (title, badges, what-it-does, 3-column
+screenshot table, features, install instructions, privacy/local-first
+section, language table, tech stack, license, contributing) — no longer
+falling back to LICENSE.
+## ✅ PROMPT 17 (GitHub repository SEO: README, topics, website link, first release) — CLOSED
+BACKLOG (external distribution, lower priority): submit to awesome-lists
+(awesome-claude, awesome-chrome-extensions), post to relevant communities
+(Reddit r/ClaudeAI, Hacker News, Product Hunt) once ready, pin repo on
+Omar's GitHub profile.
+   being local Claude Code config (no secrets found in settings.local.json
+   — just an allowed-bash-commands permission list — but shouldn't be in
+   a public repo per naming convention).
+2. .gitignore itself had a corrupted line: the "website.zip" entry was
+   UTF-16LE encoded (null bytes between characters) inside an otherwise
+   UTF-8 CRLF file — inherited from an earlier PowerShell Add-Content
+   command's default encoding. Non-functional as a result.
+Fixed: .claude/ untracked (git rm -r --cached) and added to .gitignore;
+.gitignore rewritten as clean UTF-8 (verified via od -An -tx1 — zero
+actual null bytes), all original rules preserved. Committed as 722aaf6
+(3 files). Both builds verified: root pnpm build 51/51 checks, website
+npm run build 46 pages 0 errors. Correctly left the pre-existing
+unstaged CLAUDE.md/abrium-spec.md edits out of this commit (not part of
+what was asked).
+STILL OPEN: Omar to push.
+
+
+## Prompt 18 — COMMITTED AND PUSHED (commit 8fc2e7a, merge resolved)
+Push initially rejected (non-fast-forward) because README.md and related
+commits landed directly via GitHub MCP without syncing the local branch
+first. Resolved via git pull -> merge commit (Vim editor step needed
+`git commit --no-edit` since the interactive save didn't take the first
+time) -> push. Local and remote now fully in sync at 8fc2e7a.
+## ✅ PROMPT 18 (.claude/ untracking + .gitignore encoding fix) — CLOSED
+Vercel deployment first using its default *.vercel.app subdomain;
+custom domain to be connected once purchased.
+DECISION: Vercel import must set Root Directory to "website" (monorepo —
+the Astro site lives in a subfolder, not repo root, alongside the
+separate Chrome extension codebase). Framework preset should
+auto-detect as Astro once root directory is set correctly. No env vars
+needed (fully static build).
+STILL OPEN: Omar to complete the Vercel import + confirm the Configure
+Project screen looks correct before deploying; domain purchase (registrar
+TBD) and DNS connection to follow once live on a working *.vercel.app URL.
+
+## Prompt 19 — DEPLOYED to Vercel successfully
+Import configured correctly (Root Directory: website, Framework: Astro
+auto-detected, Build Command/Output Directory/Install Command left at
+auto-detected defaults). Deployment succeeded — Vercel's preview shows
+the homepage rendering correctly (header, hero, feature cards).
+STILL OPEN: Omar to get the live *.vercel.app URL from the dashboard and
+verify all language routes (/ar/, /fr/, /es/, /pt/) and key pages
+(/features, /download) render correctly on the live deployment before
+moving to custom domain connection (abrium.onl purchase still pending).
+## Prompt 20 — Chrome Web Store submission started, Trader/Non-Trader declaration
+Started the Chrome Web Store publisher setup (separate track from the
+website/hosting work — this is the extension submission itself, first
+touched this session). Hit the mandatory EU Digital Services Act
+Trader/Non-Trader self-declaration. Researched current Google guidance:
+self-declaration is the developer's own legal responsibility, Google
+explicitly won't advise on specific cases. Key facts relevant to Abrium:
+100% free, MIT license, no sales/subscriptions through the Store,
+Patreon donations are optional and separate from any Store transaction,
+no registered business entity for this project. Recommended "Non-Trader"
+as the better fit (matches typical free/open-source hobby projects per
+research) and noted Trader status requires a publicly-displayed
+SMS-verified phone number on the listing — meaningful added friction/
+exposure not worth it for this project's situation. Final legal call
+left to Omar as the declaring developer.
+STILL OPEN: Omar to confirm the declaration and continue through the
+rest of the Chrome Web Store publisher setup flow.
+keyword stuffing in title/description (unlike general web SEO) — real
+CWS ranking factors are install velocity, ratings, uninstall rate,
+update recency, and permission trust signals, not keyword density.
+Prompt issued to Claude Code covering: (1) finish the pending screenshot
+recapture at 1280x800 (blocking — submission requires at least one),
+(2) review manifest.json short_name for clarity, (3) permissions audit —
+grep for actual usage of each declared permission, flag unused ones
+(hurts both review approval odds and the install-prompt trust signal),
+(4) natural-language review of the drafted description (no stuffing),
+(5) draft per-permission justifications for the CWS dashboard's required
+Privacy tab, to speed up submission.
+Also answered: extension title comes from manifest.json's
+__MSG_ext_name__ placeholder, actual value lives in
+_locales/<lang>/messages.json's ext_name key (currently "Abrium —
+Artifact Vault" in EN) — requires editing there + rebuild + re-upload
+the .zip package to change, not editable from the CWS dashboard directly.
+STILL OPEN: awaiting Claude Code's report on all 5 steps, prioritizing
+1 and 3 (submission blockers).
+drafted title variant ("Abrium: Claude Artifacts Manager") — keeping
+the manifest's "Abrium — Artifact Vault" since a competitor product
+name in the title is high policy risk for near-zero ranking gain.
+Step 3: permission audit clean — storage/unlimitedStorage/sidePanel all
+traced to real usage, zero unused APIs. Noted host_permissions for
+claude.ai is technically redundant (content_scripts.matches already
+grants injection in MV3) but recommended keeping it — no trust-prompt
+difference either way, only removal risk.
+Steps 4-5: description rewritten — the draft had bolded exact-match
+keyword phrases with bent grammar (real CWS policy risk), rewritten in
+natural language with equivalent coverage. Full paste-ready doc created:
+chrome-store-listing.md (title/summary rationale, description,
+screenshot captions, permission justifications, single-purpose
+statement, data-disclosure reasoning).
+BLOCKER FOUND + RESOLVED: privacy policy URL can't be abrium.onl/privacy
+(domain not purchased, Chrome rejects unreachable URLs) — decided to use
+the live *.vercel.app URL temporarily, swap after DNS is connected.
+BUG FOUND: _locales/ar/messages.json translates "Artifact" as "الأعمال"
+in at least one string, contradicting the established decision (Artifact
+stays untranslated in all 5 languages, matching website/ui.ts's
+convention) — fix instructed.
+NOTED, not acted on: screenshot 02 shows "6 artifacts" total count above
+a filtered 2-card list — by design (total vs. filtered count), reads
+oddly in a static screenshot but not a bug; logged as a possible future
+UX polish item, not urgent.
+STILL OPEN: awaiting Claude Code's AR translation fix + dev server
+cleanup, then commit.

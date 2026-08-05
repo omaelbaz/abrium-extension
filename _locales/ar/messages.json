@@ -1,9 +1,9 @@
 {
   "ext_name": {
-    "message": "أبريوم — خزانة الأعمال"
+    "message": "أبريوم — خزانة Artifacts"
   },
   "ext_description": {
-    "message": "احفظ أعمال Claude.ai على جهازك. بلا حسابات، بلا تتبّع، ولا يغادر أي شيء متصفحك."
+    "message": "احفظ Artifacts من Claude.ai على جهازك. بلا حسابات، بلا تتبّع، ولا يغادر أي شيء متصفحك."
   },
   "action_title": {
     "message": "فتح أبريوم"
@@ -12,19 +12,19 @@
     "message": "فتح لوحة أبريوم الجانبية"
   },
   "sidepanel_title": {
-    "message": "أبريوم — خزانة الأعمال"
+    "message": "أبريوم — خزانة Artifacts"
   },
   "gallery_label": {
-    "message": "الأعمال المحفوظة"
+    "message": "Artifacts المحفوظة"
   },
   "loading_label": {
-    "message": "جارٍ تحميل الأعمال…"
+    "message": "جارٍ تحميل Artifacts…"
   },
   "search_placeholder": {
-    "message": "ابحث في الأعمال…"
+    "message": "ابحث في Artifacts…"
   },
   "search_label": {
-    "message": "البحث في الأعمال"
+    "message": "البحث في Artifacts"
   },
   "search_clear": {
     "message": "مسح البحث"
@@ -58,22 +58,23 @@
     "description": "Shown instead of a storage figure when getBytesInUse() could not measure it."
   },
   "artifact_count_zero": {
-    "message": "لا توجد أعمال"
+    "message": "لا توجد Artifacts"
   },
   "artifact_count_one": {
-    "message": "عمل واحد"
+    "message": "Artifact واحد"
   },
   "artifact_count_two": {
-    "message": "عملان"
+    "message": "$1 Artifacts",
+    "description": "Artifact is a Latin-script loanword and does not inflect, so the dual/few/many/other forms differ only by the numeral."
   },
   "artifact_count_few": {
-    "message": "$1 أعمال"
+    "message": "$1 Artifacts"
   },
   "artifact_count_many": {
-    "message": "$1 عملًا"
+    "message": "$1 Artifacts"
   },
   "artifact_count_other": {
-    "message": "$1 عمل"
+    "message": "$1 Artifacts"
   },
   "action_select": {
     "message": "تحديد"
@@ -115,7 +116,7 @@
     "message": "إلغاء التحديد"
   },
   "empty_title": {
-    "message": "لا توجد أعمال بعد"
+    "message": "لا توجد Artifacts بعد"
   },
   "empty_body": {
     "message": "أنشئ شيئًا في Claude وسيظهر هنا تلقائيًا."
@@ -127,7 +128,7 @@
     "message": "جرّب كلمة أخرى أو أزل عوامل التصفية."
   },
   "error_title": {
-    "message": "تعذّرت قراءة أعمال هذه الصفحة"
+    "message": "تعذّرت قراءة Artifacts في هذه الصفحة"
   },
   "error_body": {
     "message": "حدّث صفحة claude.ai ثم أعد تحميل الخزانة."
@@ -172,16 +173,16 @@
     "message": "تعذّر إتمام العملية — لم يتغيّر شيء"
   },
   "detail_label": {
-    "message": "تفاصيل العمل"
+    "message": "تفاصيل الـ Artifact"
   },
   "action_back": {
     "message": "العودة إلى الخزانة"
   },
   "action_pin": {
-    "message": "تثبيت العمل"
+    "message": "تثبيت الـ Artifact"
   },
   "action_unpin": {
-    "message": "إلغاء تثبيت العمل"
+    "message": "إلغاء تثبيت الـ Artifact"
   },
   "action_download": {
     "message": "تنزيل"
@@ -190,7 +191,7 @@
     "message": "حذف"
   },
   "delete_confirm_title": {
-    "message": "هل تريد حذف هذا العمل؟"
+    "message": "هل تريد حذف هذا الـ Artifact؟"
   },
   "delete_confirm_body": {
     "message": "لا يمكن التراجع عن ذلك."
@@ -214,13 +215,13 @@
     "message": "نزّل الملف لعرضه."
   },
   "detail_missing_title": {
-    "message": "لم يعد هذا العمل موجودًا"
+    "message": "لم يعد هذا الـ Artifact موجودًا"
   },
   "detail_missing_body": {
     "message": "تم حذفه أو إزالته لتوفير مساحة التخزين."
   },
   "detail_error_title": {
-    "message": "تعذّر تحميل هذا العمل"
+    "message": "تعذّر تحميل هذا الـ Artifact"
   },
   "status_pinned": {
     "message": "تم التثبيت"
@@ -229,7 +230,7 @@
     "message": "تم إلغاء التثبيت"
   },
   "status_deleted": {
-    "message": "تم حذف العمل"
+    "message": "تم حذف الـ Artifact"
   },
   "settings_label": {
     "message": "الإعدادات وحول التطبيق"
@@ -271,10 +272,10 @@
     "message": "تصدير نسخة احتياطية"
   },
   "action_view_all": {
-    "message": "عرض جميع الأعمال"
+    "message": "عرض جميع Artifacts"
   },
   "privacy_note": {
-    "message": "يقرأ أبريوم محتوى أعمال Claude في صفحات claude.ai التي تزورها ويخزّنه في متصفحك فقط. لا يُرسل أي شيء إلى أي خادم. بلا حسابات، بلا تتبّع، بلا مدفوعات."
+    "message": "يقرأ أبريوم محتوى Claude Artifacts في صفحات claude.ai التي تزورها ويخزّنه في متصفحك فقط. لا يُرسل أي شيء إلى أي خادم. بلا حسابات، بلا تتبّع، بلا مدفوعات."
   },
   "about_version": {
     "message": "الإصدار $1"
@@ -298,10 +299,10 @@
     "message": "يفتح في علامة تبويب جديدة"
   },
   "preview_hint_title": {
-    "message": "تعذر قراءة هذا العنصر"
+    "message": "تعذّر قراءة هذا الـ Artifact"
   },
   "preview_hint_body": {
-    "message": "قم بالتبديل إلى عرض التعليمات البرمجية (Code view) لحفظ هذا العنصر."
+    "message": "قم بالتبديل إلى عرض التعليمات البرمجية (Code view) لحفظ هذا الـ Artifact."
   },
   "action_dismiss": {
     "message": "تجاهل"
