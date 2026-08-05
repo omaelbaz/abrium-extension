@@ -1,7 +1,7 @@
 export const EN = {
   addToChrome: "Add to Chrome", viewGithub: "View on GitHub", getIt: "Get Abrium",
   eyebrow: "Chrome extension · v0.1.0",
-  heroTitle: "Never lose a Claude Artifact again.",
+  heroTitle: "Never lose a<br class=\"hero-break\" />Claude Artifact again.",
   heroSub: "Abrium quietly catalogs every artifact you generate on claude.ai — code, documents, HTML, SVG — and keeps them searchable on your own machine. No account, no cloud, no tracking.",
   sidePanel: "Side panel", searchPh: "Search the Vault", screenshot: "Screenshot",
   howLabel: "How it works", howTitle: "Three steps, then it disappears into the background.",
@@ -63,7 +63,7 @@ export const EN = {
   ],
   contactCards: [
     { i: "github", title: "Report an issue", body: "Bugs, missing captures or feature requests belong on the issue tracker. Include your Chrome version and the artifact type if something failed to capture.", cta: "Open GitHub issues", placeholder: false },
-    { i: "patreon", title: "Support the project", body: "Abrium stays free. If it saves you time, a small recurring contribution funds maintenance and the Chrome Web Store listing fee.", cta: "Patreon page", placeholder: true }
+    { i: "patreon", title: "Support the project", body: "Abrium stays free. If it saves you time, a small recurring contribution funds maintenance and the Chrome Web Store listing fee.", cta: "Patreon page", placeholder: false }
   ],
   privacy: {
     title: "Privacy policy", updated: "Last updated · August 2, 2026",
@@ -158,7 +158,7 @@ export const AR = {
   ],
   contactCards: [
     { i: "github", title: "أبلغ عن مشكلة", body: "الأخطاء والالتقاطات الناقصة وطلبات المزايا مكانها متتبّع المشكلات. أرفق إصدار كروم ونوع العنصر إن فشل الالتقاط.", cta: "افتح صفحة المشكلات", placeholder: false },
-    { i: "patreon", title: "ادعم المشروع", body: "سيبقى أبريوم مجانياً. إن وفّر عليك وقتاً، فمساهمة صغيرة متكرّرة تموّل الصيانة ورسوم المتجر.", cta: "صفحة Patreon", placeholder: true }
+    { i: "patreon", title: "ادعم المشروع", body: "سيبقى أبريوم مجانياً. إن وفّر عليك وقتاً، فمساهمة صغيرة متكرّرة تموّل الصيانة ورسوم المتجر.", cta: "صفحة Patreon", placeholder: false }
   ],
   privacy: {
     title: "سياسة الخصوصية", updated: "آخر تحديث · ٢ أغسطس ٢٠٢٦",
@@ -253,7 +253,7 @@ export const FR = {
   ],
   contactCards: [
     { i: "github", title: "Signaler un problème", body: "Les bugs ou demandes de fonctionnalités doivent être publiés sur GitHub. Indiquez votre version de Chrome.", cta: "Ouvrir un ticket GitHub", placeholder: false },
-    { i: "patreon", title: "Soutenir le projet", body: "Abrium reste gratuit. Si cela vous fait gagner du temps, une petite contribution finance sa maintenance.", cta: "Page Patreon", placeholder: true }
+    { i: "patreon", title: "Soutenir le projet", body: "Abrium reste gratuit. Si cela vous fait gagner du temps, une petite contribution finance sa maintenance.", cta: "Page Patreon", placeholder: false }
   ],
   privacy: {
     title: "Politique de confidentialité", updated: "Dernière mise à jour · 2 août 2026",
@@ -347,7 +347,7 @@ export const ES = {
   ],
   contactCards: [
     { i: "github", title: "Reportar un problema", body: "Usa el gestor de incidencias en GitHub.", cta: "Abrir incidencias en GitHub", placeholder: false },
-    { i: "patreon", title: "Apoyar el proyecto", body: "Abrium es gratis. Una pequeña donación ayuda con su mantenimiento.", cta: "Página de Patreon", placeholder: true }
+    { i: "patreon", title: "Apoyar el proyecto", body: "Abrium es gratis. Una pequeña donación ayuda con su mantenimiento.", cta: "Página de Patreon", placeholder: false }
   ],
   privacy: {
     title: "Política de privacidad", updated: "Última actualización · 2 de agosto de 2026",
@@ -441,7 +441,7 @@ export const PT = {
   ],
   contactCards: [
     { i: "github", title: "Relatar problema", body: "Bugs e solicitações de recursos pertencem ao GitHub.", cta: "Abrir problemas no GitHub", placeholder: false },
-    { i: "patreon", title: "Apoiar projeto", body: "O Abrium é grátis. Doações ajudam na manutenção.", cta: "Página do Patreon", placeholder: true }
+    { i: "patreon", title: "Apoiar projeto", body: "O Abrium é grátis. Doações ajudam na manutenção.", cta: "Página do Patreon", placeholder: false }
   ],
   privacy: {
     title: "Política de privacidade", updated: "Última atualização · 2 de agosto de 2026",

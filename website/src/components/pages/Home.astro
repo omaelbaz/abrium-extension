@@ -14,7 +14,7 @@ const downloadHref = lang === 'en' ? '/download' : `/${lang}/download`;
   <div style="display:flex; flex-direction:row; gap:64px; align-items:center">
     <div style="flex:1; min-width:0; display:flex; flex-direction:column; gap:20px; max-width:720px">
       <span style="font:500 11.5px/1 ui-monospace,Menlo,monospace; letter-spacing:0.12em; text-transform:uppercase; color:var(--accent-text)">{t('eyebrow')}</span>
-      <h1 class="home-h1" style="margin:0; font-weight:600; line-height:1.1; letter-spacing:-0.025em; text-wrap:balance">{t('heroTitle')}</h1>
+      <h1 class="home-h1" style="margin:0; font-weight:600; line-height:1.1; letter-spacing:-0.025em; text-wrap:balance" set:html={t('heroTitle')}></h1>
       <p class="home-sub" style="margin:0; line-height:1.65; color:var(--text-3); text-wrap:pretty; max-width:48ch">{t('heroSub')}</p>
       <div class="home-ctas" style="display:flex; gap:10px; padding-top:4px">
         <a href={downloadHref} style="height:48px; display:flex; align-items:center; justify-content:center; gap:9px; padding:0 20px; border-radius:8px; background:var(--accent-solid); color:var(--on-accent); font:600 14.5px/1 inherit; cursor:pointer; text-decoration:none">

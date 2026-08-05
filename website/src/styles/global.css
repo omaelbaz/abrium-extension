@@ -85,3 +85,13 @@ a:hover { text-decoration:underline; }
   .r-page  { padding-block:36px; }
   .r-title { font-size:27px; }
 }
+
+/* Hero's forced line break (EN only, injected via set:html so a scoped
+   component <style> can't target it — this has to be global) is a
+   desktop-only device. Below 1024px, text-wrap:balance already wraps the
+   heading naturally and does it better than the fixed break point: the
+   fixed break renders an uneven ~159/277px split at 375px and forces an
+   unnecessary second line at 640px where the heading otherwise fits on one. */
+@media (max-width: 1023px) {
+  .hero-break { display:none; }
+}
