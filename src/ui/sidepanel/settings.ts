@@ -24,7 +24,7 @@ import { escapeHtml, notice } from '../shared/templates.ts';
    tools/verify-dist.mjs fails the build if one reaches dist/.
    ========================================================================== */
 export const PLACEHOLDER_LINKS = {
-  support: 'https://patreon.com/OmarElbaz',
+  support: 'https://www.patreon.com/16547235/join',
   repository: 'https://github.com/omaelbaz/abrium-extension',
   /** TODO(real-url): website changelog page not reachable yet (domain not live). */
   changelog: 'https://abrium.onl/changelog',
