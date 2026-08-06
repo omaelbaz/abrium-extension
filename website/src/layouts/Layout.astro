@@ -111,9 +111,29 @@ const t = useTranslations(currentLocale);
 ---
 
 <!doctype html>
-<html lang={currentLocale} dir={isRTL ? "rtl" : "ltr"} data-theme="light">
+<html lang={currentLocale} dir={isRTL ? "rtl" : "ltr"}>
 	<head>
 		<meta charset="UTF-8" />
+		{/* Applies a stored theme choice (or leaves data-theme unset so
+		    tokens.css's `@media (prefers-color-scheme: dark)` fallback
+		    applies) before first paint — a client-only island or a
+		    DOMContentLoaded handler would run after render and cause a
+		    flash, and neither survives a full page navigation on its own,
+		    which is why the theme was resetting to light on every
+		    click-through (localStorage was written but never read back). */}
+		<script is:inline>
+			(function () {
+				try {
+					var stored = localStorage.getItem('theme');
+					if (stored === 'dark' || stored === 'light') {
+						document.documentElement.setAttribute('data-theme', stored);
+					}
+				} catch (e) {
+					/* localStorage can throw in some privacy modes; the
+					   prefers-color-scheme fallback in tokens.css still applies. */
+				}
+			})();
+		</script>
 		<meta name="description" content={description} />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		{/* SVG first for modern browsers; .ico is the Safari/older/crawler
@@ -368,14 +388,23 @@ const t = useTranslations(currentLocale);
             iconDark.style.display = 'block';
           }
         }
-        
-        const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
-        updateThemeIcons(currentTheme);
+
+        // No explicit data-theme attribute means the page is rendering
+        // under tokens.css's prefers-color-scheme fallback, not necessarily
+        // light — read the same system signal so the icon (and the first
+        // toggle click) reflect what the user is actually looking at.
+        function effectiveTheme() {
+          const explicit = document.documentElement.getAttribute('data-theme');
+          if (explicit === 'dark' || explicit === 'light') return explicit;
+          const systemDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+          return systemDark ? 'dark' : 'light';
+        }
+
+        updateThemeIcons(effectiveTheme());
 
         if (themeBtn) {
           themeBtn.addEventListener('click', () => {
-            const docTheme = document.documentElement.getAttribute('data-theme');
-            const newTheme = docTheme === 'dark' ? 'light' : 'dark';
+            const newTheme = effectiveTheme() === 'dark' ? 'light' : 'dark';
             document.documentElement.setAttribute('data-theme', newTheme);
             localStorage.setItem('theme', newTheme);
             updateThemeIcons(newTheme);
