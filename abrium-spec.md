@@ -2566,3 +2566,154 @@ copy), with an exception for the homepage (already has full custom
 brand-inclusive title, must not double up).
 STILL OPEN: awaiting Claude Code to commit+push the homepage title
 change, then implement and verify the brand-suffix task.
+check): /download's dlTitle already says "Install Abrium" (and EN/FR/ES/PT
+translations), so the blind " · Abrium" suffix would have produced
+"Install Abrium · Abrium". Improved on the literal spec: instead of a
+second one-off homepage-style exception, implemented a generic
+word-boundary auto-detect that skips the suffix whenever "Abrium" is
+already present in the title — covers homepage + download together and
+any future ui.ts key that happens to include the brand, without needing
+new exceptions. AR pages correctly still get the suffix (أبريوم isn't
+Latin "Abrium", so no false-positive skip there).
+Verified across all title variants in dist/: features/faq/contact now
+correctly branded ("... · Abrium"), download pages unchanged (already
+branded), homepage unchanged, non-EN homepages get the suffix (heroTitle
+has no brand). og:title/twitter:title stay in sync everywhere. Build:
+46 pages, 0 errors. Committed 0534c9e, pushed, Vercel auto-deploying.
+## ✅ PROMPT 27 (Homepage title fix + site-wide brand-suffix for SERP titles) — CLOSED
+## Prompt 28 — Secret scan before commit, gitleaks-tool gitignored
+Full pre-commit safety pass: .gitignore verified clean UTF-8, staged
+diff reviewed for suspicious file names/patterns (one path-reference hit
+in doc logs, not a real secret), gitleaks --staged run clean (0 leaks).
+Correctly caught and excluded gitleaks-tool/ (22MB binary) from being
+swept into the commit by "git add ." — flagged rather than blindly
+staged. Committed docs-only change as 9ac15b0, pushed.
+Follow-up: gitleaks-tool/ added to .gitignore (verified via
+git check-ignore -v before committing), committed as 4ad28ad, pushed —
+tool stays available locally for future scans without being tracked.
+
+
+## Prompt 29 — Full extension code review (popup/sidepanel/service worker) — assigned, not yet run
+Website + SEO + GitHub repo work is fully closed (Prompts 1-28). Chrome
+Web Store submission is In Review (Omar confirmed 2026-08-06, not yet
+approved). Decided (PM call, this session): external distribution
+(Product Hunt, Reddit, awesome-lists) is explicitly BLOCKED until CWS
+approval lands — launching with a "pending review" or broken CWS link
+would poison first impressions and can't be re-run with the same
+momentum. Chose to use the waiting period productively: full review of
+the extension's own source (never reviewed this session/thread) so the
+repo is clean before external eyes arrive via Product Hunt/Reddit links.
+Prompt 29 issued to Claude Code (see CLAUDE.md for the exact prompt) to
+audit for: convention violations (raw chrome.storage.* calls outside
+storage.ts, inline DOM selectors outside extract.ts, inline <svg>
+outside icon(), duplicated/"remixed" logic), hardcoded UI strings
+outside chrome.i18n, missing tests on core functions (main path + edge
+case), and any stray fetch()/network call outside local file/blob URLs
+(violates the zero-network-calls rule). Read-only audit + report first
+— no fixes applied without Omar's review, since findings may be false
+positives.
+STILL OPEN: awaiting Claude Code's audit report.
+
+## Prompt 29 — RESULTS: audit complete, 2 real gaps found
+Read-only audit complete, no code changed. Six of eight check categories
+came back clean: Storage (all writes/reads go through /lib/storage.ts),
+Selectors (all centralized in /lib/extract.ts), Icons (icon() used
+everywhere, no inline <svg>), I18N (structurally clean, all 5 locale
+files verified to have real complete translations, no English fallback
+left untranslated), Network (zero fetch/XHR/WebSocket outside local
+file/blob URLs), RTL (logical CSS properties used throughout).
+Two real gaps found:
+1. REMIXING violation: 4 byte-identical functions duplicated between
+   src/ui/popup/popup.ts and src/ui/sidepanel/sidepanel.ts —
+   syncClearButton(), required<T>(), announce(), matchesQuery(). Direct
+   violation of the "no remixing" non-negotiable rule.
+2. TESTS gap: no automated test runner exists at all — only a manual
+   browser-based check harness (tools/extract-test.html) and an
+   assertion-free interactive one. Zero coverage on download.ts,
+   format.ts, settings.ts, i18n.ts, and capture.ts's dedup logic.
+## ✅ PROMPT 29 (Full extension code audit) — CLOSED (report only, fixes pending)
+
+
+## Prompt 30 — Fix order decided (PM call)
+Two fixes queued, sequenced deliberately rather than run together:
+STEP A (small, low-risk, do first): extract the 4 duplicated functions
+(syncClearButton, required<T>, announce, matchesQuery) out of popup.ts/
+sidepanel.ts into a new shared module (likely /lib or /src/ui/shared.ts
+— Claude Code's call on exact location/naming, following existing
+/lib conventions), both files import from there. No behavior change,
+pure dedup — safe to verify quickly and closes the "no remixing"
+violation immediately.
+STEP B (larger, do after A is verified clean): set up a real automated
+test runner (Vitest — already Vite-based project, zero extra tooling
+cost) and write tests for the five uncovered areas: download.ts,
+format.ts, settings.ts, i18n.ts, capture.ts dedup logic — each with at
+least one main-path test and one edge case per CLAUDE.md's "No bugs"
+rule. Existing manual harnesses (tools/extract-test.html) stay as-is,
+not replaced — just no longer the only coverage.
+Rationale for the split: A is mechanical and fast to verify in
+isolation: bundling it with the much larger test-infrastructure work
+would make any regression harder to isolate. Doing A first also means
+the shared module A creates can itself be covered by the tests written
+in B, instead of writing tests for functions that get moved right after.
+STILL OPEN: Step A prompt issued to Claude Code, awaiting result.
+
+## Prompt 30 Step A — COMPLETE: shared module created, verified, not yet committed
+Claude Code created src/ui/shared/dom.ts (sibling to existing
+shared/templates.ts). matchesQuery() moved verbatim. required(),
+announce(), syncClearButton() converted to factories
+(createRequired(), createAnnouncer(), createClearButtonSync()) since
+each closed over its own file's module-local dom/state objects that
+don't exist in a shared file — factory pattern was necessary, not a
+stylistic choice; original logic inside each is untouched. popup.ts and
+sidepanel.ts now import from ../shared/dom.ts; all downstream call sites
+(19 announce(), 12 required(), 2 syncClearButton() calls) unchanged.
+popup.ts's now-unused icon import removed (caught by tsc noUnusedLocals).
+Verified: pnpm build clean (tsc --noEmit, Vite build, verify-dist 51/51),
+live-tested both surfaces in dev-harness.html (search/filter/clear-button
+behavior identical pre/post-refactor, zero new console errors).
+NOT COMMITTED YET — Claude Code correctly stopped and asked before
+committing, per this session's standing instruction not to commit
+without explicit approval.
+STILL OPEN: Omar to approve commit+push, then Step B (Vitest test
+runner + tests for download.ts/format.ts/settings.ts/i18n.ts/
+capture.ts dedup logic) to begin.
+
+## Prompt 30 Step A — COMMITTED AND PUSHED (824f7ef)
+gitleaks --staged clean (0 leaks, 3.27 KB scanned). Commit 824f7ef
+"refactor: extract shared UI helpers from popup/sidepanel into
+shared/dom.ts" (3 files: dom.ts new, popup.ts/sidepanel.ts modified).
+Pushed 4ad28ad..824f7ef main -> main. Scoped to code files only —
+CLAUDE.md/abrium-spec.md doc-log edits from the audit/refactor writeup
+were deliberately left uncommitted at Claude Code's discretion, pending
+a bundled docs commit later.
+## ✅ PROMPT 30 STEP A (Dedup refactor: shared/dom.ts) — CLOSED
+
+
+## Prompt 30 Step B — COMPLETE: Vitest set up, 42 tests across 5 files, all green
+vitest.config.ts added (jsdom environment), pnpm test/test:watch scripts
+added. pnpm test confirmed running with zero tests before any test file
+was written, per instructions.
+5 test files written in the assigned order, 42 tests total:
+- format.test.ts (6): formatDate/formatCount/formatBytes, non-finite/
+  negative edge cases
+- i18n.test.ts (12): t()/tPlural() lookup+fallback, resolveLocale,
+  hydrate(), applyDocumentLocale
+- settings.test.ts (10): read/write round-trip, per-field validation
+  fallback, theme/locale apply, storage-failure tolerance
+- download.test.ts (10): single/JSON/ZIP export, filename-collision
+  dedup (verified by reloading the actual ZIP), JSZip-failure wrapping
+- capture.test.ts (4): signatureOf/contentHash only — these were
+  private, exported with no logic change specifically to make them
+  testable; timers faked so main()'s sweep loop never fires during tests
+pnpm test: 5 files, 42 tests, all green, no cross-test state leakage
+(each file owns its own setup/teardown). pnpm typecheck and pnpm build
+(incl. verify-dist 51/51) both clean.
+src/ui/shared/dom.ts's factories (from Step A) are explicitly NOT
+covered yet — stopped in scope as instructed, flagged as a fast
+follow-up rather than done silently.
+NOT COMMITTED YET — new files (vitest.config.ts, 5 *.test.ts files),
+2 export additions in capture.ts, package.json/pnpm-lock.yaml changes,
+all pending approval. Claude Code also flagged the still-uncommitted
+Step A doc-log edits (CLAUDE.md/abrium-spec.md) as an open loose end.
+STILL OPEN: Omar to approve a combined commit (Step B test suite + both
+pending doc-log commits from Step A and Step B) and push.

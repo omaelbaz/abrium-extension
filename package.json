@@ -22,6 +22,8 @@
     "check:no-network": "node tools/check-no-network.mjs",
     "verify:dist": "node tools/verify-dist.mjs",
     "serve:dist": "node tools/serve-dist.mjs",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "test:extract": "echo \"open http://localhost:5173/tools/extract-test.html with pnpm dev running\""
   },
   "dependencies": {
@@ -30,7 +32,9 @@
   "devDependencies": {
     "@crxjs/vite-plugin": "^2.2.0",
     "@types/chrome": "^0.1.34",
+    "jsdom": "^30.0.1",
     "typescript": "^5.9.3",
-    "vite": "^6.3.6"
+    "vite": "^6.3.6",
+    "vitest": "^4.1.10"
   }
 }

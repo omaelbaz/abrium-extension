@@ -45,11 +45,11 @@ function alreadyInjected(): boolean {
 }
 
 /** Cheap stability probe — total source length across all captured artifacts. */
-function signatureOf(artifacts: readonly Artifact[]): string {
+export function signatureOf(artifacts: readonly Artifact[]): string {
   return artifacts.map((artifact) => `${artifact.id}:${artifact.bytes}`).join('|');
 }
 
-function contentHash(artifact: Artifact): number {
+export function contentHash(artifact: Artifact): number {
   // Only used to decide "did this change since we last sent it".
   return artifact.bytes * 31 + artifact.content.length;
 }
