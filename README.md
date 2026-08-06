@@ -29,7 +29,13 @@ Claude Artifacts disappear the moment you close the conversation or the chat his
 
 ## Installation
 
-The Chrome Web Store listing is currently under review. Until it's live, install from source:
+**[Add to Chrome →](https://chromewebstore.google.com/detail/abrium-%E2%80%94-claude-artifact/fbabopdkjdgglcnkipiffohnnmkdkogc)**
+
+Abrium is live on the Chrome Web Store — install it there for automatic updates.
+
+### Build from source
+
+For contributors, or if you'd rather run your own build:
 
 ```bash
 git clone https://github.com/omaelbaz/abrium-extension.git
