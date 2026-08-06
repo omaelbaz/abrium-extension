@@ -21,6 +21,9 @@ tests/fixtures/claude-page.real.html
 # Local Claude Code config/settings — not project source.
 .claude/
 
+# Local secret-scanning tool binary — not project source.
+gitleaks-tool/
+
 # Service account keys and any other local credential. NOTHING under
 # credentials/ is ever committed — the Google Indexing API key lives here.
 # Keep these rules in plain UTF-8: this file has twice been corrupted by
