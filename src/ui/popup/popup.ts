@@ -12,7 +12,7 @@ import { formatBytes, formatCount, formatDate } from '../../lib/format.ts';
 import { getArtifactSizes, onArtifactsChanged, readArtifacts } from '../../lib/storage.ts';
 import { downloadArtifact } from '../../lib/download.ts';
 import { loadAndApplySettings } from '../../lib/settings.ts';
-import { icon } from '../icons.ts';
+import { createAnnouncer, createClearButtonSync, createRequired, matchesQuery } from '../shared/dom.ts';
 import type { PopupModel, RenderContext } from './templates.ts';
 import {
   POPUP_LIMIT,
@@ -53,15 +53,6 @@ const state: State = {
  */
 let currentWindowId: number | undefined;
 
-function matchesQuery(artifact: Artifact, needle: string): boolean {
-  if (needle === '') return true;
-  return (
-    artifact.title.toLowerCase().includes(needle) ||
-    artifact.filename.toLowerCase().includes(needle) ||
-    (artifact.language ?? '').toLowerCase().includes(needle)
-  );
-}
-
 function buildModel(): PopupModel {
   const needle = state.query.trim().toLowerCase();
   // readArtifacts() already returns newest first, so "last 5" is just a slice.
@@ -79,11 +70,7 @@ function buildModel(): PopupModel {
    DOM handles
    ------------------------------------------------------------------------- */
 
-function required<T extends Element>(selector: string): T {
-  const element = document.querySelector<T>(selector);
-  if (!element) throw new Error(`Popup shell is missing ${selector}`);
-  return element;
-}
+const required = createRequired('Popup shell');
 
 const dom = {
   header: required<HTMLElement>('#pop-header'),
@@ -93,13 +80,7 @@ const dom = {
   live: required<HTMLElement>('#pop-live'),
 };
 
-function announce(message: string): void {
-  // Reassigning identical text does not re-announce; clear first.
-  dom.live.textContent = '';
-  window.setTimeout(() => {
-    dom.live.textContent = message;
-  }, 50);
-}
+const announce = createAnnouncer(dom.live);
 
 /* -------------------------------------------------------------------------
    Render
@@ -267,24 +248,7 @@ function onSearchInput(event: Event): void {
   }, SEARCH_DEBOUNCE_MS);
 }
 
-/** Add or remove the clear button without re-rendering the focused input. */
-function syncClearButton(): void {
-  const field = document.querySelector<HTMLElement>('.abr-field--search');
-  if (!field) return;
-  const existing = field.querySelector<HTMLElement>('[data-action="clear-search"]');
-  const needed = state.query.length > 0;
-  if (needed && !existing) {
-    const button = document.createElement('button');
-    button.className = 'abr-icon-btn abr-icon-btn--sm abr-field__clear';
-    button.type = 'button';
-    button.dataset['action'] = 'clear-search';
-    button.setAttribute('aria-label', t('search_clear'));
-    button.innerHTML = icon('close');
-    field.append(button);
-  } else if (!needed && existing) {
-    existing.remove();
-  }
-}
+const syncClearButton = createClearButtonSync(() => state.query.length > 0);
 
 function onKeyDown(event: KeyboardEvent): void {
   // Escape clears a query before Chrome closes the popup on the second press.

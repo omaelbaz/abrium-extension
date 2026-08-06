@@ -25,6 +25,7 @@ import {
   exportArtifactsJson,
 } from '../../lib/download.ts';
 import { icon } from '../icons.ts';
+import { createAnnouncer, createClearButtonSync, createRequired, matchesQuery } from '../shared/dom.ts';
 import type { RenderContext } from './templates.ts';
 import { listAttributes, renderActionBar, renderBody, renderHeader } from './templates.ts';
 import type { DetailModel } from './detail.ts';
@@ -110,15 +111,6 @@ const state: State = {
   previewHintDismissed: false,
 };
 
-function matchesQuery(artifact: Artifact, needle: string): boolean {
-  if (needle === '') return true;
-  return (
-    artifact.title.toLowerCase().includes(needle) ||
-    artifact.filename.toLowerCase().includes(needle) ||
-    (artifact.language ?? '').toLowerCase().includes(needle)
-  );
-}
-
 function buildModel(): GalleryModel {
   const needle = state.query.trim().toLowerCase();
   const visible = state.all.filter(
@@ -150,11 +142,7 @@ function buildModel(): GalleryModel {
    DOM handles
    ------------------------------------------------------------------------- */
 
-function required<T extends Element>(selector: string): T {
-  const element = document.querySelector<T>(selector);
-  if (!element) throw new Error(`Side panel shell is missing ${selector}`);
-  return element;
-}
+const required = createRequired('Side panel shell');
 
 const dom = {
   gallery: required<HTMLElement>('#sp-gallery'),
@@ -166,13 +154,7 @@ const dom = {
   live: required<HTMLElement>('#sp-live'),
 };
 
-function announce(message: string): void {
-  // Reassigning identical text does not re-announce; clear first.
-  dom.live.textContent = '';
-  window.setTimeout(() => {
-    dom.live.textContent = message;
-  }, 50);
-}
+const announce = createAnnouncer(dom.live);
 
 /* -------------------------------------------------------------------------
    Render
@@ -753,24 +735,7 @@ function onSearchInput(event: Event): void {
 
 let searchTimer = 0;
 
-/** Add or remove the clear button without re-rendering the focused input. */
-function syncClearButton(): void {
-  const field = document.querySelector<HTMLElement>('.abr-field--search');
-  if (!field) return;
-  const existing = field.querySelector<HTMLElement>('[data-action="clear-search"]');
-  const needed = state.query.length > 0;
-  if (needed && !existing) {
-    const button = document.createElement('button');
-    button.className = 'abr-icon-btn abr-icon-btn--sm abr-field__clear';
-    button.type = 'button';
-    button.dataset['action'] = 'clear-search';
-    button.setAttribute('aria-label', t('search_clear'));
-    button.innerHTML = icon('close');
-    field.append(button);
-  } else if (!needed && existing) {
-    existing.remove();
-  }
-}
+const syncClearButton = createClearButtonSync(() => state.query.length > 0);
 
 /* --- keyboard: roving tabindex over the batch-mode listbox --------------- */
 
