@@ -2470,3 +2470,99 @@ cause as the earlier deferred "DNS Change Recommended" notice on
 www.abrium.onl.
 STILL OPEN: Omar to flip the Vercel domain primary/redirect direction,
 then commit + push (covers this task's changes plus any pending doc edits).
+
+## Prompt 25 — COMMITTED AND PUSHED (5148056, then 9a4797c cleanup)
+Technical SEO work (robots.txt, OG/Twitter tags, SoftwareApplication
+schema, alt text fixes) pushed at 5148056. Two CWS upload zips had
+accidentally been swept into that commit (same pattern as the earlier
+dist.zip leak) — untracked and *.zip added to .gitignore, pushed at
+9a4797c. Domain redirect direction also flipped in Vercel (abrium.onl
+now primary/Production, www redirects to it) — matches all code's
+canonical/hreflang references. www's remaining "DNS Change Recommended"
+notice is optional (legacy CNAME still works per Vercel's own message),
+deferred, non-blocking.
+## ✅ PROMPT 25 (Technical SEO: robots.txt, OG tags, structured data, apex/www redirect fix) — CLOSED
+Project status: website live at abrium.onl with full technical SEO,
+extension submitted to Chrome Web Store (In Review), GitHub repo fully
+optimized. Remaining backlog: Google Search Console setup (manual,
+Omar), optional www CNAME update, external distribution (awesome-lists,
+Reddit/Product Hunt) once extension is approved and live.
+## Prompt 26 — Google Indexing API setup (Cloud Console)
+Set up a Google Cloud service account (abrium-indexer) for the Web
+Search Indexing API: project created, API enabled, service account +
+JSON key generated, added as Owner in Search Console for abrium.onl.
+JSON key stored locally on Omar's machine outside the repo (recommended
+C:\Users\alext\secrets\), never shared in chat.
+Prompt issued to Claude Code: write a Node.js script using googleapis +
+google-auth-library to submit all live page URLs (derived from Astro's
+actual routes, not hand-typed) to the Indexing API's URL_UPDATED
+endpoint, with rate-limit handling and a dry-run mode first. Instructed
+to add the credentials path pattern to .gitignore before creating
+anything (same risk class as the earlier dist.zip leak, but for a real
+credential this time). Claude Code prepares the script + dry-run only;
+Omar runs the live submission himself.
+STILL OPEN: awaiting Claude Code's script + dry-run output; Omar to
+review the URL list then run the live submission.
+the *.zip lines added later via PowerShell Add-Content) — caught and
+fixed BEFORE adding credential rules, verified via git check-ignore -v
+(not assumed). Credential rules (credentials/, *.serviceaccount.json,
+service-account*.json, gcp-*.json, .env*) confirmed actually matching.
+Script: website/tools/submit-to-indexing-api.mjs. Dry-run by default,
+--live required to fire. URL list derived from the real built sitemap
+(dist/sitemap-index.xml), not hand-typed — fails loudly if dist/ is
+missing. Key resolved via --key/env vars/credentials/ folder, path only
+ever logged (never contents). Rate-limited (600ms between calls,
+backoff on 429/500-504 only, immediate report on 403). googleapis kept
+out of website/package.json deliberately (avoids bloating every Vercel
+build for a script that runs once manually).
+Dry run: 45 URLs (9 real pages x 5 languages, /404 correctly excluded
+from sitemap so excluded here too).
+Two notes raised, both already resolved/non-issues: (1) apex/www host —
+already fixed in Prompt 25 (abrium.onl is primary, www redirects to it),
+so the apex URLs in the dry run are correct as-is; (2) Indexing API's
+official JobPosting/BroadcastEvent scope caveat — already understood,
+treating this as a supplementary nudge alongside the already-submitted
+sitemap, not a replacement.
+Local commit 607559f, not pushed (not asked for). CLAUDE.md append left
+uncommitted per established convention (respects this session's pending
+doc edits).
+STILL OPEN: Omar to run the live submission + commit/push.
+
+## Prompt 26 — COMPLETE: 45/45 URLs submitted successfully
+First attempt failed (403, API not yet propagated after enabling) —
+waited ~5-10 min after confirming "Status: Enabled" in Cloud Console,
+retried. Second attempt: 45/45 succeeded, 0 failed.
+## ✅ PROMPT 26 (Google Indexing API setup + submission) — CLOSED
+STILL OPEN: Omar to commit + push the script/gitignore fix from earlier
+(local commit 607559f not yet pushed).
+Project SEO status: robots.txt, OG/Twitter tags, structured data, apex
+domain primary, sitemap submitted, manual + API indexing requests done.
+Full SEO stack for abrium.onl now complete.
+
+## Prompt 26 — PUSHED (607559f)
+.gitignore encoding fix + Indexing API script pushed to main. Full SEO
+stack for abrium.onl now complete and live: robots.txt, OG/Twitter tags,
+structured data, apex domain primary, sitemap submitted, 45/45 URLs
+confirmed accepted by the Indexing API.
+Confirmed via live `site:abrium.onl` Google search: 7 pages already
+indexed within hours of the Indexing API submission (much faster than
+the days/weeks initially expected) — homepage, /features, FR/ES/AR/PT
+homepages, /changelog. Arabic result correctly shows "Artifact" in
+Latin script.
+Homepage <title>/og:title/twitter:title updated (single shared prop, no
+drift) to "Abrium — Claude Artifact Manager & Local Catalog" — matches
+the CWS listing title decision, fixes the missing "Artifact" keyword.
+Verified in built dist/index.html. NOT yet committed/pushed.
+Claude Code correctly refused to expand the EN-only scope to the other
+inner pages (features/faq/download/contact) since their <title> reuses
+the same ui.ts key as the visible H1 across all 5 languages — flagged
+this as out of scope rather than silently doing it.
+NEW FINDING (Claude Code): 5 of 8 inner pages have NO "Abrium" in their
+title at all (title = bare H1 copy like "Get in touch"), losing brand
+identity in SERPs. DECISION: approved a separate scoped fix — append
+" · Abrium" suffix in Layout.astro's <title> rendering only (not
+touching ui.ts H1 content, not touching any of the 5 languages' visible
+copy), with an exception for the homepage (already has full custom
+brand-inclusive title, must not double up).
+STILL OPEN: awaiting Claude Code to commit+push the homepage title
+change, then implement and verify the brand-suffix task.
